@@ -200,6 +200,26 @@
     font-size: 13px; color: #4a4550; line-height: 1.6;
     margin-bottom: 12px;
   }
+  .md-body p  { margin: 0 0 6px; }
+  .md-body h2 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ink); margin: 10px 0 4px; }
+  .md-body h3 { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--ink); margin: 8px 0 3px; }
+  .md-body h4 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 8px 0 3px; }
+  .md-body ul, .md-body ol { padding-left: 18px; margin: 4px 0 8px; }
+  .md-body li { margin-bottom: 3px; }
+  .md-body strong { font-weight: 600; color: var(--ink); }
+  .md-body em { font-style: italic; }
+  .md-body s  { opacity: 0.5; }
+  .md-body code {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    background: var(--paper2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 5px; color: var(--accent);
+  }
+  .md-body blockquote {
+    border-left: 3px solid var(--border); margin: 6px 0;
+    padding: 2px 10px; color: var(--muted); font-style: italic;
+  }
+  .md-body hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+  .md-body a  { color: #2980b9; text-decoration: underline; }
   .card-dates {
     display: flex; gap: 10px; flex-wrap: wrap;
     margin-bottom: 12px;
@@ -1096,6 +1116,59 @@ function setSort(mode) {
   renderContent();
 }
 
+// ─── MARKDOWN RENDERER ───────────────────────────────────
+function renderMarkdown(raw) {
+  if (!raw) return '';
+  let s = escHtml(raw);
+
+  // Block elements — process line by line
+  const lines = s.split('\n');
+  const out = [];
+  let inUl = false, inOl = false;
+
+  function closeList() {
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+  }
+
+  lines.forEach(line => {
+    // Headings
+    if (/^### (.+)/.test(line))      { closeList(); out.push(`<h4>${line.replace(/^### /,'')}</h4>`); return; }
+    if (/^## (.+)/.test(line))       { closeList(); out.push(`<h3>${line.replace(/^## /,'')}</h3>`); return; }
+    if (/^# (.+)/.test(line))        { closeList(); out.push(`<h2>${line.replace(/^# /,'')}</h2>`); return; }
+    // Horizontal rule
+    if (/^---+$/.test(line.trim()))  { closeList(); out.push('<hr>'); return; }
+    // Unordered list
+    if (/^[-*] (.+)/.test(line))     {
+      if (!inUl) { closeList(); out.push('<ul>'); inUl = true; }
+      out.push(`<li>${line.replace(/^[-*] /,'')}</li>`); return;
+    }
+    // Ordered list
+    if (/^\d+\. (.+)/.test(line))    {
+      if (!inOl) { closeList(); out.push('<ol>'); inOl = true; }
+      out.push(`<li>${line.replace(/^\d+\. /,'')}</li>`); return;
+    }
+    // Blockquote
+    if (/^&gt; (.+)/.test(line))     { closeList(); out.push(`<blockquote>${line.replace(/^&gt; /,'')}</blockquote>`); return; }
+    // Empty line
+    if (line.trim() === '')          { closeList(); out.push('<br>'); return; }
+    // Normal paragraph line
+    closeList();
+    out.push(`<p>${line}</p>`);
+  });
+  closeList();
+
+  // Inline: bold, italic, code, strikethrough, links
+  return out.join('')
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,         '<em>$1</em>')
+    .replace(/_(.+?)_/g,           '<em>$1</em>')
+    .replace(/~~(.+?)~~/g,         '<s>$1</s>')
+    .replace(/`(.+?)`/g,           '<code>$1</code>')
+    .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
 function renderCard(p) {
   const color = COLORS.find(c => c.id === p.color) || COLORS[3];
   const overdue = p.deadline && isOverdue(p.deadline) && p.progress < 100;
@@ -1126,7 +1199,7 @@ function renderCard(p) {
       </div>
     </div>
     <div class="card-body" id="body-${p.id}">
-      ${p.desc ? `<div class="card-desc">${escHtml(p.desc).replace(/\n/g,'<br>')}</div>` : ''}
+      ${p.desc ? `<div class="card-desc md-body">${renderMarkdown(p.desc)}</div>` : ''}
       <div class="card-dates">
         ${p.start    ? `<div class="date-chip start">▶ Start: ${formatDateDisplay(p.start)}</div>` : ''}
         ${p.deadline ? `<div class="date-chip deadline${overdue?' overdue':''}">⏳ Due: ${formatDateDisplay(p.deadline)}</div>` : ''}
