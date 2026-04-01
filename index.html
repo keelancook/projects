@@ -224,11 +224,26 @@
     background: #fff3b0; color: #5a4000;
     border-radius: 3px; padding: 0 3px;
   }
-  .md-body .md-note {
-    background: #e8f4ee; border-left: 3px solid var(--accent2);
-    border-radius: 0 6px 6px 0; padding: 8px 12px;
-    margin: 6px 0; font-size: 12px; color: #2d5a3e;
+  .md-body .md-callout-note,
+  .md-body .md-callout-tip,
+  .md-body .md-callout-warn {
+    border-radius: 0 6px 6px 0;
+    padding: 8px 12px; margin: 6px 0; font-size: 12px;
   }
+  .md-body .md-callout-note {
+    background: #e8f0fe; border-left: 3px solid #4a6fa5; color: #1a3a6a;
+  }
+  .md-body .md-callout-tip {
+    background: #e8f4ee; border-left: 3px solid var(--accent2); color: #2d5a3e;
+  }
+  .md-body .md-callout-warn {
+    background: #fff3e0; border-left: 3px solid #e67e22; color: #7a3e00;
+  }
+  .md-body .md-callout-title {
+    font-weight: 600; font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .md-body .md-callout-body { line-height: 1.5; }
 
   /* ── TAB DRAG HANDLE ── */
   .tab-drag-handle {
@@ -1425,22 +1440,57 @@ function renderMarkdown(raw) {
   let s = escHtml(raw);
   const lines = s.split('\n');
   const out = [];
-  let inUl = false, inOl = false, inNote = false;
-  function closeList() { if (inUl) { out.push('</ul>'); inUl=false; } if (inOl) { out.push('</ol>'); inOl=false; } }
-  function closeNote() { if (inNote) { out.push('</div>'); inNote=false; } }
+  let inUl = false, inOl = false;
+  let calloutType = null, calloutLines = [];
+
+  function closeList() {
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+  }
+  function flushCallout() {
+    if (calloutType === null) return;
+    const type = calloutType.toLowerCase();
+    const cls  = ['warning','caution','danger'].includes(type) ? 'md-callout-warn'
+                : ['tip','hint','important'].includes(type)    ? 'md-callout-tip'
+                : 'md-callout-note';
+    const icon = ['warning','caution','danger'].includes(type) ? '⚠'
+                : ['tip','hint'].includes(type)                ? '💡'
+                : ['important'].includes(type)                 ? '❗'
+                : 'ℹ';
+    const label = calloutType.charAt(0).toUpperCase() + calloutType.slice(1);
+    out.push(`<div class="${cls}"><div class="md-callout-title">${icon} ${label}</div><div class="md-callout-body">${calloutLines.join(' ')}</div></div>`);
+    calloutType = null;
+    calloutLines = [];
+  }
+
   lines.forEach(line => {
-    if (/^:::/.test(line.trim()))    { closeList(); if (!inNote){out.push('<div class="md-note">');inNote=true;} else {out.push('</div>');inNote=false;} return; }
-    if (/^### (.+)/.test(line))     { closeList(); closeNote(); out.push(`<h4>${line.replace(/^### /,'')}</h4>`); return; }
-    if (/^## (.+)/.test(line))      { closeList(); closeNote(); out.push(`<h3>${line.replace(/^## /,'')}</h3>`); return; }
-    if (/^# (.+)/.test(line))       { closeList(); closeNote(); out.push(`<h2>${line.replace(/^# /,'')}</h2>`); return; }
-    if (/^---+$/.test(line.trim())) { closeList(); closeNote(); out.push('<hr>'); return; }
-    if (/^[-*] (.+)/.test(line))    { closeNote(); if (!inUl) { closeList(); out.push('<ul>'); inUl=true; } out.push(`<li>${line.replace(/^[-*] /,'')}</li>`); return; }
-    if (/^\d+\. (.+)/.test(line))   { closeNote(); if (!inOl) { closeList(); out.push('<ol>'); inOl=true; } out.push(`<li>${line.replace(/^\d+\. /,'')}</li>`); return; }
-    if (/^&gt; (.+)/.test(line))    { closeList(); closeNote(); out.push(`<blockquote>${line.replace(/^&gt; /,'')}</blockquote>`); return; }
-    if (line.trim() === '')         { closeList(); closeNote(); out.push('<br>'); return; }
+    // Obsidian callout opener: > [!type]
+    const calloutOpen = line.match(/^&gt;\s*\[!([\w]+)\]/i);
+    if (calloutOpen) {
+      closeList(); flushCallout();
+      calloutType = calloutOpen[1];
+      return;
+    }
+    // Continuation of a callout block: lines starting with >
+    if (calloutType !== null && /^&gt;/.test(line)) {
+      calloutLines.push(line.replace(/^&gt;\s*/, ''));
+      return;
+    }
+    // Any non-> line ends an active callout
+    if (calloutType !== null) { flushCallout(); }
+
+    if (/^### (.+)/.test(line))     { closeList(); out.push(`<h4>${line.replace(/^### /,'')}</h4>`); return; }
+    if (/^## (.+)/.test(line))      { closeList(); out.push(`<h3>${line.replace(/^## /,'')}</h3>`); return; }
+    if (/^# (.+)/.test(line))       { closeList(); out.push(`<h2>${line.replace(/^# /,'')}</h2>`); return; }
+    if (/^---+$/.test(line.trim())) { closeList(); out.push('<hr>'); return; }
+    if (/^[-*] (.+)/.test(line))    { if (!inUl) { closeList(); out.push('<ul>'); inUl=true; } out.push(`<li>${line.replace(/^[-*] /,'')}</li>`); return; }
+    if (/^\d+\. (.+)/.test(line))   { if (!inOl) { closeList(); out.push('<ol>'); inOl=true; } out.push(`<li>${line.replace(/^\d+\. /,'')}</li>`); return; }
+    if (/^&gt; (.+)/.test(line))    { closeList(); out.push(`<blockquote>${line.replace(/^&gt;\s*/,'')}</blockquote>`); return; }
+    if (line.trim() === '')         { closeList(); out.push('<br>'); return; }
     closeList(); out.push(`<p>${line}</p>`);
   });
-  closeList(); closeNote();
+  closeList(); flushCallout();
+
   return out.join('')
     .replace(/==(.+?)==/g,          '<mark>$1</mark>')
     .replace(/\*\*\*(.+?)\*\*\*/g,  '<strong><em>$1</em></strong>')
