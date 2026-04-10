@@ -245,6 +245,43 @@
   }
   .md-body .md-callout-body { line-height: 1.5; }
 
+  /* ── CHECKBOXES ── */
+  .md-cb {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin: 3px 0; cursor: pointer; user-select: none;
+  }
+  .md-cb-box {
+    flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px;
+    border: 2px solid var(--border); background: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; transition: all 0.15s; margin-top: 1px;
+  }
+  .md-cb.done   .md-cb-box { background: var(--accent2); border-color: var(--accent2); color: white; }
+  .md-cb.prog   .md-cb-box { background: var(--accent3); border-color: var(--accent3); color: white; }
+  .md-cb-label  { font-size: 13px; line-height: 1.5; color: #4a4550; flex: 1; }
+  .md-cb.done   .md-cb-label { text-decoration: line-through; opacity: 0.55; }
+  .md-cb.prog   .md-cb-label { color: #7a5a00; }
+
+  /* ── MARKDOWN TOOLBAR ── */
+  .md-toolbar {
+    display: flex; gap: 3px; flex-wrap: wrap;
+    padding: 6px 0 2px;
+  }
+  .md-tb-btn {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--paper2); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 7px;
+    cursor: pointer; padding: 0;
+    transition: background 0.12s, border-color 0.12s;
+    flex-shrink: 0;
+  }
+  .md-tb-btn:active { background: var(--border); }
+  .md-tb-btn svg { display: block; }
+  .md-tb-sep {
+    width: 1px; background: var(--border); margin: 4px 3px; align-self: stretch;
+  }
+
   /* ── TAB DRAG HANDLE ── */
   .tab-drag-handle {
     cursor: grab; opacity: 0.3; font-size: 12px;
@@ -685,6 +722,64 @@
       <div class="field">
         <label>Description</label>
         <textarea id="projDesc" placeholder="What is this project about? Markdown supported."></textarea>
+        <div class="md-toolbar">
+          <!-- Checkbox -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('checkbox')" title="Task / Checkbox">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10"/></svg>
+          </button>
+          <div class="md-tb-sep"></div>
+          <!-- Bold -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('bold')" title="Bold">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+          </button>
+          <!-- Italic -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('italic')" title="Italic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+          </button>
+          <!-- Highlight -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('highlight')" title="Highlight">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+          </button>
+          <!-- Strikethrough -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('strike')" title="Strikethrough">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14 4 12 4C9.5 4 8 5.5 8 7.5C8 11 12 11 12 11"/><path d="M8 18C8 18 10 20 12 20C14.5 20 16 18.5 16 16.5"/></svg>
+          </button>
+          <div class="md-tb-sep"></div>
+          <!-- Bullet list -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('bullet')" title="Bullet list">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </button>
+          <!-- Numbered list -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('numbered')" title="Numbered list">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4" stroke-linecap="round"/><path d="M4 10h2" stroke-linecap="round"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" stroke-linecap="round"/></svg>
+          </button>
+          <div class="md-tb-sep"></div>
+          <!-- Note callout -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('note')" title="Note callout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </button>
+          <!-- Tip callout -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('tip')" title="Tip callout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+          </button>
+          <!-- Warning callout -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('warning')" title="Warning callout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+          <div class="md-tb-sep"></div>
+          <!-- Heading -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('h2')" title="Heading">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h8M4 6v12M12 6v12"/><path d="M17 12h3M17 10v8" stroke-width="1.8"/><path d="M17 18h3" stroke-width="1.8"/></svg>
+          </button>
+          <!-- Divider -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('divider')" title="Horizontal divider">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6" stroke-width="1" opacity="0.3"/><line x1="3" y1="18" x2="21" y2="18" stroke-width="1" opacity="0.3"/></svg>
+          </button>
+          <!-- Inline code -->
+          <button type="button" class="md-tb-btn" onclick="mdInsert('code')" title="Inline code">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+        </div>
       </div>
       <div class="field">
         <label>Color</label>
@@ -1471,13 +1566,27 @@ function renderMarkdown(raw) {
       calloutType = calloutOpen[1];
       return;
     }
-    // Continuation of a callout block: lines starting with >
+    // Continuation of a callout block
     if (calloutType !== null && /^&gt;/.test(line)) {
       calloutLines.push(line.replace(/^&gt;\s*/, ''));
       return;
     }
-    // Any non-> line ends an active callout
     if (calloutType !== null) { flushCallout(); }
+
+    // Checkboxes: - [ ] / - [x] / - [/]
+    const cbMatch = line.match(/^[-*]\s+\[([ xX\/])\]\s*(.*)/);
+    if (cbMatch) {
+      closeList();
+      const raw   = cbMatch[1];
+      const label = cbMatch[2];
+      const state = raw === ' ' ? 'open' : (raw.toLowerCase() === 'x') ? 'done' : 'prog';
+      const icon  = state === 'done' ? '✓' : state === 'prog' ? '◑' : '';
+      const cls   = state === 'done' ? 'done' : state === 'prog' ? 'prog' : '';
+      // encode original syntax for cycling
+      const encoded = encodeURIComponent(line);
+      out.push(`<div class="md-cb ${cls}" onclick="cycleCheckbox(this,'${encoded}')" data-raw="${escHtml(line)}"><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
+      return;
+    }
 
     if (/^### (.+)/.test(line))     { closeList(); out.push(`<h4>${line.replace(/^### /,'')}</h4>`); return; }
     if (/^## (.+)/.test(line))      { closeList(); out.push(`<h3>${line.replace(/^## /,'')}</h3>`); return; }
@@ -1736,6 +1845,118 @@ function deleteTab() {
 // ─── UTILS ──────────────────────────────────────────────
 function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
 function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
+
+// ─── CHECKBOX CYCLING ───────────────────────────────────
+// Cycles: open → done → in-progress → open
+// Updates the raw desc string in the project and saves
+function cycleCheckbox(el, encodedRaw) {
+  // Walk up to find the project card or project body context
+  const body = el.closest('.card-body');
+  if (!body) return;
+  const card = body.closest('.project-card');
+  if (!card) return;
+  const projId = card.id.replace('card-', '');
+  const p = state.projects.find(x => x.id === projId);
+  if (!p || !p.desc) return;
+
+  const rawLine = decodeURIComponent(encodedRaw);
+  // Decode the HTML-escaped version back to original for matching
+  const decoded = rawLine
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#039;/g,"'").replace(/&quot;/g,'"');
+
+  // Determine current state and next state
+  const cbMatch = decoded.match(/^([-*]\s+\[)([ xX\/])(\].*)/);
+  if (!cbMatch) return;
+  const cur  = cbMatch[2];
+  const next = cur === ' ' ? 'x' : cur.toLowerCase() === 'x' ? '/' : ' ';
+  const newLine = cbMatch[1] + next + cbMatch[3];
+
+  // Replace the exact line in desc
+  p.desc = p.desc.split('\n').map(l => l === decoded ? newLine : l).join('\n');
+  saveState();
+
+  // Re-render just the description div without full re-render for snappy feel
+  const descEl = body.querySelector('.card-desc.md-body');
+  if (descEl) descEl.innerHTML = renderMarkdown(p.desc);
+}
+
+// ─── MARKDOWN TOOLBAR INSERT ────────────────────────────
+function mdInsert(type) {
+  const ta = document.getElementById('projDesc');
+  if (!ta) return;
+  ta.focus();
+  const start = ta.selectionStart;
+  const end   = ta.selectionEnd;
+  const sel   = ta.value.substring(start, end);
+  const before = ta.value.substring(0, start);
+  const after  = ta.value.substring(end);
+
+  // Helper: ensure we're at a new line before block elements
+  const needsNewline = before.length > 0 && !before.endsWith('\n');
+
+  let insert = '';
+  let cursorOffset = 0; // where to place cursor after insert
+
+  switch(type) {
+    case 'checkbox':
+      insert = (needsNewline ? '\n' : '') + '- [ ] ';
+      cursorOffset = insert.length;
+      break;
+    case 'bold':
+      insert = sel ? `**${sel}**` : '**bold text**';
+      cursorOffset = sel ? insert.length : 2;
+      break;
+    case 'italic':
+      insert = sel ? `*${sel}*` : '*italic text*';
+      cursorOffset = sel ? insert.length : 1;
+      break;
+    case 'highlight':
+      insert = sel ? `==${sel}==` : '==highlighted text==';
+      cursorOffset = sel ? insert.length : 2;
+      break;
+    case 'strike':
+      insert = sel ? `~~${sel}~~` : '~~strikethrough~~';
+      cursorOffset = sel ? insert.length : 2;
+      break;
+    case 'bullet':
+      insert = (needsNewline ? '\n' : '') + '- ';
+      cursorOffset = insert.length;
+      break;
+    case 'numbered':
+      insert = (needsNewline ? '\n' : '') + '1. ';
+      cursorOffset = insert.length;
+      break;
+    case 'note':
+      insert = (needsNewline ? '\n' : '') + '> [!note]\n> ';
+      cursorOffset = insert.length;
+      break;
+    case 'tip':
+      insert = (needsNewline ? '\n' : '') + '> [!tip]\n> ';
+      cursorOffset = insert.length;
+      break;
+    case 'warning':
+      insert = (needsNewline ? '\n' : '') + '> [!warning]\n> ';
+      cursorOffset = insert.length;
+      break;
+    case 'h2':
+      insert = (needsNewline ? '\n' : '') + '## ';
+      cursorOffset = insert.length;
+      break;
+    case 'divider':
+      insert = (needsNewline ? '\n' : '') + '---\n';
+      cursorOffset = insert.length;
+      break;
+    case 'code':
+      insert = sel ? '`' + sel + '`' : '`code`';
+      cursorOffset = sel ? insert.length : 1;
+      break;
+  }
+
+  ta.value = before + insert + after;
+  const newCursor = start + cursorOffset;
+  ta.setSelectionRange(newCursor, newCursor);
+  ta.focus();
+}
 
 // ─── KANBAN COLUMN DRAG ─────────────────────────────────
 let _kanbanDragId = null;
