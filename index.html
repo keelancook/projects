@@ -401,7 +401,7 @@
     transition: border-color 0.2s;
   }
   input:focus, textarea:focus, select:focus { border-color: var(--ink); }
-  textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+  textarea { resize: vertical; min-height: 200px; line-height: 1.5; }
 
   .color-picker { display: flex; gap: 10px; flex-wrap: wrap; }
   .color-swatch {
@@ -591,7 +591,7 @@
     .kanban-board::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .kanban-col {
-      flex: 0 0 300px; min-width: 280px; max-width: 340px;
+      flex: 0 0 380px; min-width: 340px; max-width: 440px;
       background: var(--paper2); border: 1px solid var(--border);
       border-radius: 14px; display: flex; flex-direction: column;
       max-height: calc(100dvh - 110px);
