@@ -1530,13 +1530,14 @@ function setSort(mode) {
 }
 
 // ─── MARKDOWN ───────────────────────────────────────────
-function renderMarkdown(raw) {
+function renderMarkdown(raw, projId) {
   if (!raw) return '';
   let s = escHtml(raw);
   const lines = s.split('\n');
   const out = [];
   let inUl = false, inOl = false;
   let calloutType = null, calloutLines = [];
+  let lineIdx = 0; // track original line index for checkbox cycling
 
   function closeList() {
     if (inUl) { out.push('</ul>'); inUl = false; }
@@ -1558,7 +1559,12 @@ function renderMarkdown(raw) {
     calloutLines = [];
   }
 
-  lines.forEach(line => {
+  // Use original (pre-escaped) lines for checkbox matching
+  const rawLines = raw.split('\n');
+
+  lines.forEach((line, idx) => {
+    const origIdx = idx; // line index in the original desc string
+
     // Obsidian callout opener: > [!type]
     const calloutOpen = line.match(/^&gt;\s*\[!([\w]+)\]/i);
     if (calloutOpen) {
@@ -1573,18 +1579,19 @@ function renderMarkdown(raw) {
     }
     if (calloutType !== null) { flushCallout(); }
 
-    // Checkboxes: - [ ] / - [x] / - [/]
+    // Checkboxes — match against escaped line for display, use origIdx for cycling
     const cbMatch = line.match(/^[-*]\s+\[([ xX\/])\]\s*(.*)/);
     if (cbMatch) {
       closeList();
-      const raw   = cbMatch[1];
-      const label = cbMatch[2];
-      const state = raw === ' ' ? 'open' : (raw.toLowerCase() === 'x') ? 'done' : 'prog';
-      const icon  = state === 'done' ? '✓' : state === 'prog' ? '◑' : '';
-      const cls   = state === 'done' ? 'done' : state === 'prog' ? 'prog' : '';
-      // encode original syntax for cycling
-      const encoded = encodeURIComponent(line);
-      out.push(`<div class="md-cb ${cls}" onclick="cycleCheckbox(this,'${encoded}')" data-raw="${escHtml(line)}"><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
+      const rawState = cbMatch[1];
+      const label    = cbMatch[2];
+      const st       = rawState === ' ' ? 'open' : rawState.toLowerCase() === 'x' ? 'done' : 'prog';
+      const icon     = st === 'done' ? '✓' : st === 'prog' ? '◑' : '';
+      const cls      = st === 'done' ? 'done' : st === 'prog' ? 'prog' : '';
+      const clickable = projId
+        ? `onclick="cycleCheckbox('${projId}',${origIdx})" style="cursor:pointer"`
+        : '';
+      out.push(`<div class="md-cb ${cls}" ${clickable}><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
       return;
     }
 
@@ -1641,7 +1648,7 @@ function renderCard(p) {
       </div>
     </div>
     <div class="card-body" id="body-${p.id}">
-      ${p.desc ? `<div class="card-desc md-body">${renderMarkdown(p.desc)}</div>` : ''}
+      ${p.desc ? `<div class="card-desc md-body">${renderMarkdown(p.desc, p.id)}</div>` : ''}
       <div class="card-dates">
         ${p.start    ? `<div class="date-chip start">${isFuture(p.start)?'▶ Starts:':'▶ Started:'} ${formatDateDisplay(p.start)}</div>` : ''}
         ${p.deadline ? `<div class="date-chip deadline">⏳ Due: ${formatDateDisplay(p.deadline)}</div>` : ''}
@@ -1847,36 +1854,27 @@ function closeSheet(id) { document.getElementById(id).classList.remove('open'); 
 function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
 
 // ─── CHECKBOX CYCLING ───────────────────────────────────
-// Cycles: open → done → in-progress → open
-// Updates the raw desc string in the project and saves
-function cycleCheckbox(el, encodedRaw) {
-  // Walk up to find the project card or project body context
-  const body = el.closest('.card-body');
-  if (!body) return;
-  const card = body.closest('.project-card');
-  if (!card) return;
-  const projId = card.id.replace('card-', '');
+// Cycles: open [ ] → done [x] → in-progress [/] → open
+function cycleCheckbox(projId, lineIdx) {
   const p = state.projects.find(x => x.id === projId);
   if (!p || !p.desc) return;
 
-  const rawLine = decodeURIComponent(encodedRaw);
-  // Decode the HTML-escaped version back to original for matching
-  const decoded = rawLine
-    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#039;/g,"'").replace(/&quot;/g,'"');
+  const lines = p.desc.split('\n');
+  if (lineIdx < 0 || lineIdx >= lines.length) return;
 
-  // Determine current state and next state
-  const cbMatch = decoded.match(/^([-*]\s+\[)([ xX\/])(\].*)/);
+  const line = lines[lineIdx];
+  const cbMatch = line.match(/^([-*]\s+\[)([ xX\/])(\].*)/);
   if (!cbMatch) return;
+
   const cur  = cbMatch[2];
   const next = cur === ' ' ? 'x' : cur.toLowerCase() === 'x' ? '/' : ' ';
-  const newLine = cbMatch[1] + next + cbMatch[3];
-
-  // Replace the exact line in desc
-  p.desc = p.desc.split('\n').map(l => l === decoded ? newLine : l).join('\n');
+  lines[lineIdx] = cbMatch[1] + next + cbMatch[3];
+  p.desc = lines.join('\n');
   saveState();
 
-  // Re-render just the description div without full re-render for snappy feel
-  const descEl = body.querySelector('.card-desc.md-body');
+  // Re-render just the description element — fast, no full re-render
+  const body   = document.getElementById('body-' + projId);
+  const descEl = body ? body.querySelector('.card-desc.md-body') : null;
   if (descEl) descEl.innerHTML = renderMarkdown(p.desc);
 }
 
