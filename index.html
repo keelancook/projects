@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Project Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a2e'/><rect x='9' y='6' width='14' height='18' rx='2' fill='none' stroke='%23f5f0e8' stroke-width='1.8'/><line x1='12' y1='12' x2='20' y2='12' stroke='%23c84b31' stroke-width='1.6' stroke-linecap='round'/><line x1='12' y1='16' x2='20' y2='16' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.6'/><line x1='12' y1='20' x2='17' y2='20' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.4'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1360,6 +1361,13 @@ function renderKanban() {
       if (p) { p.progress = +this.value; saveState(); renderKanban(); }
     });
   });
+
+  // Attach checkbox listeners for every kanban card with a description
+  state.projects.filter(p => p.desc).forEach(p => {
+    const body   = document.getElementById('body-' + p.id);
+    const descEl = body ? body.querySelector('.card-desc.md-body') : null;
+    if (descEl) attachCheckboxListeners(descEl, p.id);
+  });
 }
 
 function setKanbanSort(tabId, mode) {
@@ -1509,6 +1517,7 @@ function renderContent() {
 
   document.getElementById('mainContent').innerHTML = html;
 
+  // Attach slider listeners
   document.querySelectorAll('.prog-slider').forEach(slider => {
     slider.addEventListener('input', function() {
       const fill = document.getElementById('fill-'+this.dataset.id);
@@ -1521,6 +1530,13 @@ function renderContent() {
       if (p) { p.progress = +this.value; saveState(); renderTabs(); }
     });
   });
+
+  // Attach checkbox listeners for every rendered card
+  state.projects.filter(p => p.tabId === state.activeTab && p.desc).forEach(p => {
+    const body   = document.getElementById('body-' + p.id);
+    const descEl = body ? body.querySelector('.card-desc.md-body') : null;
+    if (descEl) attachCheckboxListeners(descEl, p.id);
+  });
 }
 
 function setSort(mode) {
@@ -1532,12 +1548,12 @@ function setSort(mode) {
 // ─── MARKDOWN ───────────────────────────────────────────
 function renderMarkdown(raw, projId) {
   if (!raw) return '';
-  let s = escHtml(raw);
-  const lines = s.split('\n');
+
+  // Work from raw lines for accurate line indexing
+  const rawLines = raw.split('\n');
   const out = [];
   let inUl = false, inOl = false;
   let calloutType = null, calloutLines = [];
-  let lineIdx = 0; // track original line index for checkbox cycling
 
   function closeList() {
     if (inUl) { out.push('</ul>'); inUl = false; }
@@ -1559,11 +1575,10 @@ function renderMarkdown(raw, projId) {
     calloutLines = [];
   }
 
-  // Use original (pre-escaped) lines for checkbox matching
-  const rawLines = raw.split('\n');
-
-  lines.forEach((line, idx) => {
-    const origIdx = idx; // line index in the original desc string
+  rawLines.forEach((rawLine, idx) => {
+    // Escape for safe HTML output
+    const line = rawLine
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
     // Obsidian callout opener: > [!type]
     const calloutOpen = line.match(/^&gt;\s*\[!([\w]+)\]/i);
@@ -1572,26 +1587,24 @@ function renderMarkdown(raw, projId) {
       calloutType = calloutOpen[1];
       return;
     }
-    // Continuation of a callout block
+    // Continuation of callout
     if (calloutType !== null && /^&gt;/.test(line)) {
       calloutLines.push(line.replace(/^&gt;\s*/, ''));
       return;
     }
     if (calloutType !== null) { flushCallout(); }
 
-    // Checkboxes — match against escaped line for display, use origIdx for cycling
-    const cbMatch = line.match(/^[-*]\s+\[([ xX\/])\]\s*(.*)/);
+    // Checkboxes — use idx (raw line index) as the stable reference
+    const cbMatch = rawLine.match(/^[-*]\s+\[([ xX\/])\]\s*(.*)/);
     if (cbMatch) {
       closeList();
       const rawState = cbMatch[1];
-      const label    = cbMatch[2];
+      const label    = escHtml(cbMatch[2]);
       const st       = rawState === ' ' ? 'open' : rawState.toLowerCase() === 'x' ? 'done' : 'prog';
       const icon     = st === 'done' ? '✓' : st === 'prog' ? '◑' : '';
       const cls      = st === 'done' ? 'done' : st === 'prog' ? 'prog' : '';
-      const clickable = projId
-        ? `onclick="cycleCheckbox('${projId}',${origIdx})" style="cursor:pointer"`
-        : '';
-      out.push(`<div class="md-cb ${cls}" ${clickable}><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
+      // data-line-idx used by attachCheckboxListeners — no inline onclick
+      out.push(`<div class="md-cb ${cls}" data-line-idx="${idx}" style="cursor:pointer"><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
       return;
     }
 
@@ -1872,10 +1885,28 @@ function cycleCheckbox(projId, lineIdx) {
   p.desc = lines.join('\n');
   saveState();
 
-  // Re-render just the description element — fast, no full re-render
+  // Re-render the description, passing projId so checkboxes stay clickable
   const body   = document.getElementById('body-' + projId);
   const descEl = body ? body.querySelector('.card-desc.md-body') : null;
-  if (descEl) descEl.innerHTML = renderMarkdown(p.desc);
+  if (descEl) {
+    descEl.innerHTML = renderMarkdown(p.desc, projId);
+    attachCheckboxListeners(descEl, projId);
+  }
+}
+
+// Attach click listeners to all .md-cb elements in a container
+// This is called after every description render so handlers are always fresh
+function attachCheckboxListeners(container, projId) {
+  container.querySelectorAll('.md-cb').forEach(el => {
+    const idx = parseInt(el.dataset.lineIdx, 10);
+    // Remove any old listener by replacing with clone
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+    clone.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cycleCheckbox(projId, idx);
+    });
+  });
 }
 
 // ─── MARKDOWN TOOLBAR INSERT ────────────────────────────
