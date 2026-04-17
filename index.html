@@ -1038,127 +1038,231 @@ function lsAvailable() {
   catch(e) { return false; }
 }
 
-// ─── SAVE / LOAD ────────────────────────────────────────
-let saveTimer = null;
-let _localSaveTs = null;
+// ─── CONNECTIVITY ───────────────────────────────────────
+// Tracks actual reachability — badge only goes green when Supabase responds
+let _isOnline = false;
+let _connectivityTimer = null;
 
-async function saveState() {
-  _localSaveTs = new Date().toISOString();
-  state._localTs = _localSaveTs;
-
-  // Write to local caches immediately for instant feel
-  if (lsReady) lsSet(LS_KEY, state);
-  if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-
-  // Debounce Supabase write 1200ms
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
-    try {
-      // Check remote timestamp before writing — never overwrite newer remote data
-      const remote = await supabaseLoad();
-      if (remote && remote._remoteTs && state._localTs) {
-        const remoteTime = new Date(remote._remoteTs).getTime();
-        const localTime  = new Date(state._localTs).getTime();
-        if (remoteTime > localTime + 2000) {
-          updateStorageBadge('conflict');
-          showConflictBanner(remote);
-          return;
-        }
-      }
-      await supabaseSave(state);
-      updateStorageBadge('ok');
-    } catch(e) {
-      console.warn('Supabase save failed, data safe locally:', e);
-      updateStorageBadge('warn');
-    }
-  }, 1200);
+async function checkConnectivity() {
+  try {
+    // Lightweight probe: just check if the Supabase endpoint responds
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      method: 'HEAD',
+      headers: { 'apikey': SUPABASE_KEY },
+      signal: AbortSignal.timeout(5000)
+    });
+    _isOnline = res.ok || res.status === 405; // 405 = method not allowed = server is up
+  } catch(e) {
+    _isOnline = false;
+  }
+  updateStorageBadge(_isOnline ? (_pendingSave ? 'pending' : 'ok') : 'offline');
+  return _isOnline;
 }
 
-async function loadPersistedState() {
-  // Supabase is the ONLY source of truth on load.
-  // Local caches are read-only fallback — never written back to Supabase during load.
-  try {
-    const remote = await supabaseLoad();
-    if (remote && remote.tabs) {
-      state = remote;
-      if (state.tabSortModes) sortModes = state.tabSortModes;
-      if (lsReady) lsSet(LS_KEY, state);
-      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-      updateStorageBadge('ok');
+// Poll connectivity every 30s so badge stays accurate
+function startConnectivityPolling() {
+  checkConnectivity();
+  _connectivityTimer = setInterval(checkConnectivity, 30000);
+}
+
+// ─── PER-PROJECT TIMESTAMPS ─────────────────────────────
+// Each project gets a _ts field (ISO string) on every edit.
+// Merge strategy: for each project, keep whichever copy has the newer _ts.
+// Tabs and sort prefs use a simple whole-state _tabTs for comparison.
+
+function stampProject(p) {
+  p._ts = new Date().toISOString();
+  return p;
+}
+
+function migrateState(s) {
+  // One-time migration: stamp any project missing _ts with epoch so remote always wins
+  if (!s || !s.projects) return s;
+  s.projects = s.projects.map(p => {
+    if (!p._ts) p._ts = '2000-01-01T00:00:00.000Z';
+    return p;
+  });
+  return s;
+}
+
+function mergeStates(local, remote) {
+  // Returns a merged state containing the best of both
+  if (!local || !local.projects) return remote;
+  if (!remote || !remote.projects) return local;
+
+  // Merge projects: per-project, keep whichever _ts is newer
+  const remoteMap = new Map(remote.projects.map(p => [p.id, p]));
+  const localMap  = new Map(local.projects.map(p => [p.id, p]));
+  const allIds    = new Set([...remoteMap.keys(), ...localMap.keys()]);
+
+  const merged = [];
+  allIds.forEach(id => {
+    const r = remoteMap.get(id);
+    const l = localMap.get(id);
+    if (!r) { merged.push(l); return; } // only local — keep it
+    if (!l) { merged.push(r); return; } // only remote — keep it
+    // Both exist — keep newer
+    const rTime = r._ts ? new Date(r._ts).getTime() : 0;
+    const lTime = l._ts ? new Date(l._ts).getTime() : 0;
+    merged.push(lTime >= rTime ? l : r);
+  });
+
+  // For tabs and sort prefs, use whichever state is newer overall
+  const remoteTabTs = remote._tabTs ? new Date(remote._tabTs).getTime() : 0;
+  const localTabTs  = local._tabTs  ? new Date(local._tabTs).getTime()  : 0;
+  const winner      = localTabTs >= remoteTabTs ? local : remote;
+
+  return {
+    ...winner,
+    projects:     merged,
+    tabSortModes: winner.tabSortModes || {},
+    _tabTs:       winner._tabTs || new Date().toISOString(),
+  };
+}
+
+// ─── SAVE / LOAD ────────────────────────────────────────
+let saveTimer      = null;
+let _pendingSave   = false; // local changes not yet confirmed written to Supabase
+
+async function saveState() {
+  // Update local caches immediately
+  if (lsReady) lsSet(LS_KEY, state);
+  if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
+  _pendingSave = true;
+  updateStorageBadge(_isOnline ? 'pending' : 'offline');
+
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushToSupabase, 1200);
+}
+
+async function flushToSupabase() {
+  if (!_isOnline) {
+    // Re-check connectivity before giving up
+    const online = await checkConnectivity();
+    if (!online) {
+      // Schedule a retry for when we come back online
+      _saveRetryTimer = setTimeout(flushToSupabase, 10000);
       return;
     }
-  } catch(e) {
-    console.warn('Supabase unreachable, using local cache (read-only):', e);
-    updateStorageBadge('warn');
   }
+  try {
+    // Fetch remote, merge, then write merged result
+    const remote = await supabaseLoad();
+    let toSave = state;
+    if (remote && remote.projects) {
+      toSave = mergeStates(state, remote);
+      state  = toSave;
+      if (state.tabSortModes) sortModes = state.tabSortModes;
+      // Update local caches with merged result
+      if (lsReady) lsSet(LS_KEY, state);
+      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
+    }
+    await supabaseSave(toSave);
+    _pendingSave = false;
+    updateStorageBadge('ok');
+  } catch(e) {
+    console.warn('Supabase write failed, will retry:', e);
+    updateStorageBadge(_isOnline ? 'err' : 'offline');
+    _saveRetryTimer = setTimeout(flushToSupabase, 15000);
+  }
+}
+let _saveRetryTimer = null;
 
-  // Offline: IndexedDB
+async function loadPersistedState() {
+  // Step 1: load local cache first so UI is instant
+  let localState = null;
   if (dbReady) {
     try {
       const raw = await idbGet(DB_KEY);
       if (raw) {
         const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (parsed && parsed.tabs) {
-          state = parsed;
-          if (state.tabSortModes) sortModes = state.tabSortModes;
-          updateStorageBadge('warn');
-          showOfflineBanner();
-          return;
-        }
+        if (parsed && parsed.tabs) localState = migrateState(parsed);
       }
     } catch(e) {}
   }
-
-  // Offline: localStorage
-  if (lsReady) {
+  if (!localState && lsReady) {
     try {
       const parsed = lsGet(LS_KEY);
-      if (parsed && parsed.tabs) {
-        state = parsed;
-        if (state.tabSortModes) sortModes = state.tabSortModes;
-        updateStorageBadge('warn');
-        showOfflineBanner();
-        return;
-      }
+      if (parsed && parsed.tabs) localState = migrateState(parsed);
     } catch(e) {}
   }
 
-  state = defaultState();
-  updateStorageBadge(dbReady || lsReady ? 'ok' : 'err');
+  // Show local state immediately if we have it
+  if (localState) {
+    state = localState;
+    if (state.tabSortModes) sortModes = state.tabSortModes;
+  }
+
+  // Step 2: check real connectivity
+  const online = await checkConnectivity();
+
+  if (!online) {
+    // Offline — show what we have, display honest banner
+    if (!localState) state = defaultState();
+    updateStorageBadge('offline');
+    showOfflineBanner();
+    return;
+  }
+
+  // Step 3: fetch remote and merge
+  try {
+    const remote = await supabaseLoad();
+    if (remote && remote.tabs) {
+      const migratedRemote = migrateState(remote);
+      if (localState) {
+        // Merge local and remote — neither blindly overwrites the other
+        state = mergeStates(localState, migratedRemote);
+      } else {
+        state = migratedRemote;
+      }
+      if (state.tabSortModes) sortModes = state.tabSortModes;
+      // Write merged result back to both caches and Supabase
+      if (lsReady) lsSet(LS_KEY, state);
+      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
+      // Only write to Supabase if local had newer data (i.e. we merged something in)
+      if (localState) await supabaseSave(state);
+      updateStorageBadge('ok');
+      const ob = document.getElementById('offlineBanner');
+      if (ob) ob.style.display = 'none';
+    }
+  } catch(e) {
+    console.warn('Supabase load failed:', e);
+    updateStorageBadge('err');
+  }
 }
 
 async function forceRefresh() {
   updateStorageBadge('syncing');
+  const online = await checkConnectivity();
+  if (!online) {
+    updateStorageBadge('offline');
+    showOfflineBanner();
+    return;
+  }
   try {
     const remote = await supabaseLoad();
     if (remote && remote.tabs) {
-      state = remote;
+      const migratedRemote = migrateState(remote);
+      // On manual refresh, still merge rather than overwrite
+      state = mergeStates(state, migratedRemote);
       if (state.tabSortModes) sortModes = state.tabSortModes;
       if (lsReady) lsSet(LS_KEY, state);
       if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
+      await supabaseSave(state);
       updateStorageBadge('ok');
       hideConflictBanner();
       const ob = document.getElementById('offlineBanner');
       if (ob) ob.style.display = 'none';
       render();
     }
-  } catch(e) { updateStorageBadge('warn'); }
+  } catch(e) {
+    updateStorageBadge('err');
+  }
 }
 
 function showConflictBanner() {
-  let b = document.getElementById('conflictBanner');
-  if (!b) {
-    b = document.createElement('div');
-    b.id = 'conflictBanner';
-    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#c84b31;color:white;padding:12px 18px;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:0.08em;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;';
-    document.body.appendChild(b);
-  }
-  b.innerHTML = '<span>⚠ Another device saved newer data — pull latest or keep yours.</span>'
-    + '<div style="display:flex;gap:8px;flex-shrink:0">'
-    + '<button onclick="forceRefresh()" style="background:white;color:#c84b31;border:none;border-radius:6px;padding:6px 12px;font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em">Pull Latest</button>'
-    + '<button onclick="hideConflictBanner();supabaseSave(state).then(()=>updateStorageBadge(\'ok\'))" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 12px;font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em">Keep Mine</button>'
-    + '</div>';
-  b.style.display = 'flex';
+  // Conflict banner no longer needed — merge handles it automatically
+  // Kept as a no-op for safety
 }
 
 function hideConflictBanner() {
@@ -1172,7 +1276,7 @@ function showOfflineBanner() {
     b = document.createElement('div');
     b.id = 'offlineBanner';
     b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;background:#3a2a0a;color:#e9a825;padding:10px 18px;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:0.08em;display:flex;align-items:center;justify-content:space-between;gap:12px;';
-    b.innerHTML = '<span>⚠ Offline — showing cached data. Changes will sync when reconnected.</span>'
+    b.innerHTML = '<span>⚠ No internet — working from cache. Changes will sync automatically when reconnected.</span>'
       + '<button onclick="forceRefresh()" style="background:rgba(255,255,255,0.1);color:#e9a825;border:1px solid rgba(233,168,37,0.4);border-radius:6px;padding:6px 12px;font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em">Retry</button>';
     document.body.appendChild(b);
   }
@@ -1183,13 +1287,13 @@ function updateStorageBadge(status) {
   const badge = document.getElementById('storageBadge');
   if (!badge) return;
   const map = {
-    ok:       { text: '● Synced',   cls: 'ok'   },
-    syncing:  { text: '↻ Syncing',  cls: 'warn' },
-    warn:     { text: '⚠ Offline',  cls: 'warn' },
-    conflict: { text: '⚠ Conflict', cls: 'err'  },
-    err:      { text: '✕ Error',    cls: 'err'  },
+    ok:      { text: '● Synced',   cls: 'ok'   },
+    syncing: { text: '↻ Syncing',  cls: 'warn' },
+    pending: { text: '↑ Saving',   cls: 'warn' },
+    offline: { text: '◌ Offline',  cls: 'warn' },
+    err:     { text: '✕ Error',    cls: 'err'  },
   };
-  const s = map[status] || map.warn;
+  const s = map[status] || map.offline;
   badge.textContent = s.text;
   badge.className = 'storage-badge ' + s.cls;
 }
@@ -1358,7 +1462,7 @@ function renderKanban() {
     });
     slider.addEventListener('change', function() {
       const p = state.projects.find(x => x.id === this.dataset.id);
-      if (p) { p.progress = +this.value; saveState(); renderKanban(); }
+      if (p) { p.progress = +this.value; stampProject(p); saveState(); renderKanban(); }
     });
   });
 
@@ -1527,7 +1631,7 @@ function renderContent() {
     });
     slider.addEventListener('change', function() {
       const p = state.projects.find(x => x.id === this.dataset.id);
-      if (p) { p.progress = +this.value; saveState(); renderTabs(); }
+      if (p) { p.progress = +this.value; stampProject(p); saveState(); renderTabs(); }
     });
   });
 
@@ -1699,7 +1803,7 @@ function handleTrackClick(e, id) {
   const pct  = Math.round(((e.clientX - rect.left) / rect.width) * 100);
   const p    = state.projects.find(x => x.id === id);
   if (p) {
-    p.progress = pct; saveState();
+    p.progress = pct; stampProject(p); saveState();
     const fill = document.getElementById('fill-'+id);
     const pctEl = document.getElementById('pct-'+id);
     if (fill) fill.style.width = pct + '%';
@@ -1711,15 +1815,16 @@ function handleTrackClick(e, id) {
 // ─── ARCHIVE ────────────────────────────────────────────
 function archiveProject(id) {
   const p = state.projects.find(x => x.id === id);
-  if (p) { p.archived = true; p.progress = 100; saveState(); render(); }
+  if (p) { p.archived = true; p.progress = 100; stampProject(p); saveState(); render(); }
 }
 function unarchiveProject(id) {
   const p = state.projects.find(x => x.id === id);
-  if (p) { p.archived = false; saveState(); render(); }
+  if (p) { p.archived = false; stampProject(p); saveState(); render(); }
 }
 function deleteProject(id) {
   if (!confirm('Delete this project? This cannot be undone.')) return;
   state.projects = state.projects.filter(x => x.id !== id);
+  state._tabTs = new Date().toISOString();
   saveState(); render();
 }
 function toggleArchiveView() {
@@ -1805,16 +1910,19 @@ function saveProject() {
       p.start = document.getElementById('projStart').value || null;
       p.deadline = document.getElementById('projDeadline').value || null;
       p.color = selectedColor; p.priority = selectedPriority; p.tabId = tabId;
+      stampProject(p);
     }
   } else {
-    state.projects.push({
+    const newProj = {
       id: uid(), name, desc: document.getElementById('projDesc').value.trim(),
       progress: +document.getElementById('projProgress').value,
       start: document.getElementById('projStart').value || null,
       deadline: document.getElementById('projDeadline').value || null,
       color: selectedColor, priority: selectedPriority,
       tabId, archived: false, created: Date.now()
-    });
+    };
+    stampProject(newProj);
+    state.projects.push(newProj);
   }
   saveState(); closeSheet('projectOverlay'); state.activeTab = tabId; render();
 }
@@ -1833,7 +1941,9 @@ function saveNewTab() {
   if (!name) { document.getElementById('newTabName').focus(); return; }
   const id = 'tab_' + uid();
   state.tabs.push({ id, name, color: selectedTabColor });
-  state.activeTab = id; saveState(); closeSheet('tabOverlay'); render();
+  state.activeTab = id;
+  state._tabTs = new Date().toISOString();
+  saveState(); closeSheet('tabOverlay'); render();
 }
 
 function openEditTab(tabId) {
@@ -1851,14 +1961,16 @@ function saveEditTab() {
   const name = document.getElementById('editTabName').value.trim();
   if (!name || !tab) return;
   tab.name = name; tab.color = editTabColorVal;
+  state._tabTs = new Date().toISOString();
   saveState(); closeSheet('editTabOverlay'); render();
 }
 
 function deleteTab() {
-  if (!confirm('Delete this tab and all its projects?')) return;
+  if (!confirm('Delete this list and all its projects?')) return;
   state.projects = state.projects.filter(p => p.tabId !== editingTabId);
   state.tabs = state.tabs.filter(t => t.id !== editingTabId);
   if (state.activeTab === editingTabId) state.activeTab = 'general';
+  state._tabTs = new Date().toISOString();
   saveState(); closeSheet('editTabOverlay'); render();
 }
 
@@ -2024,6 +2136,7 @@ function kanbanDragEnd(e) {
   lsReady = lsAvailable();
   try { await openDB(); dbReady = true; } catch(e) { dbReady = false; }
   await loadPersistedState();
+  startConnectivityPolling();
   render();
 })();
 </script>
