@@ -113,7 +113,12 @@
   .content {
     padding: 16px 16px calc(var(--bottom-h) + 20px);
     min-height: calc(100dvh - 62px - var(--tab-h));
+    transition: opacity 0.18s ease, transform 0.18s ease;
   }
+  .content.swipe-out-left  { opacity: 0; transform: translateX(-32px); }
+  .content.swipe-out-right { opacity: 0; transform: translateX(32px); }
+  .content.swipe-in-left   { opacity: 0; transform: translateX(32px); }
+  .content.swipe-in-right  { opacity: 0; transform: translateX(-32px); }
 
   /* ── SECTION LABELS ── */
   .section-label {
@@ -2137,6 +2142,95 @@ function kanbanDragEnd(e) {
   _kanbanDragId = null;
   document.querySelectorAll('.kanban-col').forEach(c => c.style.opacity = '');
 }
+
+// ─── SWIPE GESTURE ──────────────────────────────────────
+(function initSwipe() {
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const SWIPE_THRESHOLD   = 50;  // min px horizontal travel
+  const SWIPE_MAX_ANGLE   = 40;  // max degrees off horizontal
+  const SWIPE_MAX_DURATION = 600; // max ms for a swipe
+
+  function getContent() { return document.getElementById('mainContent'); }
+
+  function switchList(direction) {
+    if (isDesktop()) return;
+    const idx     = state.tabs.findIndex(t => t.id === state.activeTab);
+    const nextIdx = direction === 'left' ? idx + 1 : idx - 1;
+    if (nextIdx < 0 || nextIdx >= state.tabs.length) {
+      // Bounce effect at boundary
+      const el = getContent();
+      if (!el) return;
+      const cls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
+      el.style.transition = 'none';
+      el.classList.add(cls);
+      requestAnimationFrame(() => {
+        el.style.transition = '';
+        el.classList.remove(cls);
+      });
+      return;
+    }
+
+    const outCls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
+    const inCls  = direction === 'left' ? 'swipe-in-left'  : 'swipe-in-right';
+    const el     = getContent();
+    if (!el) return;
+
+    // Animate out
+    el.classList.add(outCls);
+    el.style.pointerEvents = 'none';
+
+    setTimeout(() => {
+      // Switch list
+      state.activeTab = state.tabs[nextIdx].id;
+      saveState();
+      renderTabs();
+      renderContent();
+
+      // Set starting position for animate-in
+      const el2 = getContent();
+      if (!el2) return;
+      el2.classList.add(inCls);
+      el2.style.pointerEvents = '';
+      // Force reflow then remove class to trigger transition
+      el2.getBoundingClientRect();
+      el2.classList.remove(inCls);
+    }, 180);
+  }
+
+  document.addEventListener('touchstart', e => {
+    if (isDesktop()) return;
+    // Ignore touches inside overlays or the tab bar
+    if (e.target.closest('.overlay.open') ||
+        e.target.closest('.tabs-wrapper') ||
+        e.target.closest('.fab')) return;
+    touchStartX    = e.touches[0].clientX;
+    touchStartY    = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (isDesktop()) return;
+    if (e.target.closest('.overlay.open') ||
+        e.target.closest('.tabs-wrapper') ||
+        e.target.closest('.fab')) return;
+
+    const dx       = e.changedTouches[0].clientX - touchStartX;
+    const dy       = e.changedTouches[0].clientY - touchStartY;
+    const dt       = Date.now() - touchStartTime;
+    const angle    = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * 180 / Math.PI);
+    const absDx    = Math.abs(dx);
+
+    if (dt > SWIPE_MAX_DURATION) return;
+    if (absDx < SWIPE_THRESHOLD) return;
+    if (angle > SWIPE_MAX_ANGLE) return; // too vertical — likely a scroll
+
+    // Swipe left = go to next list; swipe right = go to previous list
+    if (dx < 0) switchList('left');
+    else        switchList('right');
+  }, { passive: true });
+})();
 
 // ─── INIT ───────────────────────────────────────────────
 (async function init() {
