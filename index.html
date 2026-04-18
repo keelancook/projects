@@ -1584,7 +1584,14 @@ function renderTabs() {
 
 function renderContent() {
   if (isDesktop()) return;
-  document.getElementById('mainContent').style.display = '';
+  const el = document.getElementById('mainContent');
+  // Only reset display styles if not currently mid-swipe animation
+  if (el && !el.classList.contains('swipe-out-left') &&
+            !el.classList.contains('swipe-out-right') &&
+            !el.classList.contains('swipe-in-left') &&
+            !el.classList.contains('swipe-in-right')) {
+    el.style.display = '';
+  }
   document.getElementById('kanbanBoard').style.display = 'none';
   document.querySelector('.tabs-wrapper').style.display = '';
   const tab = state.tabs.find(t => t.id === state.activeTab);
@@ -2158,45 +2165,57 @@ function kanbanDragEnd(e) {
     if (isDesktop()) return;
     const idx     = state.tabs.findIndex(t => t.id === state.activeTab);
     const nextIdx = direction === 'left' ? idx + 1 : idx - 1;
+
+    // Boundary: nudge and return
     if (nextIdx < 0 || nextIdx >= state.tabs.length) {
-      // Bounce effect at boundary
       const el = getContent();
       if (!el) return;
-      const cls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
+      const nudge = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
       el.style.transition = 'none';
-      el.classList.add(cls);
+      el.classList.add(nudge);
       requestAnimationFrame(() => {
-        el.style.transition = '';
-        el.classList.remove(cls);
+        requestAnimationFrame(() => {
+          el.style.transition = '';
+          el.classList.remove(nudge);
+        });
       });
       return;
     }
 
-    const outCls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
-    const inCls  = direction === 'left' ? 'swipe-in-left'  : 'swipe-in-right';
-    const el     = getContent();
+    const el = getContent();
     if (!el) return;
 
-    // Animate out
+    const outCls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
+    const inCls  = direction === 'left' ? 'swipe-in-left'  : 'swipe-in-right';
+
+    // Step 1: animate current content out
     el.classList.add(outCls);
     el.style.pointerEvents = 'none';
 
     setTimeout(() => {
-      // Switch list
+      // Step 2: switch list and render new content — but keep it invisible first
       state.activeTab = state.tabs[nextIdx].id;
       saveState();
       renderTabs();
+
+      // Render new content with transition disabled and starting position set
+      el.style.transition = 'none';
+      el.classList.remove(outCls);
+      el.classList.add(inCls);
+
+      // Render the new content into the element
       renderContent();
 
-      // Set starting position for animate-in
-      const el2 = getContent();
-      if (!el2) return;
-      el2.classList.add(inCls);
-      el2.style.pointerEvents = '';
-      // Force reflow then remove class to trigger transition
-      el2.getBoundingClientRect();
-      el2.classList.remove(inCls);
-    }, 180);
+      el.style.pointerEvents = '';
+
+      // Step 3: force reflow, then remove the in-class to trigger the slide-in
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition = '';
+          el.classList.remove(inCls);
+        });
+      });
+    }, 190);
   }
 
   document.addEventListener('touchstart', e => {
