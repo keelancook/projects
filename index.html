@@ -6,7 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Project Dashboard</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a2e'/><rect x='9' y='6' width='14' height='18' rx='2' fill='none' stroke='%23f5f0e8' stroke-width='1.8'/><line x1='12' y1='12' x2='20' y2='12' stroke='%23c84b31' stroke-width='1.6' stroke-linecap='round'/><line x1='12' y1='16' x2='20' y2='16' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.6'/><line x1='12' y1='20' x2='17' y2='20' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.4'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -113,12 +112,7 @@
   .content {
     padding: 16px 16px calc(var(--bottom-h) + 20px);
     min-height: calc(100dvh - 62px - var(--tab-h));
-    transition: opacity 0.18s ease, transform 0.18s ease;
   }
-  .content.swipe-out-left  { opacity: 0; transform: translateX(-32px); }
-  .content.swipe-out-right { opacity: 0; transform: translateX(32px); }
-  .content.swipe-in-left   { opacity: 0; transform: translateX(32px); }
-  .content.swipe-in-right  { opacity: 0; transform: translateX(-32px); }
 
   /* ── SECTION LABELS ── */
   .section-label {
@@ -206,96 +200,6 @@
     font-size: 13px; color: #4a4550; line-height: 1.6;
     margin-bottom: 12px;
   }
-  .md-body p  { margin: 0 0 6px; }
-  .md-body h2 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ink); margin: 10px 0 4px; }
-  .md-body h3 { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--ink); margin: 8px 0 3px; }
-  .md-body h4 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 8px 0 3px; }
-  .md-body ul, .md-body ol { padding-left: 18px; margin: 4px 0 8px; }
-  .md-body li { margin-bottom: 3px; }
-  .md-body strong { font-weight: 600; color: var(--ink); }
-  .md-body em { font-style: italic; }
-  .md-body s  { opacity: 0.5; }
-  .md-body code {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    background: var(--paper2); border: 1px solid var(--border);
-    border-radius: 4px; padding: 1px 5px; color: var(--accent);
-  }
-  .md-body blockquote {
-    border-left: 3px solid var(--border); margin: 6px 0;
-    padding: 2px 10px; color: var(--muted); font-style: italic;
-  }
-  .md-body hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
-  .md-body a  { color: #2980b9; text-decoration: underline; }
-  .md-body mark {
-    background: #fff3b0; color: #5a4000;
-    border-radius: 3px; padding: 0 3px;
-  }
-  .md-body .md-callout-note,
-  .md-body .md-callout-tip,
-  .md-body .md-callout-warn {
-    border-radius: 0 6px 6px 0;
-    padding: 8px 12px; margin: 6px 0; font-size: 12px;
-  }
-  .md-body .md-callout-note {
-    background: #e8f0fe; border-left: 3px solid #4a6fa5; color: #1a3a6a;
-  }
-  .md-body .md-callout-tip {
-    background: #e8f4ee; border-left: 3px solid var(--accent2); color: #2d5a3e;
-  }
-  .md-body .md-callout-warn {
-    background: #fff3e0; border-left: 3px solid #e67e22; color: #7a3e00;
-  }
-  .md-body .md-callout-title {
-    font-weight: 600; font-size: 11px; letter-spacing: 0.06em;
-    text-transform: uppercase; margin-bottom: 4px;
-  }
-  .md-body .md-callout-body { line-height: 1.5; }
-
-  /* ── CHECKBOXES ── */
-  .md-cb {
-    display: flex; align-items: flex-start; gap: 8px;
-    margin: 3px 0; cursor: pointer; user-select: none;
-  }
-  .md-cb-box {
-    flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px;
-    border: 2px solid var(--border); background: var(--paper);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; transition: all 0.15s; margin-top: 1px;
-  }
-  .md-cb.done   .md-cb-box { background: var(--accent2); border-color: var(--accent2); color: white; }
-  .md-cb.prog   .md-cb-box { background: var(--accent3); border-color: var(--accent3); color: white; }
-  .md-cb-label  { font-size: 13px; line-height: 1.5; color: #4a4550; flex: 1; }
-  .md-cb.done   .md-cb-label { text-decoration: line-through; opacity: 0.55; }
-  .md-cb.prog   .md-cb-label { color: #7a5a00; }
-
-  /* ── MARKDOWN TOOLBAR ── */
-  .md-toolbar {
-    display: flex; gap: 3px; flex-wrap: wrap;
-    padding: 6px 0 2px;
-  }
-  .md-tb-btn {
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--paper2); color: var(--ink);
-    border: 1px solid var(--border); border-radius: 7px;
-    cursor: pointer; padding: 0;
-    transition: background 0.12s, border-color 0.12s;
-    flex-shrink: 0;
-  }
-  .md-tb-btn:active { background: var(--border); }
-  .md-tb-btn svg { display: block; }
-  .md-tb-sep {
-    width: 1px; background: var(--border); margin: 4px 3px; align-self: stretch;
-  }
-
-  /* ── TAB DRAG HANDLE ── */
-  .tab-drag-handle {
-    cursor: grab; opacity: 0.3; font-size: 12px;
-    padding: 0 2px; user-select: none;
-  }
-  .tab.dragging  { opacity: 0.4; }
-  .tab.drag-over { background: rgba(255,255,255,0.08); border-radius: 6px; }
-
   .card-dates {
     display: flex; gap: 10px; flex-wrap: wrap;
     margin-bottom: 12px;
@@ -339,7 +243,10 @@
   input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; }
 
   /* ── EMPTY STATE ── */
-  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
   .empty-icon { font-size: 44px; margin-bottom: 16px; opacity: 0.4; }
   .empty-title {
     font-family: 'DM Serif Display', serif;
@@ -407,7 +314,7 @@
     transition: border-color 0.2s;
   }
   input:focus, textarea:focus, select:focus { border-color: var(--ink); }
-  textarea { resize: vertical; min-height: 200px; line-height: 1.5; }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
   .color-picker { display: flex; gap: 10px; flex-wrap: wrap; }
   .color-swatch {
@@ -426,7 +333,8 @@
     font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
     background: var(--ink); color: var(--paper);
     border: none; border-radius: 10px; padding: 14px;
-    cursor: pointer; transition: opacity 0.15s;
+    cursor: pointer;
+    transition: opacity 0.15s;
   }
   .btn-primary:active { opacity: 0.8; }
   .btn-secondary {
@@ -437,6 +345,7 @@
     cursor: pointer;
   }
 
+  /* Tab creation modal */
   .tab-modal {
     max-width: 540px; width: 100%;
     background: var(--card); border-radius: 20px 20px 0 0;
@@ -451,38 +360,33 @@
   }
   .archive-toggle input { accent-color: var(--ink); width: 16px; height: 16px; }
 
-  /* Archived card */
+  /* Archived card dim */
   .project-card.archived { opacity: 0.55; }
 
-  /* Overdue card tint */
-  .project-card.overdue {
-    background: #f5ddd8;
-    border-color: #cc8878;
-    box-shadow: 0 2px 8px rgba(200,75,49,0.20);
-  }
-
   /* ── PROGRESS COLORS ── */
-  .fill-red    { background: var(--accent); }
-  .fill-green  { background: var(--accent2); }
-  .fill-gold   { background: var(--accent3); }
-  .fill-blue   { background: #2980b9; }
+  .fill-red { background: var(--accent); }
+  .fill-green { background: var(--accent2); }
+  .fill-gold { background: var(--accent3); }
+  .fill-blue { background: #2980b9; }
   .fill-purple { background: #8e44ad; }
-  .fill-teal   { background: #16a085; }
+  .fill-teal { background: #16a085; }
   .fill-orange { background: #e67e22; }
-  .fill-pink   { background: #e91e8c; }
+  .fill-pink { background: #e91e8c; }
 
   /* Tab colors */
-  .tab-dot-red    { background: var(--accent); }
-  .tab-dot-green  { background: var(--accent2); }
-  .tab-dot-gold   { background: var(--accent3); }
-  .tab-dot-blue   { background: #2980b9; }
+  .tab-dot-red { background: var(--accent); }
+  .tab-dot-green { background: var(--accent2); }
+  .tab-dot-gold { background: var(--accent3); }
+  .tab-dot-blue { background: #2980b9; }
   .tab-dot-purple { background: #8e44ad; }
-  .tab-dot-teal   { background: #16a085; }
+  .tab-dot-teal { background: #16a085; }
   .tab-dot-orange { background: #e67e22; }
-  .tab-dot-pink   { background: #e91e8c; }
+  .tab-dot-pink { background: #e91e8c; }
 
   /* Stats row */
-  .stats-row { display: flex; gap: 8px; margin-bottom: 4px; }
+  .stats-row {
+    display: flex; gap: 8px; margin-bottom: 4px;
+  }
   .stat-chip {
     flex: 1; background: var(--paper2);
     border: 1px solid var(--border); border-radius: 10px;
@@ -490,7 +394,8 @@
   }
   .stat-num {
     font-family: 'DM Serif Display', serif;
-    font-size: 22px; color: var(--ink); display: block;
+    font-size: 22px; color: var(--ink);
+    display: block;
   }
   .stat-lbl {
     font-size: 9px; letter-spacing: 0.12em;
@@ -498,273 +403,14 @@
     display: block; margin-top: 2px;
   }
 
-  /* Tab edit icon */
-  .tab-edit-icon { font-size: 14px; margin-left: 4px; opacity: 0.5; cursor: pointer; }
-
-  /* ── PRIORITY BADGES ── */
-  .priority-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-    font-weight: 500; border-radius: 5px; padding: 2px 7px;
-    white-space: nowrap; flex-shrink: 0;
+  /* ── TAB EDIT ── */
+  .tab-edit-icon {
+    font-size: 14px; margin-left: 4px; opacity: 0.5;
+    cursor: pointer;
   }
-  .pri-1 { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6c1; }
-  .pri-2 { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
-  .pri-3 { background: #fffde7; color: #f57f17; border: 1px solid #fff176; }
-  .pri-4 { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
-  .pri-5 { background: #ede7d8; color: #8a8070; border: 1px solid #d4cab8; }
-
-  /* ── SORT BAR ── */
-  .sort-bar {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 16px 0;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .sort-bar::-webkit-scrollbar { display: none; }
-  .sort-lbl {
-    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); flex-shrink: 0;
-  }
-  .sort-btn {
-    flex-shrink: 0; font-family: 'DM Mono', monospace;
-    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-    border: 1px solid var(--border); background: var(--paper2);
-    color: var(--muted); border-radius: 20px; padding: 5px 12px;
-    cursor: pointer; transition: all 0.15s; white-space: nowrap;
-  }
-  .sort-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .sort-btn:active { opacity: 0.8; }
-
-  /* ── PRIORITY PICKER ── */
-  .priority-picker { display: flex; gap: 8px; flex-wrap: wrap; }
-  .pri-option {
-    flex: 1; min-width: 56px; font-family: 'DM Mono', monospace;
-    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
-    border-radius: 8px; padding: 8px 6px; text-align: center;
-    cursor: pointer; border: 2px solid transparent;
-    transition: transform 0.12s, border-color 0.12s;
-  }
-  .pri-option.selected { border-color: var(--ink); transform: scale(1.06); }
-  .pri-option.po-1 { background: #fdecea; color: #b71c1c; }
-  .pri-option.po-2 { background: #fff3e0; color: #e65100; }
-  .pri-option.po-3 { background: #fffde7; color: #f57f17; }
-  .pri-option.po-4 { background: #e8f5e9; color: #1b5e20; }
-  .pri-option.po-5 { background: #ede7d8; color: #8a8070; }
-
-  /* ── STORAGE STATUS ── */
-  .storage-badge {
-    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 3px 8px; border-radius: 20px; font-family: 'DM Mono', monospace;
-  }
-  .storage-badge.ok   { background: #1a3a2a; color: #6fcf97; }
-  .storage-badge.warn { background: #3a2a0a; color: var(--accent3); }
-  .storage-badge.err  { background: #3a1a1a; color: #ff8a80; }
-
-  /* ── BACKUP SHEET ── */
-  .backup-info {
-    font-size: 12px; line-height: 1.7; color: #4a4550;
-    background: var(--paper2); border-radius: 10px;
-    padding: 14px; margin-bottom: 16px;
-  }
-  .backup-info strong { color: var(--ink); }
-  .backup-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .btn-backup {
-    flex: 1; font-family: 'DM Mono', monospace;
-    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    border-radius: 10px; padding: 12px 10px; cursor: pointer;
-    border: 1px solid var(--border); background: var(--paper2); color: var(--ink);
-    transition: background 0.15s;
-  }
-  .btn-backup:active { background: var(--border); }
-  .btn-backup.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  #importFile { display: none; }
-
-  /* ── DESKTOP KANBAN LAYOUT ── */
-  @media (min-width: 900px) {
-    body { overflow-x: hidden; }
-    .header { padding: 16px 28px 12px; }
-    .header-title { font-size: 26px; }
-    .tabs-wrapper { display: none; }
-    .fab { bottom: 28px; right: 28px; width: 52px; height: 52px; font-size: 24px; }
-
-    .kanban-board {
-      display: flex; flex-direction: row; align-items: flex-start;
-      gap: 16px; padding: 20px 24px 40px;
-      overflow-x: auto; min-height: calc(100dvh - 74px);
-    }
-    .kanban-board::-webkit-scrollbar { height: 6px; }
-    .kanban-board::-webkit-scrollbar-track { background: var(--paper2); border-radius: 3px; }
-    .kanban-board::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    .kanban-col {
-      flex: 0 0 380px; min-width: 340px; max-width: 440px;
-      background: var(--paper2); border: 1px solid var(--border);
-      border-radius: 14px; display: flex; flex-direction: column;
-      max-height: calc(100dvh - 110px);
-    }
-    .kanban-col-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; cursor: grab; }
-    .kanban-col-header:active { cursor: grabbing; }
-    .kanban-col-title {
-      display: flex; align-items: center; gap: 8px;
-      font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--ink);
-    }
-    .kanban-col-title .tab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .kanban-col-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-    .kanban-col-count { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-    .kanban-edit-btn {
-      font-size: 12px; color: var(--muted); background: none;
-      border: none; cursor: pointer; padding: 2px 4px; opacity: 0.6; transition: opacity 0.15s;
-    }
-    .kanban-edit-btn:hover { opacity: 1; }
-    .kanban-sort-bar {
-      display: flex; align-items: center; gap: 6px; padding: 8px 12px;
-      border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
-    }
-    .kanban-sort-bar::-webkit-scrollbar { display: none; }
-    .kanban-sort-bar .sort-lbl { font-size: 8px; }
-    .kanban-sort-bar .sort-btn { font-size: 9px; padding: 3px 9px; }
-    .kanban-stats {
-      display: flex; gap: 6px; padding: 8px 12px;
-      flex-shrink: 0; border-bottom: 1px solid var(--border);
-    }
-    .kanban-stats .stat-chip { padding: 6px 8px; border-radius: 8px; }
-    .kanban-stats .stat-num { font-size: 16px; }
-    .kanban-stats .stat-lbl { font-size: 8px; }
-    .kanban-cards {
-      flex: 1; overflow-y: auto; padding: 10px;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    }
-    .kanban-cards::-webkit-scrollbar { width: 4px; }
-    .kanban-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    .kanban-add-btn {
-      flex-shrink: 0; margin: 0 10px 10px; width: calc(100% - 20px);
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-      background: none; color: var(--muted); border: 1px dashed var(--border);
-      border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.15s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .kanban-add-btn:hover { background: var(--card); color: var(--ink); border-color: var(--ink); border-style: solid; }
-    .kanban-new-col {
-      flex: 0 0 220px; min-width: 180px; background: none;
-      border: 2px dashed var(--border); border-radius: 14px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 10px; padding: 30px 20px; cursor: pointer; color: var(--muted);
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-      transition: all 0.2s; align-self: stretch;
-    }
-    .kanban-new-col:hover { background: var(--paper2); border-color: var(--muted); color: var(--ink); }
-    .kanban-new-col-icon { font-size: 28px; opacity: 0.4; }
-    .kanban-cards .project-card { margin-bottom: 8px; }
-    .kanban-cards .card-title { font-size: 15px; }
-    .kanban-cards .section-label { margin: 12px 0 6px; font-size: 8px; }
-    .kanban-cards .archive-toggle { font-size: 10px; }
-    .content { display: none; }
-    .overlay.open { align-items: center; }
-    .sheet { border-radius: 16px; max-width: 480px; max-height: 88vh; }
-    .tab-modal { border-radius: 16px; }
-  }
-
-  /* ── AUTH SCREEN ── */
-  .auth-screen {
-    display: none; position: fixed; inset: 0; z-index: 10000;
-    background: var(--ink);
-    flex-direction: column; align-items: center; justify-content: center;
-    padding: 32px 24px;
-  }
-  .auth-screen.visible { display: flex; }
-  .auth-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px; color: var(--paper);
-    letter-spacing: 0.02em; margin-bottom: 6px;
-  }
-  .auth-sub {
-    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 40px;
-  }
-  .auth-card {
-    width: 100%; max-width: 360px;
-    background: var(--card); border-radius: 16px;
-    padding: 28px 24px; margin-bottom: 16px;
-  }
-  .auth-card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px; color: var(--ink);
-    margin-bottom: 6px;
-  }
-  .auth-card-sub {
-    font-size: 11px; color: var(--muted); line-height: 1.5;
-    margin-bottom: 20px; letter-spacing: 0.04em;
-  }
-  .auth-input {
-    width: 100%; font-family: 'DM Mono', monospace;
-    font-size: 14px; color: var(--ink);
-    background: var(--paper); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-    outline: none; margin-bottom: 12px;
-    -webkit-appearance: none;
-  }
-  .auth-input:focus { border-color: var(--ink); }
-  .auth-btn {
-    width: 100%; font-family: 'DM Mono', monospace;
-    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-    background: var(--accent); color: white;
-    border: none; border-radius: 10px; padding: 14px;
-    cursor: pointer; transition: opacity 0.15s; margin-bottom: 8px;
-  }
-  .auth-btn:active { opacity: 0.8; }
-  .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .auth-btn-local {
-    width: 100%; font-family: 'DM Mono', monospace;
-    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    background: none; color: var(--muted);
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px;
-    cursor: pointer; transition: color 0.15s;
-  }
-  .auth-btn-local:hover { color: var(--paper); }
-  .auth-msg {
-    font-size: 12px; text-align: center; min-height: 18px;
-    margin-top: 4px; letter-spacing: 0.04em;
-  }
-  .auth-msg.ok  { color: var(--accent2); }
-  .auth-msg.err { color: var(--accent); }
-  .auth-otp { display: none; }
-  .auth-otp.visible { display: block; }
-  .auth-user-chip {
-    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-    padding: 4px 8px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: color 0.15s;
-  }
-  .auth-user-chip:hover { color: var(--paper); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-
-<!-- AUTH SCREEN -->
-<div class="auth-screen" id="authScreen">
-  <div class="auth-logo">Projects</div>
-  <div class="auth-sub">Personal Dashboard</div>
-  <div class="auth-card">
-    <div class="auth-card-title">Sign in to sync</div>
-    <div class="auth-card-sub">Enter your email to receive a sign-in link. Click the link in your email to sign in and sync your data across devices.</div>
-    <div id="authEmailStep">
-      <input type="email" class="auth-input" id="authEmail" placeholder="your@email.com" autocomplete="email">
-      <button class="auth-btn" id="authSendBtn" onclick="authSendOTP()">Send Sign-in Link</button>
-    </div>
-    <div id="authOTPStep" class="auth-otp">
-      <div class="auth-card-sub" id="authOTPHint" style="text-align:center;padding:8px 0 16px"></div>
-      <button class="auth-btn-local" onclick="authBackToEmail()">← Use a different email</button>
-    </div>
-    <div class="auth-msg" id="authMsg"></div>
-  </div>
-  <button class="auth-btn-local" onclick="authContinueLocal()">Continue without account</button>
-  <div style="font-size:10px;color:#4a4a6a;margin-top:12px;text-align:center;line-height:1.6;letter-spacing:0.04em">
-    Local use only — your data stays on this device.<br>Sign in for cross-device sync.
-  </div>
-</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -773,51 +419,26 @@
     <div class="header-date" id="headerDate"></div>
   </div>
   <div class="header-right">
-    <span class="storage-badge warn" id="storageBadge">…</span>
-    <button class="icon-btn" onclick="forceRefresh()" title="Sync now">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-      </svg>
-    </button>
-    <button class="icon-btn" onclick="openBackupSheet()" title="Backup & Restore">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L12 15M12 15L8 11M12 15L16 11"/>
-        <path d="M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/>
-      </svg>
-    </button>
-    <button class="icon-btn" onclick="toggleArchiveView()" title="Toggle archived">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="5" rx="1"/>
-        <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
-        <path d="M10 12h4"/>
-      </svg>
-    </button>
-    <div class="auth-user-chip" id="userChip" onclick="showUserMenu()" title="Account" style="display:none">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span id="userChipLabel">…</span>
-    </div>
+    <button class="icon-btn" onclick="toggleArchiveView()" title="Toggle archived">📦</button>
   </div>
 </div>
 
-<!-- LISTS (mobile tabs) -->
+<!-- TABS -->
 <div class="tabs-wrapper">
   <div class="tabs-scroll" id="tabsScroll">
-    <button class="tab-add" onclick="openNewTabSheet()" title="New list">＋</button>
+    <!-- dynamically rendered -->
+    <button class="tab-add" onclick="openNewTabSheet()" title="New tab">＋</button>
   </div>
 </div>
 
-<!-- MAIN CONTENT (mobile) -->
+<!-- MAIN CONTENT -->
 <div class="content" id="mainContent"></div>
-
-<!-- KANBAN BOARD (desktop) -->
-<div class="kanban-board" id="kanbanBoard"></div>
 
 <!-- FAB -->
 <button class="fab" onclick="openAddProject()">＋</button>
 
 <!-- ADD/EDIT PROJECT SHEET -->
-<div class="overlay" id="projectOverlay" onclick="overlayClose(event,'projectOverlay')">
+<div class="overlay" id="projectOverlay" onclick="overlayClose(event, 'projectOverlay')">
   <div class="sheet" id="projectSheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="sheetTitle">New Project</div>
@@ -828,73 +449,13 @@
       </div>
       <div class="field">
         <label>Description</label>
-        <textarea id="projDesc" placeholder="What is this project about? Markdown supported."></textarea>
-        <div class="md-toolbar">
-          <!-- Checkbox -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('checkbox')" title="Task / Checkbox">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10"/></svg>
-          </button>
-          <div class="md-tb-sep"></div>
-          <!-- Bold -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('bold')" title="Bold">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
-          </button>
-          <!-- Italic -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('italic')" title="Italic">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
-          </button>
-          <!-- Highlight -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('highlight')" title="Highlight">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
-          </button>
-          <!-- Strikethrough -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('strike')" title="Strikethrough">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14 4 12 4C9.5 4 8 5.5 8 7.5C8 11 12 11 12 11"/><path d="M8 18C8 18 10 20 12 20C14.5 20 16 18.5 16 16.5"/></svg>
-          </button>
-          <div class="md-tb-sep"></div>
-          <!-- Bullet list -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('bullet')" title="Bullet list">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
-          </button>
-          <!-- Numbered list -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('numbered')" title="Numbered list">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4" stroke-linecap="round"/><path d="M4 10h2" stroke-linecap="round"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" stroke-linecap="round"/></svg>
-          </button>
-          <div class="md-tb-sep"></div>
-          <!-- Note callout -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('note')" title="Note callout">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </button>
-          <!-- Tip callout -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('tip')" title="Tip callout">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
-          </button>
-          <!-- Warning callout -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('warning')" title="Warning callout">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </button>
-          <div class="md-tb-sep"></div>
-          <!-- Heading -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('h2')" title="Heading">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h8M4 6v12M12 6v12"/><path d="M17 12h3M17 10v8" stroke-width="1.8"/><path d="M17 18h3" stroke-width="1.8"/></svg>
-          </button>
-          <!-- Divider -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('divider')" title="Horizontal divider">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6" stroke-width="1" opacity="0.3"/><line x1="3" y1="18" x2="21" y2="18" stroke-width="1" opacity="0.3"/></svg>
-          </button>
-          <!-- Inline code -->
-          <button type="button" class="md-tb-btn" onclick="mdInsert('code')" title="Inline code">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </button>
-        </div>
+        <textarea id="projDesc" placeholder="What is this project about?"></textarea>
       </div>
       <div class="field">
         <label>Color</label>
-        <div class="color-picker" id="colorPicker"></div>
-      </div>
-      <div class="field">
-        <label>Priority</label>
-        <div class="priority-picker" id="priorityPicker"></div>
+        <div class="color-picker" id="colorPicker">
+          <!-- rendered by JS -->
+        </div>
       </div>
       <div class="field">
         <label>Initial Progress (%)</label>
@@ -915,7 +476,7 @@
         <input type="date" id="projDeadline">
       </div>
       <div class="field">
-        <label>List</label>
+        <label>Tab</label>
         <select id="projTab"></select>
       </div>
     </div>
@@ -926,13 +487,13 @@
   </div>
 </div>
 
-<!-- NEW LIST SHEET -->
-<div class="overlay" id="tabOverlay" onclick="overlayClose(event,'tabOverlay')">
+<!-- NEW TAB SHEET -->
+<div class="overlay" id="tabOverlay" onclick="overlayClose(event, 'tabOverlay')">
   <div class="sheet tab-modal">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">New List</div>
+    <div class="sheet-title">New Tab</div>
     <div class="field" style="padding:0 0 16px">
-      <label>List Name</label>
+      <label>Tab Name</label>
       <input type="text" id="newTabName" placeholder="e.g. Writing, Research…" maxlength="24">
     </div>
     <div class="field" style="padding:0 0 16px">
@@ -941,248 +502,34 @@
     </div>
     <div class="sheet-footer" style="padding:0">
       <button class="btn-secondary" onclick="closeSheet('tabOverlay')">Cancel</button>
-      <button class="btn-primary" onclick="saveNewTab()">Create List</button>
+      <button class="btn-primary" onclick="saveNewTab()">Create Tab</button>
     </div>
   </div>
 </div>
 
-<!-- EDIT LIST SHEET -->
-<div class="overlay" id="editTabOverlay" onclick="overlayClose(event,'editTabOverlay')">
+<!-- EDIT TAB SHEET -->
+<div class="overlay" id="editTabOverlay" onclick="overlayClose(event, 'editTabOverlay')">
   <div class="sheet tab-modal">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Edit List</div>
+    <div class="sheet-title">Edit Tab</div>
     <div class="field" style="padding:0 0 16px">
-      <label>List Name</label>
-      <input type="text" id="editTabName" placeholder="List name…" maxlength="24">
+      <label>Tab Name</label>
+      <input type="text" id="editTabName" placeholder="Tab name…" maxlength="24">
     </div>
     <div class="field" style="padding:0 0 16px">
       <label>Color</label>
       <div class="color-picker" id="editTabColorPicker"></div>
     </div>
     <div class="sheet-footer" style="padding:0; flex-wrap:wrap; gap:8px">
-      <button class="btn-secondary" style="color:var(--accent);border-color:#f5c6c1" onclick="deleteTab()">Delete List</button>
+      <button class="btn-secondary" style="color:var(--accent);border-color:#f5c6c1" onclick="deleteTab()">Delete Tab</button>
       <button class="btn-secondary" onclick="closeSheet('editTabOverlay')">Cancel</button>
       <button class="btn-primary" onclick="saveEditTab()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- BACKUP SHEET -->
-<div class="overlay" id="backupOverlay" onclick="overlayClose(event,'backupOverlay')">
-  <div class="sheet tab-modal" style="max-height:85dvh;overflow-y:auto">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Data & Backup</div>
-    <div style="padding:0 0 20px">
-      <div class="backup-info">
-        <strong>Storage status:</strong> <span id="backupStatusText">checking…</span><br>
-        Your data is saved automatically. Use the buttons below to export a backup file or restore from one.
-      </div>
-      <div class="backup-row">
-        <button class="btn-backup primary" onclick="exportBackup()">⬇ Export Backup</button>
-        <button class="btn-backup" onclick="document.getElementById('importFile').click()">⬆ Import Backup</button>
-      </div>
-      <input type="file" id="importFile" accept=".json" onchange="importBackup(event)">
-      <div style="font-size:10px;color:var(--muted);letter-spacing:0.06em;line-height:1.7;margin-top:8px">
-        Export saves a <strong>.json</strong> file to your Downloads. Import will replace your current data.<br>
-        Tip: Export to Google Drive or email for cloud backup.
-      </div>
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-        <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Account</label>
-        <div id="backupAuthSigned" style="display:none">
-          <div style="font-size:12px;color:var(--ink);margin-bottom:10px">Signed in as <strong id="backupAuthEmail"></strong></div>
-          <button class="btn-backup" onclick="authSignOut();closeSheet('backupOverlay')">Sign Out</button>
-        </div>
-        <div id="backupAuthLocal" style="display:none">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">You are using local storage only. Sign in to sync across devices.</div>
-          <button class="btn-backup primary" onclick="backupSheetSignIn()">Sign In to Sync</button>
-        </div>
-      </div>
-    </div>
-    <div class="sheet-footer" style="padding:0">
-      <button class="btn-primary" onclick="closeSheet('backupOverlay')">Done</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ─── SUPABASE CONFIG ────────────────────────────────────
-const SUPABASE_URL = 'https://dxplietmqbpncikyhwve.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_1yrXYKJBq8O51o_PFw7HhQ_qMS_R99-';
-const TABLE        = 'projects_data';
-
-// Supabase JS client (used for auth)
-const _supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// ─── AUTH STATE ─────────────────────────────────────────
-let _authUser   = null;  // Supabase user object, or null for local-only
-let _authMode   = null;  // 'cloud' | 'local'
-let _authEmail  = '';    // email entered during OTP flow
-
-function isCloudUser() { return _authMode === 'cloud' && _authUser !== null; }
-
-// ─── AUTH UI ────────────────────────────────────────────
-function showAuthScreen() {
-  document.getElementById('authScreen').classList.add('visible');
-}
-function hideAuthScreen() {
-  document.getElementById('authScreen').classList.remove('visible');
-}
-function setAuthMsg(msg, type='') {
-  const el = document.getElementById('authMsg');
-  el.textContent = msg;
-  el.className = 'auth-msg ' + type;
-}
-
-async function authSendOTP() {
-  const email = document.getElementById('authEmail').value.trim();
-  if (!email || !email.includes('@')) { setAuthMsg('Enter a valid email address.', 'err'); return; }
-  _authEmail = email;
-  const btn = document.getElementById('authSendBtn');
-  btn.disabled = true;
-  setAuthMsg('Sending…');
-  try {
-    const { error } = await _supa.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-        emailRedirectTo: window.location.origin + window.location.pathname
-      }
-    });
-    if (error) throw error;
-    document.getElementById('authEmailStep').style.display = 'none';
-    document.getElementById('authOTPStep').classList.add('visible');
-    document.getElementById('authOTPHint').textContent =
-      `A sign-in link was sent to ${email}. Open it on this device to continue — it will sign you in automatically.`;
-    setAuthMsg('');
-  } catch(e) {
-    setAuthMsg(e.message || 'Could not send sign-in link. Try again.', 'err');
-    btn.disabled = false;
-  }
-}
-
-function authBackToEmail() {
-  document.getElementById('authEmailStep').style.display = 'block';
-  document.getElementById('authOTPStep').classList.remove('visible');
-  document.getElementById('authOTP').value = '';
-  setAuthMsg('');
-  document.getElementById('authSendBtn').disabled = false;
-}
-
-function authContinueLocal() {
-  _authMode = 'local';
-  _authUser = null;
-  lsSet('proj_auth_mode', 'local');
-  hideAuthScreen();
-  updateUserChip();
-  initApp();
-}
-
-async function onAuthSuccess() {
-  lsSet('proj_auth_mode', 'cloud');
-  hideAuthScreen();
-  updateUserChip();
-  await initApp();
-}
-
-function updateUserChip() {
-  const chip  = document.getElementById('userChip');
-  const label = document.getElementById('userChipLabel');
-  if (isCloudUser()) {
-    const email = _authUser.email || '';
-    label.textContent = email.split('@')[0]; // just the username part
-    chip.style.display = 'flex';
-  } else {
-    chip.style.display = 'none';
-  }
-}
-
-function showUserMenu() {
-  // Open backup sheet — sign-out is there under Account
-  openBackupSheet();
-}
-
-async function authSignOut() {
-  await _supa.auth.signOut();
-  _authUser = null;
-  _authMode = null;
-  lsSet('proj_auth_mode', null);
-  updateUserChip();
-  // Clear local caches so next user starts fresh
-  if (dbReady)  await idbSet(DB_KEY, null);
-  if (lsReady)  lsSet(LS_KEY, null);
-  state = defaultState();
-  render();
-  showAuthScreen();
-}
-
-// ─── SUPABASE REST (auth-aware) ──────────────────────────
-async function sbFetch(path, options = {}) {
-  // Get current session token for authenticated requests
-  const { data: { session } } = await _supa.auth.getSession();
-  const token = session?.access_token || SUPABASE_KEY;
-
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      'apikey':        SUPABASE_KEY,
-      'Authorization': `Bearer ${token}`,
-      'Content-Type':  'application/json',
-      'Prefer':        options.prefer || '',
-      ...(options.headers || {})
-    }
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Supabase ${res.status}: ${err}`);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
-}
-
-async function supabaseLoad() {
-  if (!isCloudUser()) return null;
-  const userId = _authUser.id;
-  const rows = await sbFetch(`${TABLE}?user_id=eq.${userId}&select=data,updated_at`);
-  if (rows && rows.length > 0) {
-    const data = rows[0].data;
-    const remoteTs = rows[0].updated_at || null;
-    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-    if (parsed) parsed._remoteTs = remoteTs;
-    return parsed;
-  }
-  // Check for unmigrated legacy row (id='state', user_id=null) — migrate it
-  const legacy = await sbFetch(`${TABLE}?id=eq.state&user_id=is.null&select=data`);
-  if (legacy && legacy.length > 0) {
-    const data = legacy[0].data;
-    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-    // Claim it: update user_id to current user
-    await sbFetch(`${TABLE}?id=eq.state&user_id=is.null`, {
-      method: 'PATCH',
-      prefer: 'return=minimal',
-      body: JSON.stringify({ user_id: userId, updated_at: new Date().toISOString() })
-    });
-    console.log('Migrated legacy row to user', userId);
-    return parsed;
-  }
-  return null;
-}
-
-async function supabaseSave(stateObj) {
-  if (!isCloudUser()) return;
-  const userId = _authUser.id;
-  // Upsert — creates or updates the user's row
-  await sbFetch(`${TABLE}`, {
-    method:  'POST',
-    prefer:  'resolution=merge-duplicates,return=minimal',
-    body: JSON.stringify({
-      user_id:    userId,
-      data:       stateObj,
-      updated_at: new Date().toISOString()
-    })
-  });
-}
-
-// ─── CONSTANTS ──────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────
 const COLORS = [
   { id:'red',    hex:'#c84b31' },
   { id:'green',  hex:'#2d6a4f' },
@@ -1194,443 +541,41 @@ const COLORS = [
   { id:'pink',   hex:'#e91e8c' },
 ];
 
-const PRIORITIES = [
-  { val: 1, label: 'Critical', short: '🔥 Critical' },
-  { val: 2, label: 'High',     short: '⬆ High'     },
-  { val: 3, label: 'Medium',   short: '◆ Medium'   },
-  { val: 4, label: 'Low',      short: '⬇ Low'      },
-  { val: 5, label: 'Someday',  short: '○ Someday'  },
-];
-
-const DB_NAME  = 'proj_dash_db';
-const DB_STORE = 'kv';
-const DB_KEY   = 'state_v2';
-const LS_KEY   = 'proj_dash_v2';
-
-// ─── STATE ──────────────────────────────────────────────
-let state = defaultState();
+let state = loadState();
 let editingProjectId = null;
 let editingTabId = null;
 let showArchived = false;
 let selectedColor = 'blue';
 let selectedTabColor = 'teal';
 let editTabColorVal = 'teal';
-let selectedPriority = 3;
-let sortModes = {};
-function getSortMode() { return sortModes[state.activeTab] || 'manual'; }
-let dbReady = false;
-let lsReady = false;
 
 function defaultState() {
   return {
     activeTab: 'general',
-    tabs: [ { id: 'general', name: 'General', color: 'blue' } ],
+    tabs: [
+      { id: 'general', name: 'General', color: 'blue' }
+    ],
     projects: []
   };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('proj_dash_v2');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return defaultState();
+}
+
+function saveState() {
+  localStorage.setItem('proj_dash_v2', JSON.stringify(state));
 }
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
 
-// ─── INDEXEDDB ──────────────────────────────────────────
-let _db = null;
-
-function openDB() {
-  return new Promise((resolve, reject) => {
-    if (_db) { resolve(_db); return; }
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = e => { e.target.result.createObjectStore(DB_STORE); };
-    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
-    req.onerror   = () => reject(req.error);
-  });
-}
-
-async function idbGet(key) {
-  try {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(DB_STORE, 'readonly');
-      const req = tx.objectStore(DB_STORE).get(key);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror   = () => reject(req.error);
-    });
-  } catch(e) { return undefined; }
-}
-
-async function idbSet(key, value) {
-  try {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(DB_STORE, 'readwrite');
-      const req = tx.objectStore(DB_STORE).put(value, key);
-      req.onsuccess = () => resolve(true);
-      req.onerror   = () => reject(req.error);
-    });
-  } catch(e) { return false; }
-}
-
-// ─── LOCALSTORAGE ───────────────────────────────────────
-function lsGet(key) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : undefined; }
-  catch(e) { return undefined; }
-}
-function lsSet(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-  catch(e) { return false; }
-}
-function lsAvailable() {
-  try { localStorage.setItem('__test__','1'); localStorage.removeItem('__test__'); return true; }
-  catch(e) { return false; }
-}
-
-// ─── CONNECTIVITY ───────────────────────────────────────
-// Tracks actual reachability — badge only goes green when Supabase responds
-let _isOnline = false;
-let _connectivityTimer = null;
-
-async function checkConnectivity() {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/${TABLE}?select=updated_at&limit=1`,
-      {
-        method: 'GET',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-        signal: AbortSignal.timeout(6000)
-      }
-    );
-    _isOnline = res.ok;
-  } catch(e) {
-    _isOnline = false;
-  }
-  updateStorageBadge(_isOnline ? (_pendingSave ? 'pending' : (isCloudUser() ? 'ok' : 'local')) : 'offline');
-  return _isOnline;
-}
-
-// Poll connectivity every 30s so badge stays accurate
-function startConnectivityPolling() {
-  checkConnectivity();
-  _connectivityTimer = setInterval(checkConnectivity, 30000);
-}
-
-// ─── PER-PROJECT TIMESTAMPS ─────────────────────────────
-// Each project gets a _ts field (ISO string) on every edit.
-// Merge strategy: for each project, keep whichever copy has the newer _ts.
-// Tabs and sort prefs use a simple whole-state _tabTs for comparison.
-
-function stampProject(p) {
-  p._ts = new Date().toISOString();
-  return p;
-}
-
-function migrateState(s) {
-  // One-time migration: stamp any project missing _ts with epoch so remote always wins
-  if (!s || !s.projects) return s;
-  s.projects = s.projects.map(p => {
-    if (!p._ts) p._ts = '2000-01-01T00:00:00.000Z';
-    return p;
-  });
-  return s;
-}
-
-function mergeStates(local, remote) {
-  // Returns a merged state containing the best of both
-  if (!local || !local.projects) return remote;
-  if (!remote || !remote.projects) return local;
-
-  // Merge projects: per-project, keep whichever _ts is newer
-  const remoteMap = new Map(remote.projects.map(p => [p.id, p]));
-  const localMap  = new Map(local.projects.map(p => [p.id, p]));
-  const allIds    = new Set([...remoteMap.keys(), ...localMap.keys()]);
-
-  const merged = [];
-  allIds.forEach(id => {
-    const r = remoteMap.get(id);
-    const l = localMap.get(id);
-    if (!r) { merged.push(l); return; } // only local — keep it
-    if (!l) { merged.push(r); return; } // only remote — keep it
-    // Both exist — keep newer
-    const rTime = r._ts ? new Date(r._ts).getTime() : 0;
-    const lTime = l._ts ? new Date(l._ts).getTime() : 0;
-    merged.push(lTime >= rTime ? l : r);
-  });
-
-  // For tabs and sort prefs, use whichever state is newer overall
-  const remoteTabTs = remote._tabTs ? new Date(remote._tabTs).getTime() : 0;
-  const localTabTs  = local._tabTs  ? new Date(local._tabTs).getTime()  : 0;
-  const winner      = localTabTs >= remoteTabTs ? local : remote;
-
-  return {
-    ...winner,
-    projects:     merged,
-    tabSortModes: winner.tabSortModes || {},
-    _tabTs:       winner._tabTs || new Date().toISOString(),
-  };
-}
-
-// ─── SAVE / LOAD ────────────────────────────────────────
-let saveTimer      = null;
-let _pendingSave   = false; // local changes not yet confirmed written to Supabase
-
-async function saveState() {
-  // Update local caches immediately
-  if (lsReady) lsSet(LS_KEY, state);
-  if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-  _pendingSave = true;
-
-  if (!isCloudUser()) {
-    updateStorageBadge('local');
-    _pendingSave = false;
-    return;
-  }
-
-  updateStorageBadge(_isOnline ? 'pending' : 'offline');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(flushToSupabase, 1200);
-}
-
-async function flushToSupabase() {
-  if (!isCloudUser()) {
-    _pendingSave = false;
-    updateStorageBadge('local');
-    return;
-  }
-  if (!_isOnline) {
-    const online = await checkConnectivity();
-    if (!online) {
-      _saveRetryTimer = setTimeout(flushToSupabase, 10000);
-      return;
-    }
-  }
-  try {
-    const remote = await supabaseLoad();
-    let toSave = state;
-    if (remote && remote.projects) {
-      toSave = mergeStates(state, remote);
-      state  = toSave;
-      if (state.tabSortModes) sortModes = state.tabSortModes;
-      if (lsReady) lsSet(LS_KEY, state);
-      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-    }
-    await supabaseSave(toSave);
-    _pendingSave = false;
-    updateStorageBadge('ok');
-  } catch(e) {
-    console.warn('Supabase write failed, will retry:', e);
-    updateStorageBadge(_isOnline ? 'err' : 'offline');
-    _saveRetryTimer = setTimeout(flushToSupabase, 15000);
-  }
-}
-let _saveRetryTimer = null;
-
-async function loadPersistedState() {
-  // Step 1: load local cache first so UI is instant
-  let localState = null;
-  if (dbReady) {
-    try {
-      const raw = await idbGet(DB_KEY);
-      if (raw) {
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (parsed && parsed.tabs) localState = migrateState(parsed);
-      }
-    } catch(e) {}
-  }
-  if (!localState && lsReady) {
-    try {
-      const parsed = lsGet(LS_KEY);
-      if (parsed && parsed.tabs) localState = migrateState(parsed);
-    } catch(e) {}
-  }
-
-  if (localState) {
-    state = localState;
-    if (state.tabSortModes) sortModes = state.tabSortModes;
-  }
-
-  // Local-only users — stop here, no Supabase
-  if (!isCloudUser()) {
-    if (!localState) state = defaultState();
-    updateStorageBadge('local');
-    return;
-  }
-
-  // Step 2: check connectivity
-  const online = await checkConnectivity();
-  if (!online) {
-    if (!localState) state = defaultState();
-    updateStorageBadge('offline');
-    showOfflineBanner();
-    return;
-  }
-
-  // Step 3: fetch remote and merge
-  try {
-    const remote = await supabaseLoad();
-    if (remote && remote.tabs) {
-      const migratedRemote = migrateState(remote);
-      if (localState) {
-        state = mergeStates(localState, migratedRemote);
-      } else {
-        state = migratedRemote;
-      }
-      if (state.tabSortModes) sortModes = state.tabSortModes;
-      if (lsReady) lsSet(LS_KEY, state);
-      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-      if (localState) await supabaseSave(state);
-      updateStorageBadge('ok');
-      const ob = document.getElementById('offlineBanner');
-      if (ob) ob.style.display = 'none';
-    } else if (!localState) {
-      // New cloud user with no data yet
-      state = defaultState();
-      updateStorageBadge('ok');
-    }
-  } catch(e) {
-    console.warn('Supabase load failed:', e);
-    updateStorageBadge('err');
-  }
-}
-
-async function forceRefresh() {
-  if (!isCloudUser()) {
-    updateStorageBadge('local');
-    return;
-  }
-  updateStorageBadge('syncing');
-  const online = await checkConnectivity();
-  if (!online) {
-    updateStorageBadge('offline');
-    showOfflineBanner();
-    return;
-  }
-  try {
-    const remote = await supabaseLoad();
-    if (remote && remote.tabs) {
-      const migratedRemote = migrateState(remote);
-      state = mergeStates(state, migratedRemote);
-      if (state.tabSortModes) sortModes = state.tabSortModes;
-      if (lsReady) lsSet(LS_KEY, state);
-      if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
-      await supabaseSave(state);
-      updateStorageBadge('ok');
-      hideConflictBanner();
-      const ob = document.getElementById('offlineBanner');
-      if (ob) ob.style.display = 'none';
-      render();
-    }
-  } catch(e) {
-    updateStorageBadge('err');
-  }
-}
-
-function showConflictBanner() {
-  // Conflict banner no longer needed — merge handles it automatically
-  // Kept as a no-op for safety
-}
-
-function hideConflictBanner() {
-  const b = document.getElementById('conflictBanner');
-  if (b) b.style.display = 'none';
-}
-
-function showOfflineBanner() {
-  let b = document.getElementById('offlineBanner');
-  if (!b) {
-    b = document.createElement('div');
-    b.id = 'offlineBanner';
-    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;background:#3a2a0a;color:#e9a825;padding:10px 18px;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:0.08em;display:flex;align-items:center;justify-content:space-between;gap:12px;';
-    b.innerHTML = '<span>⚠ No internet — working from cache. Changes will sync automatically when reconnected.</span>'
-      + '<button onclick="forceRefresh()" style="background:rgba(255,255,255,0.1);color:#e9a825;border:1px solid rgba(233,168,37,0.4);border-radius:6px;padding:6px 12px;font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em">Retry</button>';
-    document.body.appendChild(b);
-  }
-  b.style.display = 'flex';
-}
-
-function updateStorageBadge(status) {
-  const badge = document.getElementById('storageBadge');
-  if (!badge) return;
-  const map = {
-    ok:      { text: '● Synced',      cls: 'ok'   },
-    syncing: { text: '↻ Syncing',     cls: 'warn' },
-    pending: { text: '↑ Saving',      cls: 'warn' },
-    offline: { text: '◌ Offline',     cls: 'warn' },
-    local:   { text: '◌ Local only',  cls: 'warn' },
-    err:     { text: '✕ Error',       cls: 'err'  },
-  };
-  const s = map[status] || map.offline;
-  badge.textContent = s.text;
-  badge.className = 'storage-badge ' + s.cls;
-}
-
-// ─── EXPORT / IMPORT ────────────────────────────────────
-function exportBackup() {
-  const json = JSON.stringify(state, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  const date = new Date().toISOString().slice(0,10);
-  a.href = url; a.download = `projects-backup-${date}.json`;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
-}
-
-function importBackup(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const parsed = JSON.parse(e.target.result);
-      if (!parsed.tabs || !Array.isArray(parsed.projects)) { alert('Invalid backup file.'); return; }
-      if (!confirm(`Import backup? This replaces current data with ${parsed.projects.length} project(s) across ${parsed.tabs.length} tab(s).`)) return;
-      state = parsed;
-      await saveState();
-      render();
-      closeSheet('backupOverlay');
-    } catch(err) { alert('Could not read backup file: ' + err.message); }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function openBackupSheet() {
-  const statusEl = document.getElementById('backupStatusText');
-  if (statusEl) {
-    if (isCloudUser()) {
-      const badge = document.getElementById('storageBadge');
-      const synced = badge && badge.classList.contains('ok');
-      statusEl.textContent = (synced ? '✓ Synced — ' : '⚠ Unsynced — ')
-        + (_authUser.email || 'signed in')
-        + (dbReady ? ' + IndexedDB cache' : '')
-        + (lsReady ? ' + localStorage cache' : '');
-    } else {
-      statusEl.textContent = '◌ Local only — data stored on this device only';
-    }
-  }
-  // Show correct account section
-  const signedEl = document.getElementById('backupAuthSigned');
-  const localEl  = document.getElementById('backupAuthLocal');
-  const emailEl  = document.getElementById('backupAuthEmail');
-  if (isCloudUser()) {
-    if (signedEl) signedEl.style.display = 'block';
-    if (localEl)  localEl.style.display  = 'none';
-    if (emailEl)  emailEl.textContent    = _authUser.email || '';
-  } else {
-    if (signedEl) signedEl.style.display = 'none';
-    if (localEl)  localEl.style.display  = 'block';
-  }
-  document.getElementById('backupOverlay').classList.add('open');
-}
-
-function backupSheetSignIn() {
-  // Clear local-only preference and show auth screen
-  lsSet('proj_auth_mode', null);
-  _authMode = null;
-  closeSheet('backupOverlay');
-  showAuthScreen();
-}
-
-// ─── DATE UTILS ─────────────────────────────────────────
+// ─── DATE ───────────────────────────────────────────────
 function formatDateDisplay(iso) {
   if (!iso) return null;
   const [y,m,d] = iso.split('-');
@@ -1643,261 +588,55 @@ function isOverdue(iso) {
   return new Date(iso) < new Date(new Date().toDateString());
 }
 
-function isFuture(iso) {
-  if (!iso) return false;
-  return new Date(iso) > new Date(new Date().toDateString());
-}
+document.getElementById('headerDate').textContent =
+  new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
 
-// ─── RESPONSIVE ─────────────────────────────────────────
-function isDesktop() { return window.innerWidth >= 900; }
-
+// ─── RENDER ─────────────────────────────────────────────
 function render() {
-  if (isDesktop()) { renderKanban(); }
-  else { renderTabs(); renderContent(); }
+  renderTabs();
+  renderContent();
 }
-
-let _lastDesktop = isDesktop();
-window.addEventListener('resize', () => {
-  const nowDesktop = isDesktop();
-  if (nowDesktop !== _lastDesktop) { _lastDesktop = nowDesktop; render(); }
-});
-
-// ─── KANBAN ─────────────────────────────────────────────
-function renderKanban() {
-  const board = document.getElementById('kanbanBoard');
-  if (!board) return;
-  board.style.display = 'flex';
-  document.getElementById('mainContent').style.display = 'none';
-  document.querySelector('.tabs-wrapper').style.display = 'none';
-
-  let html = '';
-
-  state.tabs.forEach(tab => {
-    const sm = sortModes[tab.id] || 'manual';
-    let active   = state.projects.filter(p => p.tabId === tab.id && !p.archived);
-    let archived = state.projects.filter(p => p.tabId === tab.id && p.archived);
-
-    function srt(arr) {
-      if (sm === 'priority')      return [...arr].sort((a,b) => (a.priority||3)-(b.priority||3));
-      if (sm === 'deadline')      return [...arr].sort((a,b) => { if(!a.deadline&&!b.deadline)return 0; if(!a.deadline)return 1; if(!b.deadline)return -1; return new Date(a.deadline)-new Date(b.deadline); });
-      if (sm === 'deadline-desc') return [...arr].sort((a,b) => { if(!a.deadline&&!b.deadline)return 0; if(!a.deadline)return 1; if(!b.deadline)return -1; return new Date(b.deadline)-new Date(a.deadline); });
-      if (sm === 'start')         return [...arr].sort((a,b) => { if(!a.start&&!b.start)return 0; if(!a.start)return 1; if(!b.start)return -1; return new Date(a.start)-new Date(b.start); });
-      if (sm === 'start-desc')    return [...arr].sort((a,b) => { if(!a.start&&!b.start)return 0; if(!a.start)return 1; if(!b.start)return -1; return new Date(b.start)-new Date(a.start); });
-      return arr;
-    }
-    active = srt(active); archived = srt(archived);
-
-    const avgProg = active.length ? Math.round(active.reduce((a,p)=>a+p.progress,0)/active.length) : 0;
-    const overdue = active.filter(p => p.deadline && isOverdue(p.deadline) && p.progress < 100).length;
-    const editBtn = tab.id !== 'general'
-      ? `<button class="kanban-edit-btn" onclick="openEditTab('${tab.id}')">✎</button>` : '';
-
-    let cards = '';
-    if (active.length === 0 && !showArchived) {
-      cards = `<div class="empty" style="padding:30px 10px"><div class="empty-icon" style="font-size:32px">📋</div><div class="empty-title" style="font-size:16px">No projects</div><div class="empty-sub">Tap + below to add one</div></div>`;
-    } else {
-      if (active.length > 0) { cards += `<div class="section-label">Active</div>`; active.forEach(p => { cards += renderCard(p); }); }
-      if (showArchived && archived.length > 0) { cards += `<div class="section-label">Archived</div>`; archived.forEach(p => { cards += renderCard(p); }); }
-    }
-    if (!showArchived && archived.length > 0) {
-      cards += `<label class="archive-toggle" onclick="toggleArchiveView()"><input type="checkbox" readonly> Show ${archived.length} archived</label>`;
-    }
-
-    const stats = active.length > 0 ? `<div class="kanban-stats">
-      <div class="stat-chip"><span class="stat-num">${active.length}</span><span class="stat-lbl">Active</span></div>
-      <div class="stat-chip"><span class="stat-num">${avgProg}%</span><span class="stat-lbl">Avg</span></div>
-      <div class="stat-chip"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
-    </div>` : '';
-
-    html += `<div class="kanban-col" id="kcol-${tab.id}"
-      draggable="true"
-      ondragstart="kanbanDragStart(event,'${tab.id}')"
-      ondragover="kanbanDragOver(event)"
-      ondrop="kanbanDrop(event,'${tab.id}')"
-      ondragend="kanbanDragEnd(event)">
-      <div class="kanban-col-header">
-        <div class="kanban-col-title"><span class="tab-dot tab-dot-${tab.color}"></span>${escHtml(tab.name)}</div>
-        <div class="kanban-col-meta"><span class="kanban-col-count">${active.length} project${active.length!==1?'s':''}</span>${editBtn}</div>
-      </div>
-      <div class="kanban-sort-bar">
-        <span class="sort-lbl">Sort:</span>
-        <button class="sort-btn ${sm==='manual'?'active':''}"           onclick="setKanbanSort('${tab.id}','manual')">Default</button>
-        <button class="sort-btn ${sm==='priority'?'active':''}"         onclick="setKanbanSort('${tab.id}','priority')">Priority</button>
-        <button class="sort-btn ${sm==='deadline'?'active':''}"         onclick="setKanbanSort('${tab.id}','deadline')">Due ↑</button>
-        <button class="sort-btn ${sm==='deadline-desc'?'active':''}"    onclick="setKanbanSort('${tab.id}','deadline-desc')">Due ↓</button>
-        <button class="sort-btn ${sm==='start'?'active':''}"            onclick="setKanbanSort('${tab.id}','start')">Start ↑</button>
-        <button class="sort-btn ${sm==='start-desc'?'active':''}"       onclick="setKanbanSort('${tab.id}','start-desc')">Start ↓</button>
-      </div>
-      ${stats}
-      <div class="kanban-cards" id="kcards-${tab.id}">${cards}</div>
-      <button class="kanban-add-btn" onclick="openAddProjectForTab('${tab.id}')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Project
-      </button>
-    </div>`;
-  });
-
-  html += `<div class="kanban-new-col" onclick="openNewTabSheet()"><div class="kanban-new-col-icon">＋</div><div>New List</div></div>`;
-  board.innerHTML = html;
-
-  board.querySelectorAll('.prog-slider').forEach(slider => {
-    slider.addEventListener('input', function() {
-      const fill = document.getElementById('fill-'+this.dataset.id);
-      const pct  = document.getElementById('pct-'+this.dataset.id);
-      if (fill) fill.style.width = this.value + '%';
-      if (pct)  pct.textContent  = this.value + '%';
-    });
-    slider.addEventListener('change', function() {
-      const p = state.projects.find(x => x.id === this.dataset.id);
-      if (p) { p.progress = +this.value; stampProject(p); saveState(); renderKanban(); }
-    });
-  });
-
-  // Attach checkbox listeners for every kanban card with a description
-  state.projects.filter(p => p.desc).forEach(p => {
-    const body   = document.getElementById('body-' + p.id);
-    const descEl = body ? body.querySelector('.card-desc.md-body') : null;
-    if (descEl) attachCheckboxListeners(descEl, p.id);
-  });
-}
-
-function setKanbanSort(tabId, mode) {
-  sortModes[tabId] = mode;
-  state.tabSortModes = sortModes;
-  saveState(); renderKanban();
-}
-
-function openAddProjectForTab(tabId) {
-  openAddProject();
-  setTimeout(() => { const sel = document.getElementById('projTab'); if (sel) sel.value = tabId; }, 50);
-}
-
-// ─── MOBILE RENDER ──────────────────────────────────────
-let _dragSrcIdx = null;
 
 function renderTabs() {
-  if (isDesktop()) return;
   const scroll = document.getElementById('tabsScroll');
+  // preserve add button
   const addBtn = scroll.querySelector('.tab-add');
   scroll.innerHTML = '';
-
-  state.tabs.forEach((tab, idx) => {
+  state.tabs.forEach(tab => {
     const active = tab.id === state.activeTab;
-    const count  = state.projects.filter(p => p.tabId === tab.id && !p.archived).length;
-    const btn    = document.createElement('button');
-    btn.className   = 'tab' + (active ? ' active' : '');
-    btn.dataset.idx = idx;
-    btn.draggable   = true;
-
-    // Drag handle (⠿ dots icon)
-    const handle = document.createElement('span');
-    handle.className   = 'tab-drag-handle';
-    handle.textContent = '⠿';
-    handle.title       = 'Drag to reorder';
-    btn.appendChild(handle);
-
-    // Dot + name + count
-    const dot = document.createElement('span');
-    dot.className = `tab-dot tab-dot-${tab.color}`;
-    btn.appendChild(dot);
-    btn.appendChild(document.createTextNode(tab.name));
-    const countEl = document.createElement('span');
-    countEl.className   = 'tab-count';
-    countEl.textContent = count;
-    btn.appendChild(countEl);
-
-    // Edit icon for non-general lists
+    const count = state.projects.filter(p => p.tabId === tab.id && !p.archived).length;
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (active ? ' active' : '');
+    btn.innerHTML = `<span class="tab-dot tab-dot-${tab.color}"></span>${tab.name}<span class="tab-count">${count}</span>`;
     if (tab.id !== 'general') {
-      const ei = document.createElement('span');
-      ei.className   = 'tab-edit-icon';
-      ei.textContent = '✎';
-      ei.onclick = (e) => { e.stopPropagation(); openEditTab(tab.id); };
-      btn.appendChild(ei);
+      const editIcon = document.createElement('span');
+      editIcon.className = 'tab-edit-icon';
+      editIcon.textContent = '✎';
+      editIcon.onclick = (e) => { e.stopPropagation(); openEditTab(tab.id); };
+      btn.appendChild(editIcon);
     }
-
-    // Click to switch
-    btn.onclick = (e) => {
-      if (e.target.classList.contains('tab-drag-handle') ||
-          e.target.classList.contains('tab-edit-icon')) return;
-      state.activeTab = tab.id; saveState(); render();
-    };
-
-    // Drag events
-    btn.addEventListener('dragstart', (e) => {
-      _dragSrcIdx = idx;
-      btn.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    btn.addEventListener('dragend', () => {
-      btn.classList.remove('dragging');
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('drag-over'));
-    });
-    btn.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('drag-over'));
-      btn.classList.add('drag-over');
-    });
-    btn.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const toIdx = +btn.dataset.idx;
-      if (_dragSrcIdx === null || _dragSrcIdx === toIdx) return;
-      const tabs = [...state.tabs];
-      const [moved] = tabs.splice(_dragSrcIdx, 1);
-      tabs.splice(toIdx, 0, moved);
-      state.tabs = tabs;
-      _dragSrcIdx = null;
-      saveState();
-      render();
-    });
-
+    btn.onclick = () => { state.activeTab = tab.id; saveState(); render(); };
     scroll.insertBefore(btn, null);
   });
-
   scroll.appendChild(addBtn);
 }
 
 function renderContent() {
-  if (isDesktop()) return;
-  const el = document.getElementById('mainContent');
-  // Only reset display styles if not currently mid-swipe animation
-  if (el && !el.classList.contains('swipe-out-left') &&
-            !el.classList.contains('swipe-out-right') &&
-            !el.classList.contains('swipe-in-left') &&
-            !el.classList.contains('swipe-in-right')) {
-    el.style.display = '';
-  }
-  document.getElementById('kanbanBoard').style.display = 'none';
-  document.querySelector('.tabs-wrapper').style.display = '';
   const tab = state.tabs.find(t => t.id === state.activeTab);
   if (!tab) return;
+  const projects = state.projects.filter(p =>
+    p.tabId === state.activeTab && (showArchived ? true : !p.archived)
+  );
+  const active = projects.filter(p => !p.archived);
+  const archived = projects.filter(p => p.archived);
 
-  const sm = getSortMode();
-  function srt(arr) {
-    if (sm === 'priority')      return [...arr].sort((a,b) => (a.priority||3)-(b.priority||3));
-    if (sm === 'deadline')      return [...arr].sort((a,b) => { if(!a.deadline&&!b.deadline)return 0; if(!a.deadline)return 1; if(!b.deadline)return -1; return new Date(a.deadline)-new Date(b.deadline); });
-    if (sm === 'deadline-desc') return [...arr].sort((a,b) => { if(!a.deadline&&!b.deadline)return 0; if(!a.deadline)return 1; if(!b.deadline)return -1; return new Date(b.deadline)-new Date(a.deadline); });
-    if (sm === 'start')         return [...arr].sort((a,b) => { if(!a.start&&!b.start)return 0; if(!a.start)return 1; if(!b.start)return -1; return new Date(a.start)-new Date(b.start); });
-    if (sm === 'start-desc')    return [...arr].sort((a,b) => { if(!a.start&&!b.start)return 0; if(!a.start)return 1; if(!b.start)return -1; return new Date(b.start)-new Date(a.start); });
-    return arr;
-  }
-  let active   = srt(state.projects.filter(p => p.tabId === state.activeTab && !p.archived));
-  let archived = srt(state.projects.filter(p => p.tabId === state.activeTab && p.archived));
+  let html = '';
 
-  let html = `<div class="sort-bar">
-    <span class="sort-lbl">Sort:</span>
-    <button class="sort-btn ${sm==='manual'?'active':''}"           onclick="setSort('manual')">Default</button>
-    <button class="sort-btn ${sm==='priority'?'active':''}"         onclick="setSort('priority')">Priority</button>
-    <button class="sort-btn ${sm==='deadline'?'active':''}"         onclick="setSort('deadline')">Due ↑</button>
-    <button class="sort-btn ${sm==='deadline-desc'?'active':''}"    onclick="setSort('deadline-desc')">Due ↓</button>
-    <button class="sort-btn ${sm==='start'?'active':''}"            onclick="setSort('start')">Start ↑</button>
-    <button class="sort-btn ${sm==='start-desc'?'active':''}"       onclick="setSort('start-desc')">Start ↓</button>
-  </div>`;
-
+  // Stats
   if (active.length > 0) {
-    const avgProg = Math.round(active.reduce((a,p) => a + p.progress, 0) / active.length);
+    const avgProg = active.length ? Math.round(active.reduce((a,p) => a + p.progress, 0) / active.length) : 0;
     const overdue = active.filter(p => p.deadline && isOverdue(p.deadline) && p.progress < 100).length;
-    html += `<div class="stats-row" style="margin-top:14px">
+    html += `<div class="stats-row">
       <div class="stat-chip"><span class="stat-num">${active.length}</span><span class="stat-lbl">Active</span></div>
       <div class="stat-chip"><span class="stat-num">${avgProg}%</span><span class="stat-lbl">Avg Progress</span></div>
       <div class="stat-chip"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
@@ -1905,12 +644,27 @@ function renderContent() {
   }
 
   if (active.length === 0 && !showArchived) {
-    html += `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No projects yet</div><div class="empty-sub">Tap + to add your first project<br>to the <em>${tab.name}</em> tab.</div></div>`;
+    html += `<div class="empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No projects yet</div>
+      <div class="empty-sub">Tap + to add your first project<br>to the <em>${tab.name}</em> tab.</div>
+    </div>`;
   }
-  if (active.length > 0)   { html += `<div class="section-label">Active</div>`; active.forEach(p => { html += renderCard(p); }); }
-  if (showArchived && archived.length > 0) { html += `<div class="section-label">Archived</div>`; archived.forEach(p => { html += renderCard(p); }); }
+
+  if (active.length > 0) {
+    html += `<div class="section-label">Active</div>`;
+    active.forEach(p => { html += renderCard(p); });
+  }
+
+  if (showArchived && archived.length > 0) {
+    html += `<div class="section-label">Archived</div>`;
+    archived.forEach(p => { html += renderCard(p); });
+  }
+
   if (!showArchived && archived.length > 0) {
-    html += `<label class="archive-toggle" onclick="toggleArchiveView()"><input type="checkbox" readonly> Show ${archived.length} archived project${archived.length>1?'s':''}</label>`;
+    html += `<label class="archive-toggle" onclick="toggleArchiveView()">
+      <input type="checkbox" readonly> Show ${archived.length} archived project${archived.length>1?'s':''}
+    </label>`;
   }
 
   document.getElementById('mainContent').innerHTML = html;
@@ -1918,134 +672,32 @@ function renderContent() {
   // Attach slider listeners
   document.querySelectorAll('.prog-slider').forEach(slider => {
     slider.addEventListener('input', function() {
-      const fill = document.getElementById('fill-'+this.dataset.id);
-      const pct  = document.getElementById('pct-'+this.dataset.id);
+      const id = this.dataset.id;
+      const fill = document.getElementById('fill-'+id);
+      const pct = document.getElementById('pct-'+id);
       if (fill) fill.style.width = this.value + '%';
-      if (pct)  pct.textContent  = this.value + '%';
+      if (pct) pct.textContent = this.value + '%';
     });
     slider.addEventListener('change', function() {
-      const p = state.projects.find(x => x.id === this.dataset.id);
-      if (p) { p.progress = +this.value; stampProject(p); saveState(); renderTabs(); }
+      const id = this.dataset.id;
+      const p = state.projects.find(x => x.id === id);
+      if (p) { p.progress = +this.value; saveState(); renderTabs(); }
     });
   });
-
-  // Attach checkbox listeners for every rendered card
-  state.projects.filter(p => p.tabId === state.activeTab && p.desc).forEach(p => {
-    const body   = document.getElementById('body-' + p.id);
-    const descEl = body ? body.querySelector('.card-desc.md-body') : null;
-    if (descEl) attachCheckboxListeners(descEl, p.id);
-  });
 }
 
-function setSort(mode) {
-  sortModes[state.activeTab] = mode;
-  state.tabSortModes = sortModes;
-  saveState(); renderContent();
-}
-
-// ─── MARKDOWN ───────────────────────────────────────────
-function renderMarkdown(raw, projId) {
-  if (!raw) return '';
-
-  // Work from raw lines for accurate line indexing
-  const rawLines = raw.split('\n');
-  const out = [];
-  let inUl = false, inOl = false;
-  let calloutType = null, calloutLines = [];
-
-  function closeList() {
-    if (inUl) { out.push('</ul>'); inUl = false; }
-    if (inOl) { out.push('</ol>'); inOl = false; }
-  }
-  function flushCallout() {
-    if (calloutType === null) return;
-    const type = calloutType.toLowerCase();
-    const cls  = ['warning','caution','danger'].includes(type) ? 'md-callout-warn'
-                : ['tip','hint','important'].includes(type)    ? 'md-callout-tip'
-                : 'md-callout-note';
-    const icon = ['warning','caution','danger'].includes(type) ? '⚠'
-                : ['tip','hint'].includes(type)                ? '💡'
-                : ['important'].includes(type)                 ? '❗'
-                : 'ℹ';
-    const label = calloutType.charAt(0).toUpperCase() + calloutType.slice(1);
-    out.push(`<div class="${cls}"><div class="md-callout-title">${icon} ${label}</div><div class="md-callout-body">${calloutLines.join(' ')}</div></div>`);
-    calloutType = null;
-    calloutLines = [];
-  }
-
-  rawLines.forEach((rawLine, idx) => {
-    // Escape for safe HTML output
-    const line = rawLine
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-    // Obsidian callout opener: > [!type]
-    const calloutOpen = line.match(/^&gt;\s*\[!([\w]+)\]/i);
-    if (calloutOpen) {
-      closeList(); flushCallout();
-      calloutType = calloutOpen[1];
-      return;
-    }
-    // Continuation of callout
-    if (calloutType !== null && /^&gt;/.test(line)) {
-      calloutLines.push(line.replace(/^&gt;\s*/, ''));
-      return;
-    }
-    if (calloutType !== null) { flushCallout(); }
-
-    // Checkboxes — use idx (raw line index) as the stable reference
-    const cbMatch = rawLine.match(/^[-*]\s+\[([ xX\/])\]\s*(.*)/);
-    if (cbMatch) {
-      closeList();
-      const rawState = cbMatch[1];
-      const label    = escHtml(cbMatch[2]);
-      const st       = rawState === ' ' ? 'open' : rawState.toLowerCase() === 'x' ? 'done' : 'prog';
-      const icon     = st === 'done' ? '✓' : st === 'prog' ? '◑' : '';
-      const cls      = st === 'done' ? 'done' : st === 'prog' ? 'prog' : '';
-      // data-line-idx used by attachCheckboxListeners — no inline onclick
-      out.push(`<div class="md-cb ${cls}" data-line-idx="${idx}" style="cursor:pointer"><span class="md-cb-box">${icon}</span><span class="md-cb-label">${label}</span></div>`);
-      return;
-    }
-
-    if (/^### (.+)/.test(line))     { closeList(); out.push(`<h4>${line.replace(/^### /,'')}</h4>`); return; }
-    if (/^## (.+)/.test(line))      { closeList(); out.push(`<h3>${line.replace(/^## /,'')}</h3>`); return; }
-    if (/^# (.+)/.test(line))       { closeList(); out.push(`<h2>${line.replace(/^# /,'')}</h2>`); return; }
-    if (/^---+$/.test(line.trim())) { closeList(); out.push('<hr>'); return; }
-    if (/^[-*] (.+)/.test(line))    { if (!inUl) { closeList(); out.push('<ul>'); inUl=true; } out.push(`<li>${line.replace(/^[-*] /,'')}</li>`); return; }
-    if (/^\d+\. (.+)/.test(line))   { if (!inOl) { closeList(); out.push('<ol>'); inOl=true; } out.push(`<li>${line.replace(/^\d+\. /,'')}</li>`); return; }
-    if (/^&gt; (.+)/.test(line))    { closeList(); out.push(`<blockquote>${line.replace(/^&gt;\s*/,'')}</blockquote>`); return; }
-    if (line.trim() === '')         { closeList(); out.push('<br>'); return; }
-    closeList(); out.push(`<p>${line}</p>`);
-  });
-  closeList(); flushCallout();
-
-  return out.join('')
-    .replace(/==(.+?)==/g,          '<mark>$1</mark>')
-    .replace(/\*\*\*(.+?)\*\*\*/g,  '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g,      '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,          '<em>$1</em>')
-    .replace(/_(.+?)_/g,            '<em>$1</em>')
-    .replace(/~~(.+?)~~/g,          '<s>$1</s>')
-    .replace(/`(.+?)`/g,            '<code>$1</code>')
-    .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-}
-
-// ─── RENDER CARD ────────────────────────────────────────
 function renderCard(p) {
-  const color  = COLORS.find(c => c.id === p.color) || COLORS[3];
+  const color = COLORS.find(c => c.id === p.color) || COLORS[3];
   const overdue = p.deadline && isOverdue(p.deadline) && p.progress < 100;
-  const pri    = PRIORITIES.find(x => x.val === (p.priority || 3));
-  const priCls = `pri-${p.priority || 3}`;
-  return `<div class="project-card${p.archived?' archived':''}${overdue?' overdue':''}" id="card-${p.id}">
+  return `
+  <div class="project-card${p.archived?' archived':''}" id="card-${p.id}">
     <div class="card-header" onclick="toggleCard('${p.id}')">
       <div class="card-color-bar" style="background:${color.hex}"></div>
       <div class="card-main">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-          <div class="card-title" style="flex:1">${escHtml(p.name)}</div>
-          <span class="priority-badge ${priCls}">${pri ? pri.short : ''}</span>
-        </div>
+        <div class="card-title">${escHtml(p.name)}</div>
         <div class="card-meta">
           ${p.deadline ? `<span>${overdue?'🔴':'📅'} ${formatDateDisplay(p.deadline)}${overdue?' · Overdue':''}</span>` : ''}
-          ${p.start    ? `<span>${isFuture(p.start)?'🗓 Starts':'🟢 Started'} ${formatDateDisplay(p.start)}</span>` : ''}
+          ${p.start ? `<span>🟢 Started ${formatDateDisplay(p.start)}</span>` : ''}
         </div>
       </div>
       <div class="card-chevron" id="chev-${p.id}">▾</div>
@@ -2059,10 +711,10 @@ function renderCard(p) {
       </div>
     </div>
     <div class="card-body" id="body-${p.id}">
-      ${p.desc ? `<div class="card-desc md-body">${renderMarkdown(p.desc, p.id)}</div>` : ''}
+      ${p.desc ? `<div class="card-desc">${escHtml(p.desc).replace(/\n/g,'<br>')}</div>` : ''}
       <div class="card-dates">
-        ${p.start    ? `<div class="date-chip start">${isFuture(p.start)?'▶ Starts:':'▶ Started:'} ${formatDateDisplay(p.start)}</div>` : ''}
-        ${p.deadline ? `<div class="date-chip deadline">⏳ Due: ${formatDateDisplay(p.deadline)}</div>` : ''}
+        ${p.start ? `<div class="date-chip start">▶ Start: ${formatDateDisplay(p.start)}</div>` : ''}
+        ${p.deadline ? `<div class="date-chip deadline${overdue?' overdue':''}">⏳ Due: ${formatDateDisplay(p.deadline)}</div>` : ''}
       </div>
       <div class="slider-wrap" style="margin-bottom:12px">
         <label style="display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Adjust Progress</label>
@@ -2075,7 +727,8 @@ function renderCard(p) {
         <button class="card-action-btn" onclick="openEditProject('${p.id}')">✎ Edit</button>
         ${!p.archived
           ? `<button class="card-action-btn success" onclick="archiveProject('${p.id}')">📦 Archive</button>`
-          : `<button class="card-action-btn" onclick="unarchiveProject('${p.id}')">↩ Restore</button>`}
+          : `<button class="card-action-btn" onclick="unarchiveProject('${p.id}')">↩ Restore</button>`
+        }
         <button class="card-action-btn danger" onclick="deleteProject('${p.id}')">✕ Delete</button>
       </div>
     </div>
@@ -2089,44 +742,47 @@ function escHtml(s) {
 function toggleCard(id) {
   const body = document.getElementById('body-'+id);
   const chev = document.getElementById('chev-'+id);
-  if (body) { const open = body.classList.toggle('open'); if (chev) chev.classList.toggle('open', open); }
+  if (body) {
+    const open = body.classList.toggle('open');
+    if (chev) chev.classList.toggle('open', open);
+  }
 }
 
 function handleTrackClick(e, id) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const pct  = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-  const p    = state.projects.find(x => x.id === id);
+  const track = e.currentTarget;
+  const rect = track.getBoundingClientRect();
+  const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+  const p = state.projects.find(x => x.id === id);
   if (p) {
-    p.progress = pct; stampProject(p); saveState();
+    p.progress = pct;
+    saveState();
     const fill = document.getElementById('fill-'+id);
     const pctEl = document.getElementById('pct-'+id);
     if (fill) fill.style.width = pct + '%';
     if (pctEl) pctEl.textContent = pct + '%';
-    if (isDesktop()) renderKanban(); else renderTabs();
+    renderTabs();
   }
 }
 
 // ─── ARCHIVE ────────────────────────────────────────────
 function archiveProject(id) {
   const p = state.projects.find(x => x.id === id);
-  if (p) { p.archived = true; p.progress = 100; stampProject(p); saveState(); render(); }
+  if (p) { p.archived = true; p.progress = 100; saveState(); render(); }
 }
 function unarchiveProject(id) {
   const p = state.projects.find(x => x.id === id);
-  if (p) { p.archived = false; stampProject(p); saveState(); render(); }
+  if (p) { p.archived = false; saveState(); render(); }
 }
 function deleteProject(id) {
   if (!confirm('Delete this project? This cannot be undone.')) return;
   state.projects = state.projects.filter(x => x.id !== id);
-  state._tabTs = new Date().toISOString();
   saveState(); render();
 }
 function toggleArchiveView() {
-  showArchived = !showArchived;
-  if (isDesktop()) renderKanban(); else renderContent();
+  showArchived = !showArchived; renderContent();
 }
 
-// ─── PICKERS ────────────────────────────────────────────
+// ─── COLOR PICKER RENDER ─────────────────────────────────
 function renderColorPicker(containerId, selectedId, onSelect) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -2135,26 +791,16 @@ function renderColorPicker(containerId, selectedId, onSelect) {
     const sw = document.createElement('div');
     sw.className = 'color-swatch' + (c.id === selectedId ? ' selected' : '');
     sw.style.background = c.hex;
-    sw.onclick = () => { el.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected')); sw.classList.add('selected'); onSelect(c.id); };
+    sw.onclick = () => {
+      el.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+      onSelect(c.id);
+    };
     el.appendChild(sw);
   });
 }
 
-function renderPriorityPicker(selectedVal, onSelect) {
-  const el = document.getElementById('priorityPicker');
-  if (!el) return;
-  el.innerHTML = '';
-  PRIORITIES.forEach(pri => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `pri-option po-${pri.val}${pri.val === selectedVal ? ' selected' : ''}`;
-    btn.textContent = pri.label;
-    btn.onclick = () => { el.querySelectorAll('.pri-option').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); onSelect(pri.val); };
-    el.appendChild(btn);
-  });
-}
-
-// ─── ADD / EDIT PROJECT ─────────────────────────────────
+// ─── ADD PROJECT ─────────────────────────────────────────
 function openAddProject() {
   editingProjectId = null;
   document.getElementById('sheetTitle').textContent = 'New Project';
@@ -2164,11 +810,13 @@ function openAddProject() {
   document.getElementById('projProgressVal').textContent = '0%';
   document.getElementById('projStart').value = '';
   document.getElementById('projDeadline').value = '';
-  selectedColor = 'blue'; selectedPriority = 3;
+  selectedColor = 'blue';
   renderColorPicker('colorPicker', selectedColor, c => { selectedColor = c; });
-  renderPriorityPicker(selectedPriority, v => { selectedPriority = v; });
+  // populate tab select
   const sel = document.getElementById('projTab');
-  sel.innerHTML = state.tabs.map(t => `<option value="${t.id}" ${t.id===state.activeTab?'selected':''}>${t.name}</option>`).join('');
+  sel.innerHTML = state.tabs.map(t =>
+    `<option value="${t.id}" ${t.id===state.activeTab?'selected':''}>${t.name}</option>`
+  ).join('');
   document.getElementById('projectOverlay').classList.add('open');
   setTimeout(() => document.getElementById('projName').focus(), 200);
 }
@@ -2184,11 +832,12 @@ function openEditProject(id) {
   document.getElementById('projProgressVal').textContent = p.progress + '%';
   document.getElementById('projStart').value = p.start || '';
   document.getElementById('projDeadline').value = p.deadline || '';
-  selectedColor = p.color || 'blue'; selectedPriority = p.priority || 3;
+  selectedColor = p.color || 'blue';
   renderColorPicker('colorPicker', selectedColor, c => { selectedColor = c; });
-  renderPriorityPicker(selectedPriority, v => { selectedPriority = v; });
   const sel = document.getElementById('projTab');
-  sel.innerHTML = state.tabs.map(t => `<option value="${t.id}" ${t.id===p.tabId?'selected':''}>${t.name}</option>`).join('');
+  sel.innerHTML = state.tabs.map(t =>
+    `<option value="${t.id}" ${t.id===p.tabId?'selected':''}>${t.name}</option>`
+  ).join('');
   document.getElementById('projectOverlay').classList.add('open');
 }
 
@@ -2199,26 +848,32 @@ function saveProject() {
   if (editingProjectId) {
     const p = state.projects.find(x => x.id === editingProjectId);
     if (p) {
-      p.name = name; p.desc = document.getElementById('projDesc').value.trim();
+      p.name = name;
+      p.desc = document.getElementById('projDesc').value.trim();
       p.progress = +document.getElementById('projProgress').value;
       p.start = document.getElementById('projStart').value || null;
       p.deadline = document.getElementById('projDeadline').value || null;
-      p.color = selectedColor; p.priority = selectedPriority; p.tabId = tabId;
-      stampProject(p);
+      p.color = selectedColor;
+      p.tabId = tabId;
     }
   } else {
-    const newProj = {
-      id: uid(), name, desc: document.getElementById('projDesc').value.trim(),
+    state.projects.push({
+      id: uid(),
+      name,
+      desc: document.getElementById('projDesc').value.trim(),
       progress: +document.getElementById('projProgress').value,
       start: document.getElementById('projStart').value || null,
       deadline: document.getElementById('projDeadline').value || null,
-      color: selectedColor, priority: selectedPriority,
-      tabId, archived: false, created: Date.now()
-    };
-    stampProject(newProj);
-    state.projects.push(newProj);
+      color: selectedColor,
+      tabId,
+      archived: false,
+      created: Date.now()
+    });
   }
-  saveState(); closeSheet('projectOverlay'); state.activeTab = tabId; render();
+  saveState();
+  closeSheet('projectOverlay');
+  state.activeTab = tabId;
+  render();
 }
 
 // ─── TABS ────────────────────────────────────────────────
@@ -2236,8 +891,9 @@ function saveNewTab() {
   const id = 'tab_' + uid();
   state.tabs.push({ id, name, color: selectedTabColor });
   state.activeTab = id;
-  state._tabTs = new Date().toISOString();
-  saveState(); closeSheet('tabOverlay'); render();
+  saveState();
+  closeSheet('tabOverlay');
+  render();
 }
 
 function openEditTab(tabId) {
@@ -2254,332 +910,33 @@ function saveEditTab() {
   const tab = state.tabs.find(t => t.id === editingTabId);
   const name = document.getElementById('editTabName').value.trim();
   if (!name || !tab) return;
-  tab.name = name; tab.color = editTabColorVal;
-  state._tabTs = new Date().toISOString();
-  saveState(); closeSheet('editTabOverlay'); render();
-}
-
-function deleteTab() {
-  if (!confirm('Delete this list and all its projects?')) return;
-  state.projects = state.projects.filter(p => p.tabId !== editingTabId);
-  state.tabs = state.tabs.filter(t => t.id !== editingTabId);
-  if (state.activeTab === editingTabId) state.activeTab = 'general';
-  state._tabTs = new Date().toISOString();
-  saveState(); closeSheet('editTabOverlay'); render();
-}
-
-// ─── UTILS ──────────────────────────────────────────────
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
-function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
-
-// ─── CHECKBOX CYCLING ───────────────────────────────────
-// Cycles: open [ ] → done [x] → in-progress [/] → open
-function cycleCheckbox(projId, lineIdx) {
-  const p = state.projects.find(x => x.id === projId);
-  if (!p || !p.desc) return;
-
-  const lines = p.desc.split('\n');
-  if (lineIdx < 0 || lineIdx >= lines.length) return;
-
-  const line = lines[lineIdx];
-  const cbMatch = line.match(/^([-*]\s+\[)([ xX\/])(\].*)/);
-  if (!cbMatch) return;
-
-  const cur  = cbMatch[2];
-  const next = cur === ' ' ? 'x' : cur.toLowerCase() === 'x' ? '/' : ' ';
-  lines[lineIdx] = cbMatch[1] + next + cbMatch[3];
-  p.desc = lines.join('\n');
+  tab.name = name;
+  tab.color = editTabColorVal;
   saveState();
-
-  // Re-render the description, passing projId so checkboxes stay clickable
-  const body   = document.getElementById('body-' + projId);
-  const descEl = body ? body.querySelector('.card-desc.md-body') : null;
-  if (descEl) {
-    descEl.innerHTML = renderMarkdown(p.desc, projId);
-    attachCheckboxListeners(descEl, projId);
-  }
-}
-
-// Attach click listeners to all .md-cb elements in a container
-// This is called after every description render so handlers are always fresh
-function attachCheckboxListeners(container, projId) {
-  container.querySelectorAll('.md-cb').forEach(el => {
-    const idx = parseInt(el.dataset.lineIdx, 10);
-    // Remove any old listener by replacing with clone
-    const clone = el.cloneNode(true);
-    el.parentNode.replaceChild(clone, el);
-    clone.addEventListener('click', (e) => {
-      e.stopPropagation();
-      cycleCheckbox(projId, idx);
-    });
-  });
-}
-
-// ─── MARKDOWN TOOLBAR INSERT ────────────────────────────
-function mdInsert(type) {
-  const ta = document.getElementById('projDesc');
-  if (!ta) return;
-  ta.focus();
-  const start = ta.selectionStart;
-  const end   = ta.selectionEnd;
-  const sel   = ta.value.substring(start, end);
-  const before = ta.value.substring(0, start);
-  const after  = ta.value.substring(end);
-
-  // Helper: ensure we're at a new line before block elements
-  const needsNewline = before.length > 0 && !before.endsWith('\n');
-
-  let insert = '';
-  let cursorOffset = 0; // where to place cursor after insert
-
-  switch(type) {
-    case 'checkbox':
-      insert = (needsNewline ? '\n' : '') + '- [ ] ';
-      cursorOffset = insert.length;
-      break;
-    case 'bold':
-      insert = sel ? `**${sel}**` : '**bold text**';
-      cursorOffset = sel ? insert.length : 2;
-      break;
-    case 'italic':
-      insert = sel ? `*${sel}*` : '*italic text*';
-      cursorOffset = sel ? insert.length : 1;
-      break;
-    case 'highlight':
-      insert = sel ? `==${sel}==` : '==highlighted text==';
-      cursorOffset = sel ? insert.length : 2;
-      break;
-    case 'strike':
-      insert = sel ? `~~${sel}~~` : '~~strikethrough~~';
-      cursorOffset = sel ? insert.length : 2;
-      break;
-    case 'bullet':
-      insert = (needsNewline ? '\n' : '') + '- ';
-      cursorOffset = insert.length;
-      break;
-    case 'numbered':
-      insert = (needsNewline ? '\n' : '') + '1. ';
-      cursorOffset = insert.length;
-      break;
-    case 'note':
-      insert = (needsNewline ? '\n' : '') + '> [!note]\n> ';
-      cursorOffset = insert.length;
-      break;
-    case 'tip':
-      insert = (needsNewline ? '\n' : '') + '> [!tip]\n> ';
-      cursorOffset = insert.length;
-      break;
-    case 'warning':
-      insert = (needsNewline ? '\n' : '') + '> [!warning]\n> ';
-      cursorOffset = insert.length;
-      break;
-    case 'h2':
-      insert = (needsNewline ? '\n' : '') + '## ';
-      cursorOffset = insert.length;
-      break;
-    case 'divider':
-      insert = (needsNewline ? '\n' : '') + '---\n';
-      cursorOffset = insert.length;
-      break;
-    case 'code':
-      insert = sel ? '`' + sel + '`' : '`code`';
-      cursorOffset = sel ? insert.length : 1;
-      break;
-  }
-
-  ta.value = before + insert + after;
-  const newCursor = start + cursorOffset;
-  ta.setSelectionRange(newCursor, newCursor);
-  ta.focus();
-}
-
-// ─── KANBAN COLUMN DRAG ─────────────────────────────────
-let _kanbanDragId = null;
-
-function kanbanDragStart(e, tabId) {
-  _kanbanDragId = tabId;
-  e.dataTransfer.effectAllowed = 'move';
-  const col = document.getElementById('kcol-' + tabId);
-  if (col) col.style.opacity = '0.4';
-}
-function kanbanDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
-function kanbanDrop(e, toTabId) {
-  e.preventDefault();
-  if (!_kanbanDragId || _kanbanDragId === toTabId) return;
-  const fromIdx = state.tabs.findIndex(t => t.id === _kanbanDragId);
-  const toIdx   = state.tabs.findIndex(t => t.id === toTabId);
-  if (fromIdx < 0 || toIdx < 0) return;
-  const tabs = [...state.tabs];
-  const [moved] = tabs.splice(fromIdx, 1);
-  tabs.splice(toIdx, 0, moved);
-  state.tabs = tabs;
-  _kanbanDragId = null;
-  saveState();
-  renderKanban();
-}
-function kanbanDragEnd(e) {
-  _kanbanDragId = null;
-  document.querySelectorAll('.kanban-col').forEach(c => c.style.opacity = '');
-}
-
-// ─── SWIPE GESTURE ──────────────────────────────────────
-(function initSwipe() {
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchStartTime = 0;
-  const SWIPE_THRESHOLD   = 50;  // min px horizontal travel
-  const SWIPE_MAX_ANGLE   = 40;  // max degrees off horizontal
-  const SWIPE_MAX_DURATION = 600; // max ms for a swipe
-
-  function getContent() { return document.getElementById('mainContent'); }
-
-  function switchList(direction) {
-    if (isDesktop()) return;
-    const idx     = state.tabs.findIndex(t => t.id === state.activeTab);
-    const nextIdx = direction === 'left' ? idx + 1 : idx - 1;
-
-    // Boundary: nudge and return
-    if (nextIdx < 0 || nextIdx >= state.tabs.length) {
-      const el = getContent();
-      if (!el) return;
-      const nudge = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
-      el.style.transition = 'none';
-      el.classList.add(nudge);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.style.transition = '';
-          el.classList.remove(nudge);
-        });
-      });
-      return;
-    }
-
-    const el = getContent();
-    if (!el) return;
-
-    const outCls = direction === 'left' ? 'swipe-out-left' : 'swipe-out-right';
-    const inCls  = direction === 'left' ? 'swipe-in-left'  : 'swipe-in-right';
-
-    // Step 1: animate current content out
-    el.classList.add(outCls);
-    el.style.pointerEvents = 'none';
-
-    setTimeout(() => {
-      // Step 2: switch list and render new content — but keep it invisible first
-      state.activeTab = state.tabs[nextIdx].id;
-      saveState();
-      renderTabs();
-
-      // Render new content with transition disabled and starting position set
-      el.style.transition = 'none';
-      el.classList.remove(outCls);
-      el.classList.add(inCls);
-
-      // Render the new content into the element
-      renderContent();
-
-      el.style.pointerEvents = '';
-
-      // Step 3: force reflow, then remove the in-class to trigger the slide-in
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.style.transition = '';
-          el.classList.remove(inCls);
-        });
-      });
-    }, 190);
-  }
-
-  document.addEventListener('touchstart', e => {
-    if (isDesktop()) return;
-    // Ignore touches inside overlays or the tab bar
-    if (e.target.closest('.overlay.open') ||
-        e.target.closest('.tabs-wrapper') ||
-        e.target.closest('.fab')) return;
-    touchStartX    = e.touches[0].clientX;
-    touchStartY    = e.touches[0].clientY;
-    touchStartTime = Date.now();
-  }, { passive: true });
-
-  document.addEventListener('touchend', e => {
-    if (isDesktop()) return;
-    if (e.target.closest('.overlay.open') ||
-        e.target.closest('.tabs-wrapper') ||
-        e.target.closest('.fab')) return;
-
-    const dx       = e.changedTouches[0].clientX - touchStartX;
-    const dy       = e.changedTouches[0].clientY - touchStartY;
-    const dt       = Date.now() - touchStartTime;
-    const angle    = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * 180 / Math.PI);
-    const absDx    = Math.abs(dx);
-
-    if (dt > SWIPE_MAX_DURATION) return;
-    if (absDx < SWIPE_THRESHOLD) return;
-    if (angle > SWIPE_MAX_ANGLE) return; // too vertical — likely a scroll
-
-    // Swipe left = go to next list; swipe right = go to previous list
-    if (dx < 0) switchList('left');
-    else        switchList('right');
-  }, { passive: true });
-})();
-
-// ─── APP INIT (called after auth is resolved) ───────────
-async function initApp() {
-  document.getElementById('headerDate').textContent =
-    new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
-  lsReady = lsAvailable();
-  try { await openDB(); dbReady = true; } catch(e) { dbReady = false; }
-  await loadPersistedState();
-  startConnectivityPolling();
+  closeSheet('editTabOverlay');
   render();
 }
 
-// ─── INIT ───────────────────────────────────────────────
-(async function init() {
-  // Handle magic link redirect — Supabase puts tokens in the URL hash
-  // e.g. #access_token=...&type=magiclink
-  const hash = window.location.hash;
-  if (hash && hash.includes('access_token')) {
-    // Let Supabase JS parse the hash and establish the session
-    const { data, error } = await _supa.auth.getSession();
-    // Clean up the URL hash so it doesn't persist in history
-    window.history.replaceState(null, '', window.location.pathname);
-    if (!error && data.session && data.session.user) {
-      _authUser = data.session.user;
-      _authMode = 'cloud';
-      lsSet('proj_auth_mode', 'cloud');
-      updateUserChip();
-      await initApp();
-      return;
-    }
-  }
+function deleteTab() {
+  if (!confirm('Delete this tab and all its projects?')) return;
+  state.projects = state.projects.filter(p => p.tabId !== editingTabId);
+  state.tabs = state.tabs.filter(t => t.id !== editingTabId);
+  if (state.activeTab === editingTabId) state.activeTab = 'general';
+  saveState();
+  closeSheet('editTabOverlay');
+  render();
+}
 
-  // Check for existing Supabase session (returning user)
-  const { data: { session } } = await _supa.auth.getSession();
-  if (session && session.user) {
-    _authUser = session.user;
-    _authMode = 'cloud';
-    updateUserChip();
-    await initApp();
-    return;
-  }
+// ─── SHEET UTILS ─────────────────────────────────────────
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function overlayClose(e, id) {
+  if (e.target === document.getElementById(id)) closeSheet(id);
+}
 
-  // Check if user previously chose local-only
-  const savedMode = lsGet('proj_auth_mode');
-  if (savedMode === 'local') {
-    _authMode = 'local';
-    _authUser = null;
-    updateUserChip();
-    await initApp();
-    return;
-  }
-
-  // New visitor — show auth screen
-  showAuthScreen();
-})();
+// ─── INIT ────────────────────────────────────────────────
+render();
 </script>
 </body>
 </html>
