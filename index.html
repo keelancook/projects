@@ -986,6 +986,17 @@
         Export saves a <strong>.json</strong> file to your Downloads. Import will replace your current data.<br>
         Tip: Export to Google Drive or email for cloud backup.
       </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Account</label>
+        <div id="backupAuthSigned" style="display:none">
+          <div style="font-size:12px;color:var(--ink);margin-bottom:10px">Signed in as <strong id="backupAuthEmail"></strong></div>
+          <button class="btn-backup" onclick="authSignOut();closeSheet('backupOverlay')">Sign Out</button>
+        </div>
+        <div id="backupAuthLocal" style="display:none">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">You are using local storage only. Sign in to sync across devices.</div>
+          <button class="btn-backup primary" onclick="backupSheetSignIn()">Sign In to Sync</button>
+        </div>
+      </div>
     </div>
     <div class="sheet-footer" style="padding:0">
       <button class="btn-primary" onclick="closeSheet('backupOverlay')">Done</button>
@@ -1086,11 +1097,8 @@ function updateUserChip() {
 }
 
 function showUserMenu() {
-  if (!isCloudUser()) return;
-  const email = _authUser.email || 'signed in';
-  if (confirm(`Signed in as ${email}\n\nSign out?`)) {
-    authSignOut();
-  }
+  // Open backup sheet — sign-out is there under Account
+  openBackupSheet();
 }
 
 async function authSignOut() {
@@ -1599,7 +1607,27 @@ function openBackupSheet() {
       statusEl.textContent = '◌ Local only — data stored on this device only';
     }
   }
+  // Show correct account section
+  const signedEl = document.getElementById('backupAuthSigned');
+  const localEl  = document.getElementById('backupAuthLocal');
+  const emailEl  = document.getElementById('backupAuthEmail');
+  if (isCloudUser()) {
+    if (signedEl) signedEl.style.display = 'block';
+    if (localEl)  localEl.style.display  = 'none';
+    if (emailEl)  emailEl.textContent    = _authUser.email || '';
+  } else {
+    if (signedEl) signedEl.style.display = 'none';
+    if (localEl)  localEl.style.display  = 'block';
+  }
   document.getElementById('backupOverlay').classList.add('open');
+}
+
+function backupSheetSignIn() {
+  // Clear local-only preference and show auth screen
+  lsSet('proj_auth_mode', null);
+  _authMode = null;
+  closeSheet('backupOverlay');
+  showAuthScreen();
 }
 
 // ─── DATE UTILS ─────────────────────────────────────────
