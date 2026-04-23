@@ -749,16 +749,14 @@
   <div class="auth-sub">Personal Dashboard</div>
   <div class="auth-card">
     <div class="auth-card-title">Sign in to sync</div>
-    <div class="auth-card-sub">Enter your email to receive a one-time sign-in code. Your data syncs across all your devices.</div>
+    <div class="auth-card-sub">Enter your email to receive a sign-in link. Click the link in your email to sign in and sync your data across devices.</div>
     <div id="authEmailStep">
       <input type="email" class="auth-input" id="authEmail" placeholder="your@email.com" autocomplete="email">
-      <button class="auth-btn" id="authSendBtn" onclick="authSendOTP()">Send Sign-in Code</button>
+      <button class="auth-btn" id="authSendBtn" onclick="authSendOTP()">Send Sign-in Link</button>
     </div>
     <div id="authOTPStep" class="auth-otp">
-      <div class="auth-card-sub" id="authOTPHint">Enter the 6-digit code sent to your email.</div>
-      <input type="text" class="auth-input" id="authOTP" placeholder="000000" maxlength="6" inputmode="numeric">
-      <button class="auth-btn" id="authVerifyBtn" onclick="authVerifyOTP()">Verify Code</button>
-      <button class="auth-btn-local" onclick="authBackToEmail()" style="margin-top:4px">← Back</button>
+      <div class="auth-card-sub" id="authOTPHint" style="text-align:center;padding:8px 0 16px"></div>
+      <button class="auth-btn-local" onclick="authBackToEmail()">← Use a different email</button>
     </div>
     <div class="auth-msg" id="authMsg"></div>
   </div>
@@ -1034,39 +1032,19 @@ async function authSendOTP() {
   try {
     const { error } = await _supa.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true }
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
     });
     if (error) throw error;
-    // Show OTP input
     document.getElementById('authEmailStep').style.display = 'none';
     document.getElementById('authOTPStep').classList.add('visible');
-    document.getElementById('authOTPHint').textContent = `Code sent to ${email}. Check your inbox.`;
+    document.getElementById('authOTPHint').textContent =
+      `A sign-in link was sent to ${email}. Open it on this device to continue — it will sign you in automatically.`;
     setAuthMsg('');
-    setTimeout(() => document.getElementById('authOTP').focus(), 100);
   } catch(e) {
-    setAuthMsg(e.message || 'Could not send code. Try again.', 'err');
-    btn.disabled = false;
-  }
-}
-
-async function authVerifyOTP() {
-  const otp = document.getElementById('authOTP').value.trim();
-  if (otp.length < 6) { setAuthMsg('Enter the 6-digit code.', 'err'); return; }
-  const btn = document.getElementById('authVerifyBtn');
-  btn.disabled = true;
-  setAuthMsg('Verifying…');
-  try {
-    const { data, error } = await _supa.auth.verifyOtp({
-      email: _authEmail,
-      token: otp,
-      type: 'email'
-    });
-    if (error) throw error;
-    _authUser = data.user;
-    _authMode = 'cloud';
-    await onAuthSuccess();
-  } catch(e) {
-    setAuthMsg(e.message || 'Invalid code. Try again.', 'err');
+    setAuthMsg(e.message || 'Could not send sign-in link. Try again.', 'err');
     btn.disabled = false;
   }
 }
@@ -2533,11 +2511,27 @@ async function initApp() {
 
 // ─── INIT ───────────────────────────────────────────────
 (async function init() {
-  // Check for existing Supabase session first
-  const { data: { session } } = await _supa.auth.getSession();
+  // Handle magic link redirect — Supabase puts tokens in the URL hash
+  // e.g. #access_token=...&type=magiclink
+  const hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    // Let Supabase JS parse the hash and establish the session
+    const { data, error } = await _supa.auth.getSession();
+    // Clean up the URL hash so it doesn't persist in history
+    window.history.replaceState(null, '', window.location.pathname);
+    if (!error && data.session && data.session.user) {
+      _authUser = data.session.user;
+      _authMode = 'cloud';
+      lsSet('proj_auth_mode', 'cloud');
+      updateUserChip();
+      await initApp();
+      return;
+    }
+  }
 
+  // Check for existing Supabase session (returning user)
+  const { data: { session } } = await _supa.auth.getSession();
   if (session && session.user) {
-    // Returning cloud user — restore session silently
     _authUser = session.user;
     _authMode = 'cloud';
     updateUserChip();
