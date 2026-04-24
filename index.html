@@ -780,23 +780,11 @@
         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
       </svg>
     </button>
-    <button class="icon-btn" onclick="openBackupSheet()" title="Backup & Restore">
+    <button class="icon-btn" id="settingsBtn" onclick="openBackupSheet()" title="Settings & Account">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L12 15M12 15L8 11M12 15L16 11"/>
-        <path d="M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/>
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
       </svg>
     </button>
-    <button class="icon-btn" onclick="toggleArchiveView()" title="Toggle archived">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="5" rx="1"/>
-        <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
-        <path d="M10 12h4"/>
-      </svg>
-    </button>
-    <div class="auth-user-chip" id="userChip" onclick="showUserMenu()" title="Account" style="display:none">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span id="userChipLabel">…</span>
-    </div>
   </div>
 </div>
 
@@ -971,7 +959,7 @@
 <div class="overlay" id="backupOverlay" onclick="overlayClose(event,'backupOverlay')">
   <div class="sheet tab-modal" style="max-height:85dvh;overflow-y:auto">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Data & Backup</div>
+    <div class="sheet-title">Settings</div>
     <div style="padding:0 0 20px">
       <div class="backup-info">
         <strong>Storage status:</strong> <span id="backupStatusText">checking…</span><br>
@@ -1085,19 +1073,18 @@ async function onAuthSuccess() {
 }
 
 function updateUserChip() {
-  const chip  = document.getElementById('userChip');
-  const label = document.getElementById('userChipLabel');
+  const btn = document.getElementById('settingsBtn');
+  if (!btn) return;
   if (isCloudUser()) {
-    const email = _authUser.email || '';
-    label.textContent = email.split('@')[0]; // just the username part
-    chip.style.display = 'flex';
+    btn.title = `Settings & Account (${_authUser.email})`;
+    btn.style.color = 'var(--accent2)'; // green tint when signed in
   } else {
-    chip.style.display = 'none';
+    btn.title = 'Settings & Account';
+    btn.style.color = '';
   }
 }
 
 function showUserMenu() {
-  // Open backup sheet — sign-out is there under Account
   openBackupSheet();
 }
 
@@ -1117,10 +1104,7 @@ async function authSignOut() {
 
 // ─── SUPABASE REST (auth-aware) ──────────────────────────
 async function sbFetch(path, options = {}) {
-  // Get current session token for authenticated requests
-  const { data: { session } } = await _supa.auth.getSession();
-  const token = session?.access_token || SUPABASE_KEY;
-
+  const token = await getAuthToken();
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
     headers: {
@@ -1170,16 +1154,59 @@ async function supabaseLoad() {
 async function supabaseSave(stateObj) {
   if (!isCloudUser()) return;
   const userId = _authUser.id;
-  // Upsert — creates or updates the user's row
-  await sbFetch(`${TABLE}`, {
-    method:  'POST',
-    prefer:  'resolution=merge-duplicates,return=minimal',
-    body: JSON.stringify({
-      user_id:    userId,
-      data:       stateObj,
-      updated_at: new Date().toISOString()
-    })
-  });
+  const payload = {
+    data:       stateObj,
+    updated_at: new Date().toISOString()
+  };
+
+  // Try PATCH first — updates the existing row for this user
+  const patchRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}?user_id=eq.${userId}`,
+    {
+      method:  'PATCH',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${await getAuthToken()}`,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal,count=exact'
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+  if (!patchRes.ok) {
+    const err = await patchRes.text();
+    throw new Error(`Supabase PATCH ${patchRes.status}: ${err}`);
+  }
+
+  // Check if the PATCH actually matched a row
+  const count = patchRes.headers.get('content-range');
+  const matched = count && !count.startsWith('*/0') && count !== '*/0';
+
+  if (!matched) {
+    // No existing row — INSERT a new one
+    const insertRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}`,
+      {
+        method:  'POST',
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': `Bearer ${await getAuthToken()}`,
+          'Content-Type':  'application/json',
+          'Prefer':        'return=minimal'
+        },
+        body: JSON.stringify({ user_id: userId, ...payload })
+      }
+    );
+    if (!insertRes.ok) {
+      const err = await insertRes.text();
+      throw new Error(`Supabase INSERT ${insertRes.status}: ${err}`);
+    }
+  }
+}
+
+async function getAuthToken() {
+  const { data: { session } } = await _supa.auth.getSession();
+  return session?.access_token || SUPABASE_KEY;
 }
 
 // ─── CONSTANTS ──────────────────────────────────────────
@@ -1607,7 +1634,6 @@ function openBackupSheet() {
       statusEl.textContent = '◌ Local only — data stored on this device only';
     }
   }
-  // Show correct account section
   const signedEl = document.getElementById('backupAuthSigned');
   const localEl  = document.getElementById('backupAuthLocal');
   const emailEl  = document.getElementById('backupAuthEmail');
@@ -1710,12 +1736,12 @@ function renderKanban() {
     </div>` : '';
 
     html += `<div class="kanban-col" id="kcol-${tab.id}"
-      draggable="true"
-      ondragstart="kanbanDragStart(event,'${tab.id}')"
       ondragover="kanbanDragOver(event)"
       ondrop="kanbanDrop(event,'${tab.id}')"
       ondragend="kanbanDragEnd(event)">
-      <div class="kanban-col-header">
+      <div class="kanban-col-header"
+        draggable="true"
+        ondragstart="kanbanDragStart(event,'${tab.id}')">
         <div class="kanban-col-title"><span class="tab-dot tab-dot-${tab.color}"></span>${escHtml(tab.name)}</div>
         <div class="kanban-col-meta"><span class="kanban-col-count">${active.length} project${active.length!==1?'s':''}</span>${editBtn}</div>
       </div>
@@ -2399,8 +2425,11 @@ let _kanbanDragId = null;
 function kanbanDragStart(e, tabId) {
   _kanbanDragId = tabId;
   e.dataTransfer.effectAllowed = 'move';
+  // Only dim the column, not block child clicks
   const col = document.getElementById('kcol-' + tabId);
-  if (col) col.style.opacity = '0.4';
+  if (col) col.style.opacity = '0.5';
+  // Stop propagation so card clicks don't accidentally trigger drag
+  e.stopPropagation();
 }
 function kanbanDragOver(e) {
   e.preventDefault();
@@ -2539,13 +2568,13 @@ async function initApp() {
 
 // ─── INIT ───────────────────────────────────────────────
 (async function init() {
+  // Always check Supabase session first — before anything in localStorage.
+  // This ensures a valid cloud session is never overridden by a stale 'local' flag.
+
   // Handle magic link redirect — Supabase puts tokens in the URL hash
-  // e.g. #access_token=...&type=magiclink
   const hash = window.location.hash;
   if (hash && hash.includes('access_token')) {
-    // Let Supabase JS parse the hash and establish the session
     const { data, error } = await _supa.auth.getSession();
-    // Clean up the URL hash so it doesn't persist in history
     window.history.replaceState(null, '', window.location.pathname);
     if (!error && data.session && data.session.user) {
       _authUser = data.session.user;
@@ -2557,17 +2586,22 @@ async function initApp() {
     }
   }
 
-  // Check for existing Supabase session (returning user)
-  const { data: { session } } = await _supa.auth.getSession();
-  if (session && session.user) {
-    _authUser = session.user;
-    _authMode = 'cloud';
-    updateUserChip();
-    await initApp();
-    return;
+  // Check for existing Supabase session — this works even if localStorage says 'local'
+  try {
+    const { data: { session } } = await _supa.auth.getSession();
+    if (session && session.user) {
+      _authUser = session.user;
+      _authMode = 'cloud';
+      lsSet('proj_auth_mode', 'cloud'); // fix any stale 'local' flag
+      updateUserChip();
+      await initApp();
+      return;
+    }
+  } catch(e) {
+    console.warn('Session check failed:', e);
   }
 
-  // Check if user previously chose local-only
+  // No active Supabase session — check if user previously chose local-only
   const savedMode = lsGet('proj_auth_mode');
   if (savedMode === 'local') {
     _authMode = 'local';
@@ -2577,7 +2611,7 @@ async function initApp() {
     return;
   }
 
-  // New visitor — show auth screen
+  // New visitor or session expired — show auth screen
   showAuthScreen();
 })();
 </script>
