@@ -747,22 +747,33 @@
 <div class="auth-screen" id="authScreen">
   <div class="auth-logo">Projects</div>
   <div class="auth-sub">Personal Dashboard</div>
-  <div class="auth-card">
-    <div class="auth-card-title">Sign in to sync</div>
-    <div class="auth-card-sub">Enter your email to receive a sign-in link. Click the link in your email to sign in and sync your data across devices.</div>
+
+  <!-- PRIMARY: Local use -->
+  <div class="auth-card" style="margin-bottom:12px">
+    <div class="auth-card-title">Use without an account</div>
+    <div class="auth-card-sub" style="margin-bottom:16px">Your projects are saved on this device. No login required. This is the right choice for most users.</div>
+    <button class="auth-btn" onclick="authContinueLocal()">Get Started</button>
+  </div>
+
+  <!-- SECONDARY: Sign in -->
+  <div style="width:100%;max-width:360px;padding:0 4px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>
+      <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#4a4a6a">Authorized sync</span>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>
+    </div>
+    <div style="font-size:11px;color:#4a4a6a;line-height:1.6;margin-bottom:12px;letter-spacing:0.03em;text-align:center">
+      Cross-device sync is only available to invited users.<br>If you weren't given access, use the option above.
+    </div>
     <div id="authEmailStep">
-      <input type="email" class="auth-input" id="authEmail" placeholder="your@email.com" autocomplete="email">
-      <button class="auth-btn" id="authSendBtn" onclick="authSendOTP()">Send Sign-in Link</button>
+      <input type="email" class="auth-input" id="authEmail" placeholder="Authorized email address" autocomplete="email" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);color:var(--paper)">
+      <button class="auth-btn-local" id="authSendBtn" onclick="authSendOTP()" style="border-color:rgba(255,255,255,0.2)">Sign in to sync →</button>
     </div>
     <div id="authOTPStep" class="auth-otp">
-      <div class="auth-card-sub" id="authOTPHint" style="text-align:center;padding:8px 0 16px"></div>
-      <button class="auth-btn-local" onclick="authBackToEmail()">← Use a different email</button>
+      <div class="auth-card-sub" id="authOTPHint" style="text-align:center;padding:8px 0 16px;color:#6a6a8a"></div>
+      <button class="auth-btn-local" onclick="authBackToEmail()" style="border-color:rgba(255,255,255,0.2)">← Use a different email</button>
     </div>
     <div class="auth-msg" id="authMsg"></div>
-  </div>
-  <button class="auth-btn-local" onclick="authContinueLocal()">Continue without account</button>
-  <div style="font-size:10px;color:#4a4a6a;margin-top:12px;text-align:center;line-height:1.6;letter-spacing:0.04em">
-    Local use only — your data stays on this device.<br>Sign in for cross-device sync.
   </div>
 </div>
 
@@ -981,8 +992,8 @@
           <button class="btn-backup" onclick="authSignOut();closeSheet('backupOverlay')">Sign Out</button>
         </div>
         <div id="backupAuthLocal" style="display:none">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">You are using local storage only. Sign in to sync across devices.</div>
-          <button class="btn-backup primary" onclick="backupSheetSignIn()">Sign In to Sync</button>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Using local storage — your data stays on this device. Cross-device sync is available to invited users only.</div>
+          <button class="btn-backup primary" onclick="backupSheetSignIn()">Sign In to Sync →</button>
         </div>
       </div>
     </div>
