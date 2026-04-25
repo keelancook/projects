@@ -738,6 +738,201 @@
     transition: color 0.15s;
   }
   .auth-user-chip:hover { color: var(--paper); }
+
+  /* ── GANTT VIEW ── */
+  .gantt-controls {
+    position: sticky; top: 0; z-index: 90;
+    background: var(--paper2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .gantt-controls-row {
+    display: flex; align-items: center; gap: 6px;
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+  }
+  .gantt-controls-row::-webkit-scrollbar { display: none; }
+  .gantt-zoom-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--paper);
+    color: var(--muted); border-radius: 20px; padding: 4px 11px;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .gantt-zoom-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .gantt-filter-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+    border: 1px solid var(--border); background: var(--paper2);
+    border-radius: 20px; padding: 4px 10px;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+    color: var(--muted);
+  }
+  .gantt-filter-chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .gantt-filter-chip.active .gantt-chip-dot { opacity: 1; }
+  .gantt-chip-dot { width: 7px; height: 7px; border-radius: 50%; opacity: 0.5; flex-shrink: 0; }
+  .gantt-sep { width: 1px; background: var(--border); align-self: stretch; margin: 2px 3px; flex-shrink: 0; }
+  .gantt-nav-btn {
+    font-family: 'DM Mono', monospace; font-size: 14px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px; cursor: pointer;
+    color: var(--ink); transition: background 0.15s; flex-shrink: 0;
+  }
+  .gantt-nav-btn:active { background: var(--paper2); }
+  .gantt-today-btn {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px; cursor: pointer;
+    color: var(--accent); flex-shrink: 0;
+  }
+  .gantt-wrap {
+    display: flex;
+    height: calc(100dvh - 62px - 96px);
+    overflow: hidden;
+  }
+  .gantt-sidebar {
+    flex-shrink: 0; width: 120px;
+    overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; background: var(--card);
+    border-right: 2px solid var(--border);
+  }
+  .gantt-sidebar::-webkit-scrollbar { display: none; }
+  .gantt-scroll {
+    flex: 1; overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gantt-inner { position: relative; }
+  .gantt-axis {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    display: flex; height: 36px;
+  }
+  .gantt-axis-cell {
+    border-right: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); flex-shrink: 0;
+    white-space: nowrap; padding: 0 4px;
+  }
+  .gantt-axis-cell.today-col { color: var(--accent); font-weight: 600; background: rgba(200,75,49,0.06); }
+  .gantt-sidebar-spacer {
+    height: 36px; background: var(--card);
+    border-bottom: 2px solid var(--border);
+  }
+  .gantt-group-label {
+    padding: 6px 8px;
+    font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 5px;
+    background: var(--paper2); border-bottom: 1px solid var(--border);
+  }
+  .gantt-row-label {
+    height: 36px; padding: 0 8px;
+    display: flex; align-items: center;
+    font-size: 10px; color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .gantt-group-header-row {
+    background: var(--paper2);
+    border-bottom: 1px solid var(--border);
+    height: 28px; display: flex;
+  }
+  .gantt-row {
+    position: relative; height: 36px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+  }
+  .gantt-cell {
+    flex-shrink: 0; height: 100%;
+    border-right: 1px solid rgba(212,202,184,0.35);
+  }
+  .gantt-cell.today-col {
+    background: rgba(200,75,49,0.04);
+    border-right: 1px solid rgba(200,75,49,0.25);
+  }
+  .gantt-today-line {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: var(--accent); opacity: 0.5;
+    pointer-events: none; z-index: 5;
+  }
+  .gantt-bar {
+    position: absolute; top: 6px; height: 24px;
+    border-radius: 5px; cursor: pointer;
+    display: flex; align-items: center; padding: 0 8px;
+    overflow: hidden; white-space: nowrap;
+    font-size: 10px; color: white; font-weight: 500;
+    letter-spacing: 0.04em;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    transition: filter 0.15s;
+    z-index: 4;
+  }
+  .gantt-bar:hover { filter: brightness(1.1); }
+  .gantt-bar.overdue { box-shadow: 0 0 0 2px var(--accent), 0 1px 4px rgba(0,0,0,0.18); }
+  .gantt-bar-progress {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    background: rgba(0,0,0,0.2); border-radius: 5px 0 0 5px;
+    pointer-events: none; z-index: 1;
+  }
+  .gantt-bar-label { position: relative; z-index: 2; overflow: hidden; text-overflow: ellipsis; }
+  .gantt-milestone {
+    position: absolute; top: 8px;
+    width: 20px; height: 20px;
+    cursor: pointer; z-index: 4;
+    transform: rotate(45deg);
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.15s;
+  }
+  .gantt-milestone:hover { transform: rotate(45deg) scale(1.2); }
+  .gantt-open-arrow {
+    position: absolute; top: 6px; right: 0; height: 24px;
+    width: 24px; display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px; z-index: 3;
+  }
+  .gantt-popup {
+    position: fixed; z-index: 9000;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    box-shadow: 0 8px 32px rgba(26,26,46,0.25);
+    max-width: 260px; width: 260px;
+    animation: fadeIn 0.15s ease;
+  }
+  .gantt-popup-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px; color: var(--ink); margin-bottom: 6px;
+  }
+  .gantt-popup-meta {
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 0.06em; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  .gantt-popup-progress {
+    height: 5px; background: var(--paper2);
+    border-radius: 3px; overflow: hidden; margin-bottom: 10px;
+  }
+  .gantt-popup-progress-fill { height: 100%; border-radius: 3px; }
+  .gantt-popup-desc {
+    font-size: 11px; color: #4a4550; line-height: 1.5;
+    max-height: 55px; overflow: hidden; margin-bottom: 10px;
+  }
+  .gantt-popup-actions { display: flex; gap: 6px; }
+  .gantt-popup-btn {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--paper2);
+    color: var(--ink); border-radius: 6px; padding: 6px 10px;
+    cursor: pointer;
+  }
+  .gantt-popup-btn:active { background: var(--border); }
+  @media (min-width: 900px) {
+    .gantt-sidebar { width: 180px; }
+    .gantt-row-label { font-size: 12px; }
+    .gantt-wrap { height: calc(100dvh - 62px - 102px); }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
@@ -791,6 +986,12 @@
         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
       </svg>
     </button>
+    <button class="icon-btn" id="viewToggleBtn" onclick="toggleView()" title="Switch view">
+      <!-- Icon swaps between Gantt and Kanban via JS -->
+      <svg id="viewToggleIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="10" x2="15" y2="10"/><line x1="3" y1="14" x2="18" y2="14"/><line x1="3" y1="18" x2="12" y2="18"/>
+      </svg>
+    </button>
     <button class="icon-btn" id="settingsBtn" onclick="openBackupSheet()" title="Settings & Account">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
@@ -811,6 +1012,20 @@
 
 <!-- KANBAN BOARD (desktop) -->
 <div class="kanban-board" id="kanbanBoard"></div>
+
+<!-- GANTT VIEW -->
+<div id="ganttView" style="display:none">
+  <div class="gantt-controls" id="ganttControls"></div>
+  <div class="gantt-wrap">
+    <div class="gantt-sidebar" id="ganttSidebar"></div>
+    <div class="gantt-scroll" id="ganttScroll">
+      <div class="gantt-inner" id="ganttInner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GANTT POPUP -->
+<div id="ganttPopup" class="gantt-popup" style="display:none"></div>
 
 <!-- FAB -->
 <button class="fab" onclick="openAddProject()">＋</button>
@@ -1145,20 +1360,7 @@ async function supabaseLoad() {
     if (parsed) parsed._remoteTs = remoteTs;
     return parsed;
   }
-  // Check for unmigrated legacy row (id='state', user_id=null) — migrate it
-  const legacy = await sbFetch(`${TABLE}?id=eq.state&user_id=is.null&select=data`);
-  if (legacy && legacy.length > 0) {
-    const data = legacy[0].data;
-    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-    // Claim it: update user_id to current user
-    await sbFetch(`${TABLE}?id=eq.state&user_id=is.null`, {
-      method: 'PATCH',
-      prefer: 'return=minimal',
-      body: JSON.stringify({ user_id: userId, updated_at: new Date().toISOString() })
-    });
-    console.log('Migrated legacy row to user', userId);
-    return parsed;
-  }
+  // No row for this user — they are new, return null so app starts fresh
   return null;
 }
 
@@ -2428,6 +2630,385 @@ function mdInsert(type) {
   const newCursor = start + cursorOffset;
   ta.setSelectionRange(newCursor, newCursor);
   ta.focus();
+}
+
+// ─── VIEW STATE ─────────────────────────────────────────
+let currentView = 'kanban'; // 'kanban' | 'gantt'
+
+function toggleView() {
+  currentView = currentView === 'kanban' ? 'gantt' : 'kanban';
+  updateViewToggleIcon();
+  if (currentView === 'gantt') {
+    showGanttView();
+  } else {
+    hideGanttView();
+    render();
+  }
+}
+
+function updateViewToggleIcon() {
+  const icon = document.getElementById('viewToggleIcon');
+  const btn  = document.getElementById('viewToggleBtn');
+  if (!icon) return;
+  if (currentView === 'kanban') {
+    // Show Gantt icon (horizontal bars) to indicate "switch to Gantt"
+    icon.innerHTML = '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="10" x2="15" y2="10"/><line x1="3" y1="14" x2="18" y2="14"/><line x1="3" y1="18" x2="12" y2="18"/>';
+    btn.title = 'Switch to Gantt view';
+  } else {
+    // Show Kanban icon (vertical columns) to indicate "switch to Kanban"
+    icon.innerHTML = '<rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/>';
+    btn.title = 'Switch to Kanban view';
+  }
+}
+
+function showGanttView() {
+  document.getElementById('ganttView').style.display = 'block';
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('kanbanBoard').style.display = 'none';
+  document.querySelector('.tabs-wrapper').style.display = 'none';
+  document.querySelector('.fab').style.display = 'none';
+  renderGantt();
+}
+
+function hideGanttView() {
+  document.getElementById('ganttView').style.display = 'none';
+  document.querySelector('.fab').style.display = '';
+  document.querySelector('.tabs-wrapper').style.display = '';
+}
+
+// ─── GANTT STATE ────────────────────────────────────────
+const GANTT_COLORS = {
+  red:'#c84b31',green:'#2d6a4f',gold:'#e9a825',blue:'#2980b9',
+  purple:'#8e44ad',teal:'#16a085',orange:'#e67e22',pink:'#e91e8c'
+};
+const ZOOM_LEVELS = [
+  { id:'week',   label:'Week',    days:14,  cellDays:1,  cellW:42,  fmt:'ddd D'   },
+  { id:'month',  label:'Month',   days:60,  cellDays:7,  cellW:52,  fmt:'MMM D'   },
+  { id:'quarter',label:'Quarter', days:120, cellDays:14, cellW:60,  fmt:'MMM D'   },
+  { id:'year',   label:'Year',    days:365, cellDays:30, cellW:64,  fmt:'MMM YY'  },
+];
+let ganttZoom        = 1;        // index into ZOOM_LEVELS
+let ganttOffset      = 0;        // days offset from today
+let ganttListFilter  = null;     // Set of active tab IDs, null = all
+let ganttShowArchived = false;
+
+function ganttStartDate() {
+  const z = ZOOM_LEVELS[ganttZoom];
+  const d = new Date();
+  d.setDate(d.getDate() - Math.floor(z.days * 0.3) + ganttOffset);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function daysBetween(a, b) {
+  return Math.round((b - a) / 86400000);
+}
+
+function fmtAxisLabel(date, cellDays) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const days   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  if (cellDays === 1)  return `${days[date.getDay()]} ${date.getDate()}`;
+  if (cellDays === 7)  return `${months[date.getMonth()]} ${date.getDate()}`;
+  if (cellDays === 14) return `${months[date.getMonth()]} ${date.getDate()}`;
+  return `${months[date.getMonth()]} '${String(date.getFullYear()).slice(2)}`;
+}
+
+// ─── GANTT RENDER ────────────────────────────────────────
+function renderGantt() {
+  const z         = ZOOM_LEVELS[ganttZoom];
+  const start     = ganttStartDate();
+  const totalDays = z.days;
+  const cellW     = z.cellW;
+  const cellDays  = z.cellDays;
+  const totalCols = Math.ceil(totalDays / cellDays);
+  const today     = new Date(); today.setHours(0,0,0,0);
+
+  // Filter projects
+  const activeTabs = ganttListFilter
+    ? state.tabs.filter(t => ganttListFilter.has(t.id))
+    : state.tabs;
+  const visibleTabIds = new Set(activeTabs.map(t => t.id));
+
+  let projects = state.projects.filter(p =>
+    visibleTabIds.has(p.tabId) && (ganttShowArchived || !p.archived)
+  );
+
+  // Build controls
+  renderGanttControls(z, activeTabs);
+
+  // Build axis cells info
+  const cols = [];
+  for (let i = 0; i < totalCols; i++) {
+    const d = addDays(start, i * cellDays);
+    const isToday = daysBetween(d, today) >= 0 && daysBetween(d, today) < cellDays;
+    cols.push({ date: d, isToday });
+  }
+
+  const totalW = totalCols * cellW;
+
+  // Build sidebar and grid HTML together, grouped by list
+  let sidebarHtml = `<div class="gantt-sidebar-spacer"></div>`;
+  let gridHtml    = `<div class="gantt-inner" id="ganttInner" style="width:${totalW}px">`;
+
+  // Axis row
+  gridHtml += `<div class="gantt-axis" style="width:${totalW}px">`;
+  cols.forEach(c => {
+    gridHtml += `<div class="gantt-axis-cell${c.isToday?' today-col':''}" style="width:${cellW}px;min-width:${cellW}px">${fmtAxisLabel(c.date, cellDays)}</div>`;
+  });
+  gridHtml += `</div>`;
+
+  // Today line position
+  const todayOffset = daysBetween(start, today);
+  const todayX = (todayOffset / cellDays) * cellW + cellW * 0.5;
+
+  activeTabs.forEach(tab => {
+    const tabProjects = projects.filter(p => p.tabId === tab.id);
+    if (tabProjects.length === 0) return;
+
+    const color = COLORS.find(c => c.id === tab.color)?.hex || '#2980b9';
+
+    // Group header
+    sidebarHtml += `<div class="gantt-group-label"><span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>${escHtml(tab.name)}</div>`;
+    gridHtml += `<div class="gantt-group-header-row" style="width:${totalW}px">`;
+    cols.forEach(c => {
+      gridHtml += `<div class="gantt-cell${c.isToday?' today-col':''}" style="width:${cellW}px;min-width:${cellW}px"></div>`;
+    });
+    gridHtml += `</div>`;
+
+    tabProjects.forEach(p => {
+      const pColor = GANTT_COLORS[p.color] || '#2980b9';
+      const overdue = p.deadline && isOverdue(p.deadline) && p.progress < 100;
+
+      sidebarHtml += `<div class="gantt-row-label" title="${escHtml(p.name)}">${escHtml(p.name)}</div>`;
+
+      gridHtml += `<div class="gantt-row" style="width:${totalW}px">`;
+      cols.forEach(c => {
+        gridHtml += `<div class="gantt-cell${c.isToday?' today-col':''}" style="width:${cellW}px;min-width:${cellW}px"></div>`;
+      });
+
+      // Today line
+      if (todayX >= 0 && todayX <= totalW) {
+        gridHtml += `<div class="gantt-today-line" style="left:${todayX}px"></div>`;
+      }
+
+      // Determine bar type
+      if (!p.start && !p.deadline) {
+        // No dates — skip bar, just empty row
+      } else if (!p.start && p.deadline) {
+        // Milestone — diamond at deadline
+        const deadlineDate = new Date(p.deadline); deadlineDate.setHours(0,0,0,0);
+        const dx = daysBetween(start, deadlineDate);
+        const x  = (dx / cellDays) * cellW + cellW * 0.5 - 10;
+        if (x >= -10 && x <= totalW + 10) {
+          gridHtml += `<div class="gantt-milestone${overdue?' overdue':''}"
+            style="left:${x}px;background:${pColor}"
+            onclick="showGanttPopup(event,'${p.id}')"
+            title="${escHtml(p.name)}"></div>`;
+        }
+      } else if (p.start && !p.deadline) {
+        // Open-ended bar
+        const startDate = new Date(p.start); startDate.setHours(0,0,0,0);
+        const sx = daysBetween(start, startDate);
+        const x  = (sx / cellDays) * cellW;
+        const w  = totalW - x;
+        if (x <= totalW) {
+          const progressW = Math.round((p.progress / 100) * Math.min(w, totalW - x));
+          gridHtml += `<div class="gantt-bar" style="left:${Math.max(0,x)}px;width:${Math.min(w,totalW-Math.max(0,x))}px;background:${pColor};mask-image:linear-gradient(to right, black 70%, transparent 100%);-webkit-mask-image:linear-gradient(to right, black 70%, transparent 100%)"
+            onclick="showGanttPopup(event,'${p.id}')">
+            <div class="gantt-bar-progress" style="width:${p.progress}%"></div>
+            <span class="gantt-bar-label">${escHtml(p.name)}</span>
+            <span class="gantt-open-arrow" style="position:relative;z-index:2">›</span>
+          </div>`;
+        }
+      } else {
+        // Normal bar with start and deadline
+        const startDate   = new Date(p.start);   startDate.setHours(0,0,0,0);
+        const deadlineDate = new Date(p.deadline); deadlineDate.setHours(0,0,0,0);
+        const sx = daysBetween(start, startDate);
+        const ex = daysBetween(start, deadlineDate);
+        const x  = (sx / cellDays) * cellW;
+        const x2 = (ex / cellDays) * cellW + cellW;
+        const w  = Math.max(x2 - x, 20);
+        const clampedX = Math.max(0, x);
+        const clampedW = Math.min(w - (clampedX - x), totalW - clampedX);
+        if (clampedW > 0 && clampedX <= totalW) {
+          gridHtml += `<div class="gantt-bar${overdue?' overdue':''}"
+            style="left:${clampedX}px;width:${clampedW}px;background:${pColor}"
+            onclick="showGanttPopup(event,'${p.id}')">
+            <div class="gantt-bar-progress" style="width:${p.progress}%"></div>
+            <span class="gantt-bar-label">${escHtml(p.name)}</span>
+          </div>`;
+        }
+      }
+
+      gridHtml += `</div>`;
+    });
+  });
+
+  if (projects.length === 0) {
+    sidebarHtml += `<div style="padding:20px 8px;font-size:10px;color:var(--muted);line-height:1.5">No projects to show</div>`;
+    gridHtml += `<div style="padding:40px 20px;text-align:center;font-size:12px;color:var(--muted)">No projects visible with current filters</div>`;
+  }
+
+  gridHtml += `</div>`;
+
+  document.getElementById('ganttSidebar').innerHTML = sidebarHtml;
+  document.getElementById('ganttScroll').innerHTML  = gridHtml;
+
+  // Sync sidebar scroll with grid scroll
+  const scroll  = document.getElementById('ganttScroll');
+  const sidebar = document.getElementById('ganttSidebar');
+  scroll.addEventListener('scroll', () => {
+    sidebar.scrollTop = scroll.scrollTop;
+  }, { passive: true });
+
+  // Scroll to today
+  const todayScrollX = Math.max(0, todayX - (scroll.clientWidth * 0.3));
+  scroll.scrollLeft = todayScrollX;
+
+  // Dismiss popup on scroll
+  scroll.addEventListener('scroll', dismissGanttPopup, { passive: true });
+}
+
+function renderGanttControls(z, activeTabs) {
+  const ctrl = document.getElementById('ganttControls');
+  if (!ctrl) return;
+
+  // Row 1: nav + zoom
+  let html = `<div class="gantt-controls-row">
+    <button class="gantt-nav-btn" onclick="ganttPan(-1)">‹</button>
+    <button class="gantt-today-btn" onclick="ganttGoToday()">Today</button>
+    <button class="gantt-nav-btn" onclick="ganttPan(1)">›</button>
+    <div class="gantt-sep"></div>`;
+  ZOOM_LEVELS.forEach((zl, i) => {
+    html += `<button class="gantt-zoom-btn${i===ganttZoom?' active':''}" onclick="setGanttZoom(${i})">${zl.label}</button>`;
+  });
+  html += `</div>`;
+
+  // Row 2: list filters + archive toggle
+  html += `<div class="gantt-controls-row">
+    <button class="gantt-filter-chip${ganttListFilter===null?' active':''}" onclick="ganttFilterAll()">All</button>
+    <div class="gantt-sep"></div>`;
+  state.tabs.forEach(tab => {
+    const color   = GANTT_COLORS[tab.color] || '#2980b9';
+    const isActive = ganttListFilter === null || ganttListFilter.has(tab.id);
+    html += `<button class="gantt-filter-chip${isActive?' active':''}" onclick="ganttToggleFilter('${tab.id}')">
+      <span class="gantt-chip-dot" style="background:${color}"></span>${escHtml(tab.name)}
+    </button>`;
+  });
+  html += `<div class="gantt-sep"></div>
+    <button class="gantt-filter-chip${ganttShowArchived?' active':''}" onclick="ganttToggleArchived()">Archived</button>
+  </div>`;
+
+  ctrl.innerHTML = html;
+}
+
+function ganttPan(dir) {
+  const z = ZOOM_LEVELS[ganttZoom];
+  ganttOffset += dir * Math.floor(z.days * 0.5);
+  renderGantt();
+}
+
+function ganttGoToday() {
+  ganttOffset = 0;
+  renderGantt();
+}
+
+function setGanttZoom(idx) {
+  ganttZoom = idx;
+  renderGantt();
+}
+
+function ganttFilterAll() {
+  ganttListFilter = null;
+  renderGantt();
+}
+
+function ganttToggleFilter(tabId) {
+  if (ganttListFilter === null) {
+    // Start with all tabs selected, then deselect the tapped one
+    ganttListFilter = new Set(state.tabs.map(t => t.id));
+    ganttListFilter.delete(tabId);
+  } else {
+    if (ganttListFilter.has(tabId)) {
+      ganttListFilter.delete(tabId);
+      if (ganttListFilter.size === 0) ganttListFilter = null; // back to all
+    } else {
+      ganttListFilter.add(tabId);
+      if (ganttListFilter.size === state.tabs.length) ganttListFilter = null;
+    }
+  }
+  renderGantt();
+}
+
+function ganttToggleArchived() {
+  ganttShowArchived = !ganttShowArchived;
+  renderGantt();
+}
+
+// ─── GANTT POPUP ─────────────────────────────────────────
+function showGanttPopup(e, projId) {
+  e.stopPropagation();
+  const p = state.projects.find(x => x.id === projId);
+  if (!p) return;
+
+  const pri    = PRIORITIES.find(x => x.val === (p.priority || 3));
+  const color  = GANTT_COLORS[p.color] || '#2980b9';
+  const overdue = p.deadline && isOverdue(p.deadline) && p.progress < 100;
+
+  let meta = [];
+  if (p.start)    meta.push(`${isFuture(p.start)?'Starts':'Started'} ${formatDateDisplay(p.start)}`);
+  if (p.deadline) meta.push(`Due ${formatDateDisplay(p.deadline)}${overdue?' · Overdue':''}`);
+  if (pri)        meta.push(pri.label);
+
+  const descText = p.desc
+    ? p.desc.replace(/[#*_`~>]/g,'').replace(/\n/g,' ').slice(0, 120) + (p.desc.length > 120 ? '…' : '')
+    : '';
+
+  const popup = document.getElementById('ganttPopup');
+  popup.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
+      <div class="gantt-popup-title" style="margin:0">${escHtml(p.name)}</div>
+      <button onclick="dismissGanttPopup()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0">×</button>
+    </div>
+    <div class="gantt-popup-meta">${meta.map(m => `<span>${escHtml(m)}</span>`).join('<span style="opacity:0.3">·</span>')}</div>
+    <div class="gantt-popup-progress">
+      <div class="gantt-popup-progress-fill" style="width:${p.progress}%;background:${color}"></div>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:0.06em">${p.progress}% complete</div>
+    ${descText ? `<div class="gantt-popup-desc">${escHtml(descText)}</div>` : ''}
+    <div class="gantt-popup-actions">
+      <button class="gantt-popup-btn" onclick="dismissGanttPopup();openEditProject('${p.id}')">✎ Edit</button>
+      ${!p.archived ? `<button class="gantt-popup-btn" onclick="dismissGanttPopup();archiveProject('${p.id}')">Archive</button>` : ''}
+    </div>`;
+
+  // Position popup near click, keeping it on screen
+  popup.style.display = 'block';
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let x = e.clientX + 10;
+  let y = e.clientY + 10;
+  if (x + 270 > vw) x = e.clientX - 270;
+  if (y + popup.offsetHeight + 20 > vh) y = e.clientY - popup.offsetHeight - 10;
+  popup.style.left = Math.max(8, x) + 'px';
+  popup.style.top  = Math.max(8, y) + 'px';
+
+  // Dismiss on outside click
+  setTimeout(() => {
+    document.addEventListener('click', dismissGanttPopup, { once: true });
+  }, 10);
+}
+
+function dismissGanttPopup() {
+  const popup = document.getElementById('ganttPopup');
+  if (popup) popup.style.display = 'none';
 }
 
 // ─── KANBAN COLUMN DRAG ─────────────────────────────────
