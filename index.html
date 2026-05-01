@@ -5,29 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Project Dashboard</title>
+<title>Projects</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a2e'/><rect x='9' y='6' width='14' height='18' rx='2' fill='none' stroke='%23f5f0e8' stroke-width='1.8'/><line x1='12' y1='12' x2='20' y2='12' stroke='%23c84b31' stroke-width='1.6' stroke-linecap='round'/><line x1='12' y1='16' x2='20' y2='16' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.6'/><line x1='12' y1='20' x2='17' y2='20' stroke='%23f5f0e8' stroke-width='1.4' stroke-linecap='round' opacity='.4'/></svg>">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1a2e;
-    --paper: #f5f0e8;
-    --paper2: #ede7d8;
+    --ink: #1c1917;
+    --ink-soft: #44403c;
+    --paper: #f9f7f4;
+    --paper2: #f0ece6;
+    --paper3: #e4ddd4;
     --accent: #c84b31;
     --accent2: #2d6a4f;
-    --accent3: #e9a825;
-    --muted: #8a8070;
-    --card: #faf7f2;
-    --border: #d4cab8;
-    --shadow: rgba(26,26,46,0.12);
-    --tab-h: 52px;
+    --accent3: #c9940a;
+    --muted: #9c9489;
+    --card: #ffffff;
+    --border: rgba(28,25,23,0.1);
+    --shadow-sm: 0 1px 2px rgba(28,25,23,0.05);
+    --shadow: 0 2px 8px rgba(28,25,23,0.07), 0 1px 2px rgba(28,25,23,0.04);
+    --shadow-lg: 0 8px 24px rgba(28,25,23,0.10), 0 2px 6px rgba(28,25,23,0.05);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --tab-h: 48px;
     --bottom-h: 72px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     background: var(--paper);
     color: var(--ink);
     min-height: 100dvh;
@@ -38,49 +44,51 @@
   .header {
     position: sticky; top: 0; z-index: 100;
     background: var(--ink);
-    padding: 14px 18px 10px;
+    padding: 0 20px;
+    height: 60px;
     display: flex; align-items: center; justify-content: space-between;
   }
   .header-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px; color: var(--paper);
-    letter-spacing: 0.02em;
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px; color: var(--paper);
+    letter-spacing: -0.01em; font-weight: 500;
   }
   .header-date {
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 0.12em; text-transform: uppercase;
-    margin-top: 2px;
+    font-size: 11px; color: rgba(250,248,245,0.5);
+    margin-top: 2px; letter-spacing: 0.02em; font-weight: 300;
   }
-  .header-right { display: flex; gap: 10px; align-items: center; }
+  .header-right { display: flex; gap: 6px; align-items: center; }
   .icon-btn {
     background: none; border: none; cursor: pointer;
-    color: var(--paper); width: 34px; height: 34px;
+    color: rgba(250,248,245,0.65); width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 8px; font-size: 18px;
-    transition: background 0.15s;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
   }
-  .icon-btn:active { background: rgba(255,255,255,0.12); }
+  .icon-btn:hover { background: rgba(255,255,255,0.1); color: var(--paper); }
+  .icon-btn:active { background: rgba(255,255,255,0.08); }
 
   /* ── TABS ── */
   .tabs-wrapper {
-    position: sticky; top: 62px; z-index: 99;
+    position: sticky; top: 60px; z-index: 99;
     background: var(--ink);
-    border-bottom: 2px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
   }
   .tabs-scroll {
     display: flex; overflow-x: auto; gap: 0;
+    padding: 0 8px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
   .tabs-scroll::-webkit-scrollbar { display: none; }
   .tab {
     flex-shrink: 0;
-    padding: 0 16px;
+    padding: 0 14px;
     height: var(--tab-h);
-    display: flex; align-items: center; gap: 6px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted);
+    display: flex; align-items: center; gap: 7px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; font-weight: 400; letter-spacing: 0;
+    color: rgba(250,248,245,0.4);
     background: none; border: none; cursor: pointer;
     position: relative;
     transition: color 0.2s;
@@ -88,31 +96,35 @@
   }
   .tab.active { color: var(--paper); }
   .tab.active::after {
-    content: ''; position: absolute; bottom: 0; left: 8px; right: 8px;
+    content: ''; position: absolute; bottom: 0; left: 10px; right: 10px;
     height: 2px; background: var(--accent);
     border-radius: 2px 2px 0 0;
   }
   .tab-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: currentColor; opacity: 0.6;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; opacity: 0.5; flex-shrink: 0;
   }
+  .tab.active .tab-dot { opacity: 1; }
   .tab-count {
-    font-size: 10px; background: rgba(255,255,255,0.15);
+    font-size: 10px; background: rgba(255,255,255,0.1);
     border-radius: 10px; padding: 1px 6px; color: var(--paper);
-    opacity: 0.7;
+    opacity: 0.6;
   }
   .tab-add {
-    flex-shrink: 0; padding: 0 16px; height: var(--tab-h);
+    flex-shrink: 0; padding: 0 14px; height: var(--tab-h);
     display: flex; align-items: center;
-    color: var(--accent3); font-size: 20px;
+    color: rgba(250,248,245,0.4); font-size: 18px;
     background: none; border: none; cursor: pointer;
     border-left: 1px solid rgba(255,255,255,0.08);
+    margin-left: 4px;
+    transition: color 0.15s;
   }
+  .tab-add:hover { color: var(--paper); }
 
   /* ── MAIN CONTENT ── */
   .content {
-    padding: 16px 16px calc(var(--bottom-h) + 20px);
-    min-height: calc(100dvh - 62px - var(--tab-h));
+    padding: 20px 16px calc(var(--bottom-h) + 20px);
+    min-height: calc(100dvh - 60px - var(--tab-h));
     transition: opacity 0.18s ease, transform 0.18s ease;
   }
   .content.swipe-out-left  { opacity: 0; transform: translateX(-32px); }
@@ -134,60 +146,68 @@
   .project-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 10px;
+    border-left-width: 3px;
+    border-radius: var(--radius);
+    margin-bottom: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px var(--shadow);
-    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s, transform 0.15s;
+    animation: cardIn 0.22s ease both;
+    animation-delay: calc(var(--card-i, 0) * 40ms);
   }
-  .project-card:active { transform: scale(0.99); }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .project-card:active { transform: scale(0.995); }
+  @media (hover: hover) { .project-card:hover { box-shadow: var(--shadow); } }
   .card-header {
-    padding: 14px 14px 10px;
-    display: flex; align-items: flex-start; gap: 10px;
+    padding: 14px 14px 12px;
+    display: flex; align-items: flex-start; gap: 0;
     cursor: pointer;
   }
-  .card-color-bar {
-    width: 3px; height: 100%; min-height: 40px;
-    border-radius: 2px; flex-shrink: 0; margin-top: 2px;
-  }
+  .card-color-bar { display: none; }
   .card-main { flex: 1; min-width: 0; }
   .card-title {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 17px; line-height: 1.25;
-    color: var(--ink);
+    color: var(--ink); font-style: italic;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  .card-title-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 8px; margin-bottom: 5px;
+  }
   .card-meta {
-    font-size: 10px; color: var(--muted);
-    margin-top: 3px; letter-spacing: 0.06em;
-    display: flex; gap: 10px; flex-wrap: wrap;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.01em;
+    display: flex; gap: 12px; flex-wrap: wrap;
   }
-  .card-meta span { display: flex; align-items: center; gap: 3px; }
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
   .card-chevron {
-    flex-shrink: 0; font-size: 16px; color: var(--muted);
-    transition: transform 0.2s;
-    margin-top: 2px;
+    flex-shrink: 0; color: var(--muted); margin-top: 4px; margin-left: 10px;
+    transition: transform 0.22s cubic-bezier(0.34,1.2,0.64,1);
+    opacity: 0.4; display: flex; align-items: center;
   }
-  .card-chevron.open { transform: rotate(180deg); }
+  .card-chevron.open { transform: rotate(180deg); opacity: 0.7; }
 
   /* Progress bar */
-  .card-progress-wrap { padding: 0 14px 14px; }
-  .progress-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 6px;
-  }
-  .progress-pct {
-    font-size: 11px; font-weight: 500; color: var(--ink);
-    min-width: 32px; text-align: right;
-  }
+  .card-progress-wrap { padding: 0 14px 13px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; }
+  .progress-pct { font-size: 11px; color: var(--muted); min-width: 30px; text-align: right; }
   .progress-track {
-    flex: 1; height: 6px; background: var(--paper2);
-    border-radius: 4px; overflow: hidden;
-    cursor: pointer;
+    flex: 1; height: 4px; background: var(--paper2);
+    border-radius: 4px; overflow: hidden; cursor: pointer;
   }
   .progress-fill {
     height: 100%; border-radius: 4px;
-    transition: width 0.3s ease;
+    width: var(--w, 0%);
+    animation: progressLoad 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    animation-delay: calc(var(--card-i, 0) * 40ms + 100ms);
+  }
+  @keyframes progressLoad {
+    from { width: 0; }
+    to   { width: var(--w, 0%); }
   }
 
   /* Expanded body */
@@ -207,8 +227,8 @@
     margin-bottom: 12px;
   }
   .md-body p  { margin: 0 0 6px; }
-  .md-body h2 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ink); margin: 10px 0 4px; }
-  .md-body h3 { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--ink); margin: 8px 0 3px; }
+  .md-body h2 { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--ink); margin: 10px 0 4px; }
+  .md-body h3 { font-family: 'Instrument Serif', serif; font-size: 14px; color: var(--ink); margin: 8px 0 3px; }
   .md-body h4 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 8px 0 3px; }
   .md-body ul, .md-body ol { padding-left: 18px; margin: 4px 0 8px; }
   .md-body li { margin-bottom: 3px; }
@@ -216,7 +236,7 @@
   .md-body em { font-style: italic; }
   .md-body s  { opacity: 0.5; }
   .md-body code {
-    font-family: 'DM Mono', monospace; font-size: 11px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 11px;
     background: var(--paper2); border: 1px solid var(--border);
     border-radius: 4px; padding: 1px 5px; color: var(--accent);
   }
@@ -312,7 +332,7 @@
     display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;
   }
   .card-action-btn {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
     border: 1px solid var(--border); background: var(--paper2);
     color: var(--ink); border-radius: 6px;
@@ -339,25 +359,35 @@
   input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; }
 
   /* ── EMPTY STATE ── */
-  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
-  .empty-icon { font-size: 44px; margin-bottom: 16px; opacity: 0.4; }
-  .empty-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px; color: var(--ink); margin-bottom: 8px; opacity: 0.5;
+  .empty { text-align: center; padding: 56px 24px; color: var(--muted); animation: emptyFadeIn 0.4s ease both; }
+  @keyframes emptyFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .empty-graphic { margin: 0 auto 20px; width: 72px; height: 72px; opacity: 0.18; }
+  .empty-title { font-family: 'Instrument Serif', serif; font-size: 20px; font-style: italic; color: var(--ink); margin-bottom: 6px; opacity: 0.5; }
+  .empty-sub { font-size: 12px; line-height: 1.7; opacity: 0.55; }
+
+  /* ── CHECKBOX SPRING ── */
+  @keyframes cbPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.8); }
+    70%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
   }
-  .empty-sub { font-size: 12px; line-height: 1.6; opacity: 0.7; }
+  .md-cb-box.popping { animation: cbPop 0.28s cubic-bezier(0.34,1.4,0.64,1); }
 
   /* ── BOTTOM FAB ── */
   .fab {
-    position: fixed; bottom: 20px; right: 20px; z-index: 200;
-    width: 56px; height: 56px; border-radius: 16px;
-    background: var(--accent); border: none; cursor: pointer;
-    box-shadow: 0 4px 20px rgba(200,75,49,0.4);
+    position: fixed; bottom: 24px; right: 20px; z-index: 200;
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--ink); border: none; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(28,25,23,0.22), 0 1px 4px rgba(28,25,23,0.12);
     display: flex; align-items: center; justify-content: center;
-    font-size: 26px; color: white;
-    transition: transform 0.15s, box-shadow 0.15s;
+    font-size: 24px; color: var(--paper);
+    transition: transform 0.18s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.15s;
   }
-  .fab:active { transform: scale(0.94); box-shadow: 0 2px 10px rgba(200,75,49,0.3); }
+  .fab:hover { transform: scale(1.06); box-shadow: 0 8px 24px rgba(28,25,23,0.2); }
+  .fab:active { transform: scale(0.94); }
+  .fab .fab-icon { display: inline-block; transition: transform 0.28s cubic-bezier(0.34,1.2,0.64,1); line-height: 1; }
+  .fab.sheet-open .fab-icon { transform: rotate(45deg); }
 
   /* ── MODAL / SHEET ── */
   .overlay {
@@ -386,7 +416,7 @@
     border-radius: 2px; margin: 12px auto 16px;
   }
   .sheet-title {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 22px; padding: 0 20px 16px;
     border-bottom: 1px solid var(--border);
   }
@@ -399,7 +429,7 @@
     margin-bottom: 6px;
   }
   input[type=text], input[type=date], textarea, select {
-    width: 100%; font-family: 'DM Mono', monospace;
+    width: 100%; font-family: 'Space Grotesk', sans-serif;
     font-size: 14px; color: var(--ink);
     background: var(--paper); border: 1px solid var(--border);
     border-radius: 10px; padding: 11px 13px;
@@ -422,7 +452,7 @@
     display: flex; gap: 10px;
   }
   .btn-primary {
-    flex: 1; font-family: 'DM Mono', monospace;
+    flex: 1; font-family: 'Space Grotesk', sans-serif;
     font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
     background: var(--ink); color: var(--paper);
     border: none; border-radius: 10px; padding: 14px;
@@ -430,7 +460,7 @@
   }
   .btn-primary:active { opacity: 0.8; }
   .btn-secondary {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
     background: none; color: var(--muted);
     border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
@@ -452,13 +482,12 @@
   .archive-toggle input { accent-color: var(--ink); width: 16px; height: 16px; }
 
   /* Archived card */
-  .project-card.archived { opacity: 0.55; }
+  .project-card.archived { opacity: 0.5; }
 
   /* Overdue card tint */
   .project-card.overdue {
-    background: #f5ddd8;
-    border-color: #cc8878;
-    box-shadow: 0 2px 8px rgba(200,75,49,0.20);
+    background: rgba(200,75,49,0.09);
+    border-left-color: var(--accent) !important;
   }
 
   /* ── PROGRESS COLORS ── */
@@ -489,7 +518,7 @@
     padding: 10px; text-align: center;
   }
   .stat-num {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 22px; color: var(--ink); display: block;
   }
   .stat-lbl {
@@ -526,7 +555,7 @@
     color: var(--muted); flex-shrink: 0;
   }
   .sort-btn {
-    flex-shrink: 0; font-family: 'DM Mono', monospace;
+    flex-shrink: 0; font-family: 'Space Grotesk', sans-serif;
     font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
     border: 1px solid var(--border); background: var(--paper2);
     color: var(--muted); border-radius: 20px; padding: 5px 12px;
@@ -538,7 +567,7 @@
   /* ── PRIORITY PICKER ── */
   .priority-picker { display: flex; gap: 8px; flex-wrap: wrap; }
   .pri-option {
-    flex: 1; min-width: 56px; font-family: 'DM Mono', monospace;
+    flex: 1; min-width: 56px; font-family: 'Space Grotesk', sans-serif;
     font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
     border-radius: 8px; padding: 8px 6px; text-align: center;
     cursor: pointer; border: 2px solid transparent;
@@ -554,7 +583,7 @@
   /* ── STORAGE STATUS ── */
   .storage-badge {
     font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 3px 8px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    padding: 3px 8px; border-radius: 20px; font-family: 'Space Grotesk', sans-serif;
   }
   .storage-badge.ok   { background: #1a3a2a; color: #6fcf97; }
   .storage-badge.warn { background: #3a2a0a; color: var(--accent3); }
@@ -569,7 +598,7 @@
   .backup-info strong { color: var(--ink); }
   .backup-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .btn-backup {
-    flex: 1; font-family: 'DM Mono', monospace;
+    flex: 1; font-family: 'Space Grotesk', sans-serif;
     font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     border-radius: 10px; padding: 12px 10px; cursor: pointer;
     border: 1px solid var(--border); background: var(--paper2); color: var(--ink);
@@ -582,15 +611,15 @@
   /* ── DESKTOP KANBAN LAYOUT ── */
   @media (min-width: 900px) {
     body { overflow-x: hidden; }
-    .header { padding: 16px 28px 12px; }
-    .header-title { font-size: 26px; }
+    .header { padding: 0 28px; }
+    .header-title { font-size: 20px; }
     .tabs-wrapper { display: none; }
-    .fab { bottom: 28px; right: 28px; width: 52px; height: 52px; font-size: 24px; }
+    .fab { bottom: 28px; right: 28px; width: 50px; height: 50px; font-size: 22px; }
 
     .kanban-board {
       display: flex; flex-direction: row; align-items: flex-start;
       gap: 16px; padding: 20px 24px 40px;
-      overflow-x: auto; min-height: calc(100dvh - 74px);
+      overflow-x: auto; min-height: calc(100dvh - 60px);
     }
     .kanban-board::-webkit-scrollbar { height: 6px; }
     .kanban-board::-webkit-scrollbar-track { background: var(--paper2); border-radius: 3px; }
@@ -600,13 +629,13 @@
       flex: 0 0 380px; min-width: 340px; max-width: 440px;
       background: var(--paper2); border: 1px solid var(--border);
       border-radius: 14px; display: flex; flex-direction: column;
-      max-height: calc(100dvh - 110px);
+      max-height: calc(100dvh - 100px);
     }
     .kanban-col-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; cursor: grab; }
     .kanban-col-header:active { cursor: grabbing; }
     .kanban-col-title {
       display: flex; align-items: center; gap: 8px;
-      font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--ink);
+      font-family: 'Instrument Serif', serif; font-size: 17px; color: var(--ink);
     }
     .kanban-col-title .tab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .kanban-col-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
@@ -638,7 +667,7 @@
     .kanban-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     .kanban-add-btn {
       flex-shrink: 0; margin: 0 10px 10px; width: calc(100% - 20px);
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
       background: none; color: var(--muted); border: 1px dashed var(--border);
       border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.15s;
       display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -649,10 +678,11 @@
       border: 2px dashed var(--border); border-radius: 14px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 10px; padding: 30px 20px; cursor: pointer; color: var(--muted);
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
       transition: all 0.2s; align-self: stretch;
     }
     .kanban-new-col:hover { background: var(--paper2); border-color: var(--muted); color: var(--ink); }
+    .kanban-col.drag-target { background: rgba(200,75,49,0.04); outline: 2px dashed rgba(200,75,49,0.3); outline-offset: -2px; transition: background 0.15s; }
     .kanban-new-col-icon { font-size: 28px; opacity: 0.4; }
     .kanban-cards .project-card { margin-bottom: 8px; }
     .kanban-cards .card-title { font-size: 15px; }
@@ -673,9 +703,9 @@
   }
   .auth-screen.visible { display: flex; }
   .auth-logo {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 32px; color: var(--paper);
-    letter-spacing: 0.02em; margin-bottom: 6px;
+    letter-spacing: -0.01em; margin-bottom: 6px;
   }
   .auth-sub {
     font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -687,7 +717,7 @@
     padding: 28px 24px; margin-bottom: 16px;
   }
   .auth-card-title {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 20px; color: var(--ink);
     margin-bottom: 6px;
   }
@@ -696,7 +726,7 @@
     margin-bottom: 20px; letter-spacing: 0.04em;
   }
   .auth-input {
-    width: 100%; font-family: 'DM Mono', monospace;
+    width: 100%; font-family: 'Space Grotesk', sans-serif;
     font-size: 14px; color: var(--ink);
     background: var(--paper); border: 1px solid var(--border);
     border-radius: 10px; padding: 12px 14px;
@@ -705,7 +735,7 @@
   }
   .auth-input:focus { border-color: var(--ink); }
   .auth-btn {
-    width: 100%; font-family: 'DM Mono', monospace;
+    width: 100%; font-family: 'Space Grotesk', sans-serif;
     font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
     background: var(--accent); color: white;
     border: none; border-radius: 10px; padding: 14px;
@@ -714,7 +744,7 @@
   .auth-btn:active { opacity: 0.8; }
   .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .auth-btn-local {
-    width: 100%; font-family: 'DM Mono', monospace;
+    width: 100%; font-family: 'Space Grotesk', sans-serif;
     font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     background: none; color: var(--muted);
     border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px;
@@ -753,7 +783,7 @@
   }
   .gantt-controls-row::-webkit-scrollbar { display: none; }
   .gantt-zoom-btn {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
     border: 1px solid var(--border); background: var(--paper);
     color: var(--muted); border-radius: 20px; padding: 4px 11px;
@@ -761,7 +791,7 @@
   }
   .gantt-zoom-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .gantt-filter-chip {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 10px; letter-spacing: 0.06em;
     border: 1px solid var(--border); background: var(--paper2);
     border-radius: 20px; padding: 4px 10px;
@@ -774,14 +804,14 @@
   .gantt-chip-dot { width: 7px; height: 7px; border-radius: 50%; opacity: 0.5; flex-shrink: 0; }
   .gantt-sep { width: 1px; background: var(--border); align-self: stretch; margin: 2px 3px; flex-shrink: 0; }
   .gantt-nav-btn {
-    font-family: 'DM Mono', monospace; font-size: 14px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px;
     background: none; border: 1px solid var(--border);
     border-radius: 8px; padding: 4px 10px; cursor: pointer;
     color: var(--ink); transition: background 0.15s; flex-shrink: 0;
   }
   .gantt-nav-btn:active { background: var(--paper2); }
   .gantt-today-btn {
-    font-family: 'DM Mono', monospace; font-size: 10px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 10px;
     letter-spacing: 0.08em; text-transform: uppercase;
     background: none; border: 1px solid var(--border);
     border-radius: 8px; padding: 4px 10px; cursor: pointer;
@@ -789,7 +819,7 @@
   }
   .gantt-wrap {
     display: flex;
-    height: calc(100dvh - 62px - 96px);
+    height: calc(100dvh - 60px - 96px);
     overflow: hidden;
   }
   .gantt-sidebar {
@@ -902,7 +932,7 @@
     animation: fadeIn 0.15s ease;
   }
   .gantt-popup-title {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Instrument Serif', serif;
     font-size: 16px; color: var(--ink); margin-bottom: 6px;
   }
   .gantt-popup-meta {
@@ -921,7 +951,7 @@
   }
   .gantt-popup-actions { display: flex; gap: 6px; }
   .gantt-popup-btn {
-    font-family: 'DM Mono', monospace; font-size: 10px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 10px;
     letter-spacing: 0.08em; text-transform: uppercase;
     border: 1px solid var(--border); background: var(--paper2);
     color: var(--ink); border-radius: 6px; padding: 6px 10px;
@@ -931,7 +961,7 @@
   @media (min-width: 900px) {
     .gantt-sidebar { width: 180px; }
     .gantt-row-label { font-size: 12px; }
-    .gantt-wrap { height: calc(100dvh - 62px - 102px); }
+    .gantt-wrap { height: calc(100dvh - 60px - 102px); }
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1028,7 +1058,7 @@
 <div id="ganttPopup" class="gantt-popup" style="display:none"></div>
 
 <!-- FAB -->
-<button class="fab" onclick="openAddProject()">＋</button>
+<button class="fab" id="mainFab" onclick="openAddProject()"><span class="fab-icon">＋</span></button>
 
 <!-- ADD/EDIT PROJECT SHEET -->
 <div class="overlay" id="projectOverlay" onclick="overlayClose(event,'projectOverlay')">
@@ -1933,10 +1963,19 @@ function renderKanban() {
 
     let cards = '';
     if (active.length === 0 && !showArchived) {
-      cards = `<div class="empty" style="padding:30px 10px"><div class="empty-icon" style="font-size:32px">📋</div><div class="empty-title" style="font-size:16px">No projects</div><div class="empty-sub">Tap + below to add one</div></div>`;
+      cards = `<div class="empty" style="padding:36px 10px">
+        <svg class="empty-graphic" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="16" width="48" height="44" rx="6" stroke="currentColor" stroke-width="2.5"/>
+          <rect x="24" y="10" width="24" height="12" rx="4" stroke="currentColor" stroke-width="2.5"/>
+          <line x1="22" y1="34" x2="50" y2="34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="22" y1="44" x2="42" y2="44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="empty-title">Nothing here yet</div>
+        <div class="empty-sub">Tap <strong>+</strong> below to add your first project</div>
+      </div>`;
     } else {
-      if (active.length > 0) { cards += `<div class="section-label">Active</div>`; active.forEach(p => { cards += renderCard(p); }); }
-      if (showArchived && archived.length > 0) { cards += `<div class="section-label">Archived</div>`; archived.forEach(p => { cards += renderCard(p); }); }
+      if (active.length > 0) { cards += `<div class="section-label">Active</div>`; active.forEach((p,i) => { cards += renderCard(p,i); }); }
+      if (showArchived && archived.length > 0) { cards += `<div class="section-label">Archived</div>`; archived.forEach((p,i) => { cards += renderCard(p,i); }); }
     }
     if (!showArchived && archived.length > 0) {
       cards += `<label class="archive-toggle" onclick="toggleArchiveView()"><input type="checkbox" readonly> Show ${archived.length} archived</label>`;
@@ -1983,7 +2022,7 @@ function renderKanban() {
     slider.addEventListener('input', function() {
       const fill = document.getElementById('fill-'+this.dataset.id);
       const pct  = document.getElementById('pct-'+this.dataset.id);
-      if (fill) fill.style.width = this.value + '%';
+      if (fill) fill.style.setProperty('--w', this.value + '%');
       if (pct)  pct.textContent  = this.value + '%';
     });
     slider.addEventListener('change', function() {
@@ -2144,10 +2183,19 @@ function renderContent() {
   }
 
   if (active.length === 0 && !showArchived) {
-    html += `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No projects yet</div><div class="empty-sub">Tap + to add your first project<br>to the <em>${tab.name}</em> tab.</div></div>`;
+    html += `<div class="empty">
+      <svg class="empty-graphic" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="16" width="48" height="44" rx="6" stroke="currentColor" stroke-width="2.5"/>
+        <rect x="24" y="10" width="24" height="12" rx="4" stroke="currentColor" stroke-width="2.5"/>
+        <line x1="22" y1="34" x2="50" y2="34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="22" y1="44" x2="42" y2="44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="empty-title">No projects in <em>${escHtml(tab.name)}</em></div>
+      <div class="empty-sub">Tap <strong>+</strong> to add your first project here.</div>
+    </div>`;
   }
-  if (active.length > 0)   { html += `<div class="section-label">Active</div>`; active.forEach(p => { html += renderCard(p); }); }
-  if (showArchived && archived.length > 0) { html += `<div class="section-label">Archived</div>`; archived.forEach(p => { html += renderCard(p); }); }
+  if (active.length > 0)   { html += `<div class="section-label">Active</div>`; active.forEach((p,i) => { html += renderCard(p,i); }); }
+  if (showArchived && archived.length > 0) { html += `<div class="section-label">Archived</div>`; archived.forEach((p,i) => { html += renderCard(p,i); }); }
   if (!showArchived && archived.length > 0) {
     html += `<label class="archive-toggle" onclick="toggleArchiveView()"><input type="checkbox" readonly> Show ${archived.length} archived project${archived.length>1?'s':''}</label>`;
   }
@@ -2159,7 +2207,7 @@ function renderContent() {
     slider.addEventListener('input', function() {
       const fill = document.getElementById('fill-'+this.dataset.id);
       const pct  = document.getElementById('pct-'+this.dataset.id);
-      if (fill) fill.style.width = this.value + '%';
+      if (fill) fill.style.setProperty('--w', this.value + '%');
       if (pct)  pct.textContent  = this.value + '%';
     });
     slider.addEventListener('change', function() {
@@ -2269,30 +2317,31 @@ function renderMarkdown(raw, projId) {
 }
 
 // ─── RENDER CARD ────────────────────────────────────────
-function renderCard(p) {
+function renderCard(p, idx) {
   const color  = COLORS.find(c => c.id === p.color) || COLORS[3];
   const overdue = p.deadline && isOverdue(p.deadline) && p.progress < 100;
   const pri    = PRIORITIES.find(x => x.val === (p.priority || 3));
   const priCls = `pri-${p.priority || 3}`;
-  return `<div class="project-card${p.archived?' archived':''}${overdue?' overdue':''}" id="card-${p.id}">
+  const stagger = idx !== undefined ? `--card-i:${idx};` : '';
+  return `<div class="project-card${p.archived?' archived':''}${overdue?' overdue':''}" id="card-${p.id}" style="${stagger}border-left-color:${color.hex}">
     <div class="card-header" onclick="toggleCard('${p.id}')">
       <div class="card-color-bar" style="background:${color.hex}"></div>
       <div class="card-main">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-          <div class="card-title" style="flex:1">${escHtml(p.name)}</div>
+        <div class="card-title-row">
+          <div class="card-title">${escHtml(p.name)}</div>
           <span class="priority-badge ${priCls}">${pri ? pri.short : ''}</span>
         </div>
         <div class="card-meta">
-          ${p.deadline ? `<span>${overdue?'🔴':'📅'} ${formatDateDisplay(p.deadline)}${overdue?' · Overdue':''}</span>` : ''}
-          ${p.start    ? `<span>${isFuture(p.start)?'🗓 Starts':'🟢 Started'} ${formatDateDisplay(p.start)}</span>` : ''}
+          ${p.deadline ? `<span>${overdue?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:3px;vertical-align:middle"></span>':'·'} ${formatDateDisplay(p.deadline)}${overdue?'<span style="color:var(--accent)"> · overdue</span>':''}</span>` : ''}
+          ${p.start    ? `<span>${isFuture(p.start)?'→ starts':'· started'} ${formatDateDisplay(p.start)}</span>` : ''}
         </div>
       </div>
-      <div class="card-chevron" id="chev-${p.id}">▾</div>
+      <div class="card-chevron" id="chev-${p.id}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-progress-wrap">
       <div class="progress-row">
         <div class="progress-track" onclick="handleTrackClick(event,'${p.id}')">
-          <div class="progress-fill fill-${p.color}" id="fill-${p.id}" style="width:${p.progress}%"></div>
+          <div class="progress-fill fill-${p.color}" id="fill-${p.id}" style="${stagger}--w:${p.progress}%"></div>
         </div>
         <div class="progress-pct" id="pct-${p.id}">${p.progress}%</div>
       </div>
@@ -2339,7 +2388,7 @@ function handleTrackClick(e, id) {
     p.progress = pct; stampProject(p); saveState();
     const fill = document.getElementById('fill-'+id);
     const pctEl = document.getElementById('pct-'+id);
-    if (fill) fill.style.width = pct + '%';
+    if (fill) fill.style.setProperty('--w', pct + '%');
     if (pctEl) pctEl.textContent = pct + '%';
     if (isDesktop()) renderKanban(); else renderTabs();
   }
@@ -2409,6 +2458,8 @@ function openAddProject() {
   const sel = document.getElementById('projTab');
   sel.innerHTML = state.tabs.map(t => `<option value="${t.id}" ${t.id===state.activeTab?'selected':''}>${t.name}</option>`).join('');
   document.getElementById('projectOverlay').classList.add('open');
+  const fab = document.getElementById('mainFab');
+  if (fab) fab.classList.add('sheet-open');
   setTimeout(() => document.getElementById('projName').focus(), 200);
 }
 
@@ -2508,7 +2559,11 @@ function deleteTab() {
 }
 
 // ─── UTILS ──────────────────────────────────────────────
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('open');
+  const fab = document.getElementById('mainFab');
+  if (fab) fab.classList.remove('sheet-open');
+}
 function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
 
 // ─── CHECKBOX CYCLING ───────────────────────────────────
@@ -2549,7 +2604,9 @@ function attachCheckboxListeners(container, projId) {
     el.parentNode.replaceChild(clone, el);
     clone.addEventListener('click', (e) => {
       e.stopPropagation();
-      cycleCheckbox(projId, idx);
+      const box = clone.querySelector('.md-cb-box');
+      if (box) { box.classList.remove('popping'); void box.offsetWidth; box.classList.add('popping'); }
+      setTimeout(() => cycleCheckbox(projId, idx), 260);
     });
   });
 }
@@ -3026,9 +3083,13 @@ function kanbanDragStart(e, tabId) {
 function kanbanDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
+  const col = e.currentTarget;
+  document.querySelectorAll('.kanban-col').forEach(c => c.classList.remove('drag-target'));
+  if (col) col.classList.add('drag-target');
 }
 function kanbanDrop(e, toTabId) {
   e.preventDefault();
+  document.querySelectorAll('.kanban-col').forEach(c => c.classList.remove('drag-target'));
   if (!_kanbanDragId || _kanbanDragId === toTabId) return;
   const fromIdx = state.tabs.findIndex(t => t.id === _kanbanDragId);
   const toIdx   = state.tabs.findIndex(t => t.id === toTabId);
@@ -3043,7 +3104,7 @@ function kanbanDrop(e, toTabId) {
 }
 function kanbanDragEnd(e) {
   _kanbanDragId = null;
-  document.querySelectorAll('.kanban-col').forEach(c => c.style.opacity = '');
+  document.querySelectorAll('.kanban-col').forEach(c => { c.style.opacity = ''; c.classList.remove('drag-target'); });
 }
 
 // ─── SWIPE GESTURE ──────────────────────────────────────
@@ -3150,7 +3211,7 @@ function kanbanDragEnd(e) {
 // ─── APP INIT (called after auth is resolved) ───────────
 async function initApp() {
   document.getElementById('headerDate').textContent =
-    new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    new Date().toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
   lsReady = lsAvailable();
   try { await openDB(); dbReady = true; } catch(e) { dbReady = false; }
   await loadPersistedState();
