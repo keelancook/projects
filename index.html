@@ -171,7 +171,7 @@
   .card-title {
     font-family: 'Instrument Serif', serif;
     font-size: 17px; line-height: 1.25;
-    color: var(--ink); font-style: italic;
+    color: var(--ink);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .card-title-row {
@@ -332,16 +332,17 @@
     display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;
   }
   .card-action-btn {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
     border: 1px solid var(--border); background: var(--paper2);
-    color: var(--ink); border-radius: 6px;
-    padding: 6px 12px; cursor: pointer;
-    transition: background 0.15s;
+    color: var(--ink); border-radius: 8px;
+    cursor: pointer; padding: 0;
+    transition: background 0.15s, border-color 0.15s;
   }
   .card-action-btn:active { background: var(--border); }
   .card-action-btn.danger { color: var(--accent); border-color: #f5c6c1; background: #fdecea; }
   .card-action-btn.success { color: var(--accent2); border-color: #c2dfc9; background: #e8f4ee; }
+  .card-action-btn svg { display: block; }
 
   /* Slider input */
   .slider-wrap { padding: 10px 0 4px; }
@@ -511,21 +512,25 @@
   .tab-dot-pink   { background: #e91e8c; }
 
   /* Stats row */
-  .stats-row { display: flex; gap: 8px; margin-bottom: 4px; }
+  .stats-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 4px; padding: 2px 0;
+  }
   .stat-chip {
-    flex: 1; background: var(--paper2);
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 10px; text-align: center;
+    display: flex; align-items: baseline; gap: 5px;
   }
   .stat-num {
     font-family: 'Instrument Serif', serif;
-    font-size: 22px; color: var(--ink); display: block;
+    font-size: 20px; color: var(--ink);
   }
   .stat-lbl {
-    font-size: 9px; letter-spacing: 0.12em;
+    font-size: 10px; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted);
-    display: block; margin-top: 2px;
   }
+  .stat-chip.overdue .stat-num { color: var(--accent); }
+  .stat-chip.overdue .stat-lbl { color: var(--accent); opacity: 0.7; }
+  .stat-chip.archived .stat-num { color: var(--muted); }
+  .stat-chip.archived .stat-lbl { color: var(--muted); }
 
   /* Tab edit icon */
   .tab-edit-icon { font-size: 14px; margin-left: 4px; opacity: 0.5; cursor: pointer; }
@@ -653,12 +658,13 @@
     .kanban-sort-bar .sort-lbl { font-size: 8px; }
     .kanban-sort-bar .sort-btn { font-size: 9px; padding: 3px 9px; }
     .kanban-stats {
-      display: flex; gap: 6px; padding: 8px 12px;
-      flex-shrink: 0; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 7px 14px; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
     }
-    .kanban-stats .stat-chip { padding: 6px 8px; border-radius: 8px; }
-    .kanban-stats .stat-num { font-size: 16px; }
-    .kanban-stats .stat-lbl { font-size: 8px; }
+    .kanban-stats .stat-chip { gap: 5px; }
+    .kanban-stats .stat-num { font-size: 17px; }
+    .kanban-stats .stat-lbl { font-size: 9px; }
     .kanban-cards {
       flex: 1; overflow-y: auto; padding: 10px;
       scrollbar-width: thin; scrollbar-color: var(--border) transparent;
@@ -1956,8 +1962,9 @@ function renderKanban() {
     }
     active = srt(active); archived = srt(archived);
 
-    const avgProg = active.length ? Math.round(active.reduce((a,p)=>a+p.progress,0)/active.length) : 0;
+    const done = active.filter(p => p.progress === 100).length;
     const overdue = active.filter(p => p.deadline && isOverdue(p.deadline) && p.progress < 100).length;
+    const archivedCount = archived.length;
     const editBtn = tab.id !== 'general'
       ? `<button class="kanban-edit-btn" onclick="openEditTab('${tab.id}')">✎</button>` : '';
 
@@ -1981,10 +1988,10 @@ function renderKanban() {
       cards += `<label class="archive-toggle" onclick="toggleArchiveView()"><input type="checkbox" readonly> Show ${archived.length} archived</label>`;
     }
 
-    const stats = active.length > 0 ? `<div class="kanban-stats">
+    const stats = (active.length > 0 || archivedCount > 0) ? `<div class="kanban-stats">
       <div class="stat-chip"><span class="stat-num">${active.length}</span><span class="stat-lbl">Active</span></div>
-      <div class="stat-chip"><span class="stat-num">${avgProg}%</span><span class="stat-lbl">Avg</span></div>
-      <div class="stat-chip"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
+      <div class="stat-chip${overdue>0?' overdue':''}"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
+      ${archivedCount>0?`<div class="stat-chip archived"><span class="stat-num">${archivedCount}</span><span class="stat-lbl">Archived</span></div>`:''}
     </div>` : '';
 
     html += `<div class="kanban-col" id="kcol-${tab.id}"
@@ -2172,13 +2179,14 @@ function renderContent() {
     <button class="sort-btn ${sm==='start-desc'?'active':''}"       onclick="setSort('start-desc')">Start ↓</button>
   </div>`;
 
-  if (active.length > 0) {
-    const avgProg = Math.round(active.reduce((a,p) => a + p.progress, 0) / active.length);
+  if (active.length > 0 || archived.length > 0) {
+    const done = active.filter(p => p.progress === 100).length;
     const overdue = active.filter(p => p.deadline && isOverdue(p.deadline) && p.progress < 100).length;
+    const archivedCount = archived.length;
     html += `<div class="stats-row" style="margin-top:14px">
       <div class="stat-chip"><span class="stat-num">${active.length}</span><span class="stat-lbl">Active</span></div>
-      <div class="stat-chip"><span class="stat-num">${avgProg}%</span><span class="stat-lbl">Avg Progress</span></div>
-      <div class="stat-chip"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
+      <div class="stat-chip${overdue>0?' overdue':''}"><span class="stat-num">${overdue}</span><span class="stat-lbl">Overdue</span></div>
+      ${archivedCount>0?`<div class="stat-chip archived"><span class="stat-num">${archivedCount}</span><span class="stat-lbl">Archived</span></div>`:''}
     </div>`;
   }
 
@@ -2360,11 +2368,19 @@ function renderCard(p, idx) {
         </div>
       </div>
       <div class="card-actions">
-        <button class="card-action-btn" onclick="openEditProject('${p.id}')">✎ Edit</button>
+        <button class="card-action-btn" onclick="openEditProject('${p.id}')" title="Edit">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
         ${!p.archived
-          ? `<button class="card-action-btn success" onclick="archiveProject('${p.id}')">📦 Archive</button>`
-          : `<button class="card-action-btn" onclick="unarchiveProject('${p.id}')">↩ Restore</button>`}
-        <button class="card-action-btn danger" onclick="deleteProject('${p.id}')">✕ Delete</button>
+          ? `<button class="card-action-btn success" onclick="archiveProject('${p.id}')" title="Archive">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            </button>`
+          : `<button class="card-action-btn" onclick="unarchiveProject('${p.id}')" title="Restore">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            </button>`}
+        <button class="card-action-btn danger" onclick="deleteProject('${p.id}')" title="Delete">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
       </div>
     </div>
   </div>`;
@@ -3081,6 +3097,7 @@ function kanbanDragStart(e, tabId) {
   e.stopPropagation();
 }
 function kanbanDragOver(e) {
+  if (!_kanbanDragId) return;
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   const col = e.currentTarget;
