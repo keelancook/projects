@@ -2404,9 +2404,10 @@ function handleTrackClick(e, id) {
     p.progress = pct; stampProject(p); saveState();
     const fill = document.getElementById('fill-'+id);
     const pctEl = document.getElementById('pct-'+id);
+    const slider = document.querySelector(`.prog-slider[data-id="${id}"]`);
     if (fill) fill.style.setProperty('--w', pct + '%');
     if (pctEl) pctEl.textContent = pct + '%';
-    if (isDesktop()) renderKanban(); else renderTabs();
+    if (slider) slider.value = pct;
   }
 }
 
