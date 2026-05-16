@@ -1614,7 +1614,7 @@ function migrateState(s) {
   return s;
 }
 
-function mergeStates(local, remote) {
+function mergeStates(local, remote, preferRemote = false) {
   // Returns a merged state containing the best of both
   if (!local || !local.projects) return remote;
   if (!remote || !remote.projects) return local;
@@ -1630,16 +1630,19 @@ function mergeStates(local, remote) {
     const l = localMap.get(id);
     if (!r) { merged.push(l); return; } // only local — keep it
     if (!l) { merged.push(r); return; } // only remote — keep it
-    // Both exist — keep newer
+    // Both exist — keep newer; on ties, preferRemote decides (manual refresh = remote wins)
     const rTime = r._ts ? new Date(r._ts).getTime() : 0;
     const lTime = l._ts ? new Date(l._ts).getTime() : 0;
-    merged.push(lTime >= rTime ? l : r);
+    if (rTime === lTime) merged.push(preferRemote ? r : l);
+    else                 merged.push(lTime > rTime ? l : r);
   });
 
   // For tabs and sort prefs, use whichever state is newer overall
   const remoteTabTs = remote._tabTs ? new Date(remote._tabTs).getTime() : 0;
   const localTabTs  = local._tabTs  ? new Date(local._tabTs).getTime()  : 0;
-  const winner      = localTabTs >= remoteTabTs ? local : remote;
+  let winner;
+  if (remoteTabTs === localTabTs) winner = preferRemote ? remote : local;
+  else                            winner = localTabTs > remoteTabTs ? local : remote;
 
   return {
     ...winner,
@@ -1788,7 +1791,7 @@ async function forceRefresh() {
     const remote = await supabaseLoad();
     if (remote && remote.tabs) {
       const migratedRemote = migrateState(remote);
-      state = mergeStates(state, migratedRemote);
+      state = mergeStates(state, migratedRemote, true);  // manual refresh: remote wins ties
       if (state.tabSortModes) sortModes = state.tabSortModes;
       if (lsReady) lsSet(LS_KEY, state);
       if (dbReady) await idbSet(DB_KEY, JSON.stringify(state));
@@ -2627,6 +2630,7 @@ function cycleCheckbox(projId, lineIdx) {
   const next = cur === ' ' ? 'x' : cur.toLowerCase() === 'x' ? '/' : ' ';
   lines[lineIdx] = cbMatch[1] + next + cbMatch[3];
   p.desc = lines.join('\n');
+  stampProject(p);   // bump _ts so sync merge picks up this change on other devices
   saveState();
 
   // Re-render the description, passing projId so checkboxes stay clickable
