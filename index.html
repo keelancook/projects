@@ -1071,58 +1071,107 @@
 @media(min-width:900px){.card-header[draggable=true]{cursor:grab}.card-header[draggable=true]:active{cursor:grabbing}}
 .tab.drop-hot{outline:2px solid var(--accent3);outline-offset:-2px;background:rgba(255,255,255,.18)}
 body.card-dragging .tab:not(.active){box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.tpl-sheet{max-width:640px;max-height:92dvh;display:flex;flex-direction:column}
+#tplBody{overflow-y:auto;padding:4px 20px 16px;flex:1;min-height:0}
+#tplFoot{padding-top:12px;flex:none}
+.tpl-card{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--border)}
+.tpl-card:first-of-type{border-top:none}
+.tpl-dot{width:12px;height:12px;border-radius:50%;flex:none}
+.tpl-info{flex:1;min-width:0}
+.tpl-name{font-size:15px;color:var(--ink)}
+.tpl-sum{font-size:11px;color:var(--muted);margin-top:2px}
+.tpl-h{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;padding-top:16px;border-top:1px solid var(--border)}
+.tpl-field{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--paper2);margin-bottom:8px}
+.tpl-row2{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px}
+.tpl-row2 input,.tpl-row2 select,.tpl-opts{padding:10px 11px;font-size:13px}
+.tpl-opts{margin-top:8px}
+.tpl-row3{display:flex;align-items:center;gap:6px;margin-top:10px}
+.tpl-spacer{flex:1}
+.tpl-row3 .ed-x{width:36px;height:36px}
+.tpl-check{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;margin:0;min-height:32px}
+.tpl-check input{width:18px;height:18px;flex:none;accent-color:var(--ink)}
+.ed-row.two{grid-template-columns:minmax(0,1fr) 40px}
+.group-label{color:var(--ink);font-size:10px;margin-top:20px}
+.kanban-cards .group-label{font-size:10px}
+.section-label .section-count{margin-left:8px}
+.td-v.pre{white-space:pre-wrap}
+@media(max-width:480px){.tpl-row2{grid-template-columns:minmax(0,1fr) 118px}}
 </style>
 <script>
-const TYPE_ORDER=['general','speaking','writing','course','supervision'];
 const DEFAULT_STAGES=['Coursework','Qualifying exams','Proposal defense','IRB / ethics approval','Data collection','Drafting','Defense','Final submission'];
+const TYPE_ORDER=[],TYPES={};
+let _tplArr=null,_tplTs=null,_defTpl=null;
+const KINDS=[['text','Text'],['long','Long text'],['select','Dropdown'],['suggest','Text with suggestions'],['date','Date'],['number','Number'],['semester','Semester']];
 const semOpts=()=>{const y=new Date().getFullYear(),o=[];for(let i=y-1;i<=y+2;i++)['Spring','Summer','Fall'].forEach(s=>o.push(s+' '+i));return o};
 const TERM={spring:1,summer:2,fall:3};
 function semParse(s){const m=/(spring|summer|fall)\s*(\d{4})/i.exec(s||'');return m?+m[2]*10+TERM[m[1].toLowerCase()]:null}
 function semFromDate(iso){if(!iso)return null;const [y,m]=iso.split('-').map(Number);return y*10+(m<=5?1:m<=7?2:3)}
-function semKey(p){return semParse((p.fields||{}).semester)||semFromDate(p.deadline)}
-function semLabel(k){if(!k)return'';const t=k%10;return['','Spring','Summer','Fall'][t]+' '+Math.floor(k/10)}
-function semSort(arr,desc){return [...arr].sort((a,b)=>{const x=semKey(a),y=semKey(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return x!==y?(desc?y-x:x-y):cmpDate(a.deadline,b.deadline)})}
-const TYPES={
-general:{id:'general',label:'General',dateLabel:'Deadline',meta:'Due',nameLabel:'Project Name',fields:[]},
-speaking:{id:'speaking',label:'Speaking',dateLabel:'Event date',meta:'Event',nameLabel:'Engagement Name',
- fields:[{k:'topic',l:'Topic'},{k:'venue',l:'Venue'},{k:'org',l:'Organization'}],
- deliv:{title:'Deliverables',hint:'Add only what the organizer requires. Each gets its own deadline.',presets:['Slides','Outline','Manuscript','Bio / headshot','A/V needs'],defaults:[]}},
-writing:{id:'writing',label:'Writing',dateLabel:'Submission deadline',meta:'Submit',nameLabel:'Assignment Name',
- fields:[{k:'title',l:'Title / topic'},{k:'wtype',l:'Type of writing',opts:['Article','Paper','Chapter','Book','Review','Essay','Other']},{k:'event',l:'Event'},{k:'publisher',l:'Publisher'}],
- deliv:{title:'Draft & interim deadlines',hint:'The final submission uses the deadline below.',presets:['Draft','Outline','Revisions'],defaults:['Draft']}},
-course:{id:'course',label:'Course',dateLabel:'Grades due',meta:'Grades',nameLabel:'Course Name',
- fields:[{k:'semester',l:'Semester taught',opts:semOpts()},{k:'code',l:'Course code'}],
- deliv:{title:'Semester deliverables',hint:'Prep and reporting tasks, each with its own deadline.',presets:['Post syllabus','Submit textbook order','Set up LMS site','Post final exam','Submit grades'],defaults:['Submit textbook order','Post syllabus']}},
-supervision:{id:'supervision',label:'Supervision',dateLabel:'Proposed graduation',meta:'Grad',nameLabel:'Student Name',
- fields:[{k:'track',l:'Degree track',list:['PhD','EdD','DMin','DBA','DSW','Other']},{k:'dtitle',l:'Dissertation / project title'}],stages:true}
-};
+function semLabel(k){if(!k)return'';return['','Spring','Summer','Fall'][k%10]+' '+Math.floor(k/10)}
+function defaultTemplates(){return[
+{id:'general',label:'General',color:'#6b6359',nameLabel:'Project Name',dateLabel:'Deadline',meta:'',fields:[],deliv:null,stages:null,defaults:{priority:3,color:'blue',desc:''},group:'',countdown:false,subSem:false},
+{id:'speaking',label:'Speaking',color:'#8e44ad',nameLabel:'Engagement Name',dateLabel:'Event date',meta:'Event',
+ fields:[{k:'topic',l:'Topic',kind:'text',card:false},{k:'venue',l:'Venue',kind:'text',card:true},{k:'org',l:'Organization',kind:'text',card:true}],
+ deliv:{title:'Deliverables',hint:'Add only what the organizer requires. Each gets its own deadline.',presets:['Slides','Outline','Manuscript','Bio / headshot','A/V needs'],defaults:[]},stages:null,defaults:{priority:3,color:'purple',desc:''},group:'month',countdown:false,subSem:false},
+{id:'writing',label:'Writing',color:'#2980b9',nameLabel:'Assignment Name',dateLabel:'Submission deadline',meta:'Submit',
+ fields:[{k:'title',l:'Title / topic',kind:'text',card:false},{k:'wtype',l:'Type of writing',kind:'select',opts:['Article','Paper','Chapter','Book','Review','Essay','Other'],card:true},{k:'event',l:'Event',kind:'text',card:false},{k:'publisher',l:'Publisher',kind:'text',card:true}],
+ deliv:{title:'Draft & interim deadlines',hint:'The final submission uses the deadline below.',presets:['Draft','Outline','Revisions'],defaults:[{label:'Draft',before:null}]},stages:null,defaults:{priority:3,color:'blue',desc:''},group:'month',countdown:false,subSem:false,variantField:'wtype',variants:{
+ 'Book':{stages:null,desc:null,deliv:[{label:'Outline',before:240},{label:'Sample chapter',before:180},{label:'Full draft',before:60},{label:'Revisions',before:30}]},
+ 'Article':{stages:null,desc:null,deliv:[{label:'Outline',before:45},{label:'Draft',before:21}]},
+ 'Chapter':{stages:null,desc:null,deliv:[{label:'Outline',before:60},{label:'Draft',before:30}]},
+ 'Paper':{stages:null,desc:null,deliv:[{label:'Abstract',before:60},{label:'Draft',before:21}]}}},
+{id:'course',label:'Course',color:'#e67e22',nameLabel:'Course Name',dateLabel:'Grades due',meta:'Grades',
+ fields:[{k:'semester',l:'Semester taught',kind:'semester',card:true},{k:'format',l:'Course format',kind:'select',opts:['Seminar','On campus','Online','Hybrid','Mission trip course'],card:true},{k:'code',l:'Course code',kind:'text',card:true}],
+ deliv:{title:'Semester deliverables',hint:'Prep and reporting tasks, each with its own deadline.',presets:['Post syllabus','Submit textbook order','Set up LMS site','Post final exam','Submit grades'],defaults:[{label:'Submit textbook order',before:null},{label:'Post syllabus',before:null}]},stages:null,defaults:{priority:3,color:'gold',desc:''},group:'semester',countdown:false,subSem:false,variantField:'format',variants:{
+ 'Online':{stages:null,desc:null,deliv:[{label:'Submit textbook order',before:null},{label:'Post syllabus',before:null},{label:'Set up LMS site',before:null},{label:'Record intro video',before:null},{label:'Submit grades',before:null}]},
+ 'Hybrid':{stages:null,desc:null,deliv:[{label:'Submit textbook order',before:null},{label:'Post syllabus',before:null},{label:'Set up LMS site',before:null},{label:'Submit grades',before:null}]},
+ 'Mission trip course':{stages:null,desc:null,deliv:[{label:'Submit textbook order',before:null},{label:'Post syllabus',before:null},{label:'Travel logistics',before:null},{label:'Student waivers',before:null},{label:'Submit grades',before:null}]}}},
+{id:'supervision',label:'Supervision',color:'#2d6a4f',nameLabel:'Student Name',dateLabel:'Proposed graduation',meta:'Grad',
+ fields:[{k:'track',l:'Degree track',kind:'suggest',opts:['PhD','EdD','DMin','DBA','DSW','Other'],card:true},{k:'dtitle',l:'Dissertation / project title',kind:'text',card:true}],
+ deliv:null,stages:{title:'Stages to graduation',items:[...DEFAULT_STAGES]},defaults:{priority:3,color:'green',desc:''},group:'semester',countdown:true,subSem:true,variantField:'track',variants:{
+ 'PhD':{deliv:null,desc:null,stages:['Coursework','Comprehensive exams','Prospectus defense','IRB / ethics approval','Data collection','Drafting','Dissertation defense','Final submission']},
+ 'DMin':{deliv:null,desc:null,stages:['Coursework','Project proposal','Proposal defense','IRB / ethics approval','Ministry project implementation','Project report drafting','Final presentation','Final submission']}}}]}
+function syncTypes(force){let arr=null,ts='';try{arr=state.templates&&state.templates.length?state.templates:null;ts=state.templatesTs||''}catch(e){}
+ const use=arr||(_defTpl||(_defTpl=defaultTemplates()));
+ if(!force&&_tplArr===use&&_tplTs===ts)return;_tplArr=use;_tplTs=ts;
+ Object.keys(TYPES).forEach(k=>delete TYPES[k]);TYPE_ORDER.length=0;
+ let list=use;
+ if(arr){const defs=defaultTemplates();list=use.map(t=>{const df=defs.find(x=>x.id===t.id);if(!df||'variantField' in t)return t;
+  const fields=[...t.fields];df.fields.forEach((f,i)=>{if(!fields.some(x=>x.k===f.k))fields.splice(Math.min(i,fields.length),0,f)});
+  return{...t,fields,variantField:df.variantField||'',variants:df.variants||{}}})}
+ list.forEach(t=>{TYPES[t.id]=t;TYPE_ORDER.push(t.id)});
+ if(!TYPES.general){TYPES.general=defaultTemplates()[0];TYPE_ORDER.unshift('general')}}
+const TY=k=>{syncTypes();return TYPES[k]||TYPES.general};
 let typeFilter='all';try{typeFilter=localStorage.getItem('proj_type_filter')||'all'}catch(e){}
 const _a=v=>escHtml(v==null?'':v).replace(/"/g,'&quot;');
-const tp=p=>TYPES[p.type]||TYPES.general;
-const typeVisible=p=>typeFilter==='all'||(p.type||'general')===typeFilter;
-const metaLbl=p=>{const m=tp(p).meta;return m==='Due'?'':m+' '};
+function _mix(h,t,a){const n=parseInt(h.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;const m=(c)=>Math.round(c*(1-a)+t*a);return `rgb(${m(r)},${m(g)},${m(b)})`}
+const tagStyle=h=>`color:${_mix(h,0,.38)};background:${_mix(h,255,.86)}`;
+const tp=p=>TY(p.type);
+const typeVisible=p=>typeFilter==='all'||TY(p.type).id===typeFilter;
+const metaLbl=p=>{const m=tp(p).meta;return m?m+' ':''};
 const dueLbl=p=>{const l=tp(p).dateLabel;return l==='Deadline'?'Due':l};
 function dayISO(o){const d=new Date();d.setDate(d.getDate()+o);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDaysISO(iso,n){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function daysUntil(iso){return Math.round((new Date(iso+'T00:00:00')-new Date(new Date().toDateString()))/864e5)}
 function spanLabel(iso){const d=daysUntil(iso);if(d<0)return null;if(d<=45)return d+(d===1?' day':' days');const m=Math.round(d/30.4);return m>=24?Math.floor(m/12)+' yr'+(m%12?' '+(m%12)+' mo':''):m+' mo'}
+function semKey(p){const sf=tp(p).fields.find(f=>f.kind==='semester');return(sf&&semParse((p.fields||{})[sf.k]))||semFromDate(p.deadline)}
+function cmpDate(a,b){if(!a&&!b)return 0;if(!a)return 1;if(!b)return -1;return a<b?-1:a>b?1:0}
+function semSort(arr,desc){return [...arr].sort((a,b)=>{const x=semKey(a),y=semKey(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return x!==y?(desc?y-x:x-y):cmpDate(a.deadline,b.deadline)})}
 function stageInfo(p){const s=p.stages||[];const done=s.filter(x=>x.done).length;return{done,total:s.length,pct:s.length?Math.round(done/s.length*100):0,cur:s.find(x=>!x.done)}}
 function progressInfo(p){
- if(p.type==='supervision'&&p.stages&&p.stages.length){const si=stageInfo(p);return{pct:si.pct,kind:'stages',si}}
+ if(tp(p).stages&&p.stages&&p.stages.length){const si=stageInfo(p);return{pct:si.pct,kind:'stages',si}}
  const cp=computeCheckboxProgress(p.desc);if(cp)return{pct:cp.progress,kind:'checkbox',cp};
  return{pct:p.progress,kind:'manual'}}
 function syncProgress(p){const i=progressInfo(p);if(i.kind!=='manual')p.progress=i.pct}
 const nextDeliv=p=>(p.deliverables||[]).filter(d=>!d.done&&d.date).sort((a,b)=>a.date<b.date?-1:1)[0];
 function nextDue(p){const c=(p.deliverables||[]).filter(d=>!d.done&&d.date).map(d=>d.date);if(p.deadline&&p.progress<100)c.push(p.deadline);return c.sort()[0]||null}
-function cmpDate(a,b){if(!a&&!b)return 0;if(!a)return 1;if(!b)return -1;return a<b?-1:a>b?1:0}
-function typeSub(p){const f=p.fields||{};
- if(p.type==='speaking')return[f.org,f.venue].filter(Boolean).join(' · ');
- if(p.type==='writing')return[f.wtype,f.publisher||f.event].filter(Boolean).join(' · ');
- if(p.type==='course')return[(p.fields||{}).semester,f.code].filter(Boolean).join(' · ');
- if(p.type==='supervision')return[f.track,p.deadline?'Grad '+semLabel(semFromDate(p.deadline)):'',f.dtitle].filter(Boolean).join(' · ');return''}
-function cardKicker(p){if(!p.type||p.type==='general')return'';const s=typeSub(p);
- return `<div class="card-kicker"><span class="type-tag tt-${p.type}">${tp(p).label}</span>${s?`<span class="kicker-sub">${_a(s)}</span>`:''}</div>`}
-function metaExtra(p){let h='';
- if(p.type==='supervision'&&p.deadline){const s=spanLabel(p.deadline);if(s)h+=`<span>· ${s} to go</span>`}
+const fieldVal=(f,v)=>f.kind==='date'?formatDateDisplay(v):v;
+function typeSub(p){const t=tp(p),fv=p.fields||{};const out=[];
+ if(t.subSem&&p.deadline)out.push((t.meta?t.meta+' ':'')+semLabel(semFromDate(p.deadline)));
+ t.fields.filter(f=>f.card&&fv[f.k]).forEach(f=>out.push(fieldVal(f,fv[f.k])));return out.join(' · ')}
+function cardKicker(p){const t=tp(p);if(t.id==='general')return'';const s=typeSub(p);
+ return `<div class="card-kicker"><span class="type-tag" style="${tagStyle(t.color)}">${_a(t.label)}</span>${s?`<span class="kicker-sub">${_a(s)}</span>`:''}</div>`}
+function metaExtra(p){let h='';const t=tp(p);
+ if(t.countdown&&p.deadline){const s=spanLabel(p.deadline);if(s)h+=`<span>· ${s} to go</span>`}
  const nd=nextDeliv(p);
  if(nd){const late=daysUntil(nd.date)<0;h+=`<span${late?' style="color:var(--accent)"':''}>${late?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:3px"></span>':'·'} ${_a(nd.label)} ${formatDateDisplay(nd.date)}</span>`}
  return h}
@@ -1134,14 +1183,14 @@ function stageNoteHtml(p){const si=stageInfo(p);
  return `<div class="checkbox-progress-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10"/></svg><span>Progress tracked by stages: <strong>${si.done}</strong> of <strong>${si.total}</strong> complete.</span></div>`}
 const _ck='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
 function typeDetailsHtml(p){
- if(!p.type||p.type==='general')return'';const t=tp(p),f=p.fields||{};let h='';
- const rows=t.fields.filter(x=>f[x.k]).map(x=>`<span class="td-l">${x.l}</span><span class="td-v">${_a(f[x.k])}</span>`).join('');
+ const t=tp(p);if(t.id==='general')return'';const fv=p.fields||{};let h='';
+ const rows=t.fields.filter(x=>fv[x.k]).map(x=>`<span class="td-l">${_a(x.l)}</span><span class="td-v${x.kind==='long'?' pre':''}">${_a(fieldVal(x,fv[x.k]))}</span>`).join('');
  if(rows)h+=`<div class="type-details">${rows}</div>`;
  if(t.deliv&&p.deliverables&&p.deliverables.length){
-  h+=`<div class="td-head">${t.deliv.title}</div><div class="deliv-list">`+[...p.deliverables].sort((a,b)=>cmpDate(a.date,b.date)).map(d=>{const late=!d.done&&d.date&&daysUntil(d.date)<0;
+  h+=`<div class="td-head">${_a(t.deliv.title||'Deliverables')}</div><div class="deliv-list">`+[...p.deliverables].sort((a,b)=>cmpDate(a.date,b.date)).map(d=>{const late=!d.done&&d.date&&daysUntil(d.date)<0;
    return `<div class="deliv-row${d.done?' done':''}" onclick="toggleDeliv('${p.id}','${d.id}')"><span class="deliv-check">${d.done?_ck:''}</span><span class="deliv-lbl">${_a(d.label)}</span><span class="deliv-date${late?' late':''}">${d.date?formatDateDisplay(d.date):'No date'}</span></div>`}).join('')+'</div>'}
- if(p.type==='supervision'&&p.stages&&p.stages.length){const si=stageInfo(p);
-  h+=`<div class="td-head">Path to graduation</div><div class="deliv-list">`+p.stages.map(s=>`<div class="deliv-row${s.done?' done':''}${s===si.cur?' current':''}" onclick="toggleStage('${p.id}','${s.id}')"><span class="deliv-check">${s.done?_ck:''}</span><span class="deliv-lbl">${_a(s.label)}</span>${s===si.cur?'<span class="deliv-date">Current</span>':''}</div>`).join('')+'</div>'}
+ if(t.stages&&p.stages&&p.stages.length){const si=stageInfo(p);
+  h+=`<div class="td-head">${_a(t.stages.title||'Stages')}</div><div class="deliv-list">`+p.stages.map(s=>`<div class="deliv-row${s.done?' done':''}${s===si.cur?' current':''}" onclick="toggleStage('${p.id}','${s.id}')"><span class="deliv-check">${s.done?_ck:''}</span><span class="deliv-lbl">${_a(s.label)}</span>${s===si.cur?'<span class="deliv-date">Current</span>':''}</div>`).join('')+'</div>'}
  return h}
 function refreshCard(id){
  const p=state.projects.find(x=>x.id===id),el=document.getElementById('card-'+id);if(!p||!el){render();return}
@@ -1157,32 +1206,58 @@ function toggleStage(pid,sid){const p=state.projects.find(x=>x.id===pid);const s
 function ganttTicksHtml(p,start,cellDays,cellW,totalW){let h='';
  (p.deliverables||[]).forEach(d=>{if(!d.date)return;const dx=daysBetween(start,new Date(d.date+'T00:00:00'));const x=(dx/cellDays)*cellW+cellW*.5-5;if(x<0||x>totalW)return;
   h+=`<div class="gantt-tick${d.done?' done':''}" style="left:${x}px" title="${_a(d.label)} · ${formatDateDisplay(d.date)}" onclick="showGanttPopup(event,'${p.id}')"></div>`});return h}
-let formType='general',formFields={},formDeliv=[],formStages=[];
-function initTypeForm(p){formType=p?(p.type||'general'):'general';formFields=p&&p.fields?{...p.fields}:{};
+let formType='general',formFields={},formDeliv=[],formStages=[],_typeTouched=false,_lastDesc='';
+function listTypeOf(tabId){const t=state.tabs.find(x=>x.id===tabId);return t&&t.listType&&TY(t.listType).id===t.listType?t.listType:null}
+function applyNewDefaults(prevDesc){const T=TY(formType),d=T.defaults||{};
+ const de=document.getElementById('projDesc');if(de&&(!de.value.trim()||de.value===prevDesc))de.value=d.desc||'';_lastDesc=d.desc||'';
+ selectedPriority=d.priority||3;renderPriorityPicker(selectedPriority,v=>{selectedPriority=v});
+ if(d.color){selectedColor=d.color;renderColorPicker('colorPicker',selectedColor,c=>{selectedColor=c})}}
+function initTypeForm(p){_typeTouched=false;
+ formType=p?TY(p.type).id:(listTypeOf(state.activeTab)||'general');formFields=p&&p.fields?{...p.fields}:{};
  formDeliv=p&&p.deliverables?p.deliverables.map(d=>({...d})):[];formStages=p&&p.stages?p.stages.map(s=>({...s})):[];
- ensureTypeDefaults();renderTypePicker();applyTypeUI()}
-function setFormType(t){formType=t;ensureTypeDefaults();renderTypePicker();applyTypeUI()}
-function ensureTypeDefaults(){const t=TYPES[formType];
- if(t.deliv&&!formDeliv.length&&t.deliv.defaults.length)formDeliv=t.deliv.defaults.map(l=>({id:uid(),label:l,date:'',done:false}));
- if(t.stages&&!formStages.length)formStages=DEFAULT_STAGES.map(l=>({id:uid(),label:l,done:false}))}
-function renderTypePicker(){const el=document.getElementById('typePicker');if(!el)return;
- el.innerHTML=TYPE_ORDER.map(k=>`<button type="button" class="type-opt${k===formType?' selected':''}" style="--c:${{general:'#6b6359',speaking:'#8e44ad',writing:'#2980b9',course:'#e67e22',supervision:'#2d6a4f'}[k]}" onclick="setFormType('${k}')">${TYPES[k].label}</button>`).join('')}
-function applyTypeUI(){const t=TYPES[formType];
- const nl=document.getElementById('nameLabel');if(nl)nl.textContent=t.nameLabel;
- const dl=document.getElementById('deadlineLabel');if(dl)dl.textContent=t.dateLabel;
+ ensureTypeDefaults();renderTypePicker();applyTypeUI();if(!p){applyNewDefaults('');autoDates()}}
+function setFormType(t,fromUser){if(fromUser)_typeTouched=true;const prev=TY(formType);formType=t;
+ if(!editingProjectId){formDeliv=[];formStages=[]}
+ ensureTypeDefaults();renderTypePicker();applyTypeUI();
+ if(!editingProjectId){applyNewDefaults(_lastDesc);autoDates()}}
+const variantFor=(t,val)=>t.variantField&&t.variants&&val?t.variants[val]||null:null;
+const delivDefaults=(t,v)=>((v&&v.deliv)||(t.deliv&&t.deliv.defaults)||[]);
+const stageDefaults=(t,v)=>((v&&v.stages)||(t.stages&&t.stages.items)||[]);
+function onVariantChange(){const t=TY(formType),val=formFields[t.variantField];if(!val)return;const v=variantFor(t,val);
+ if(editingProjectId&&!confirm('Replace stages and deliverables with the '+val+' defaults? Items with matching names keep their status.'))return;
+ const od=formDeliv,os=formStages;
+ if(t.deliv)formDeliv=delivDefaults(t,v).map(d=>{const o=od.find(x=>x.label===d.label);return o?{...o}:{id:uid(),label:d.label,date:'',done:false,_off:d.before}});
+ if(t.stages)formStages=stageDefaults(t,v).map(l=>{const o=os.find(x=>x.label===l);return o?{...o}:{id:uid(),label:l,done:false}});
+ if(!editingProjectId){const de=document.getElementById('projDesc'),nd=(v&&v.desc!=null)?v.desc:((t.defaults||{}).desc||'');if(de&&(!de.value.trim()||de.value===_lastDesc)){de.value=nd;_lastDesc=nd}}
+ renderTypeFields();autoDates()}
+function onProjTabChange(){if(editingProjectId||_typeTouched)return;const sel=document.getElementById('projTab');const lt=sel&&listTypeOf(sel.value);if(lt&&lt!==formType)setFormType(lt)}
+function ensureTypeDefaults(){const t=TY(formType);
+ if(t.deliv&&!formDeliv.length&&(t.deliv.defaults||[]).length)formDeliv=t.deliv.defaults.map(d=>({id:uid(),label:d.label,date:'',done:false,_off:d.before}));
+ if(t.stages&&!formStages.length)formStages=(t.stages.items||[]).map(l=>({id:uid(),label:l,done:false}))}
+function autoDates(){const dl=document.getElementById('projDeadline');const v=dl&&dl.value;let ch=false;
+ formDeliv.forEach(d=>{if(d._off!=null&&d._off!==''&&!d._man){const nd=v?addDaysISO(v,-d._off):'';if(d.date!==nd){d.date=nd;ch=true}}});if(ch)renderTypeFields()}
+function renderTypePicker(){syncTypes();const el=document.getElementById('typePicker');if(!el)return;
+ el.innerHTML=TYPE_ORDER.map(k=>`<button type="button" class="type-opt${k===formType?' selected':''}" style="--c:${TYPES[k].color}" onclick="setFormType('${k}',true)">${_a(TYPES[k].label)}</button>`).join('')}
+function applyTypeUI(){const t=TY(formType);
+ const nl=document.getElementById('nameLabel');if(nl)nl.textContent=t.nameLabel||'Project Name';
+ const dl=document.getElementById('deadlineLabel');if(dl)dl.textContent=t.dateLabel||'Deadline';
  const pf=document.getElementById('progressField');if(pf)pf.style.display=t.stages?'none':'';
  renderTypeFields()}
-function fieldHtml(f){const v=_a(formFields[f.k]);let c;
- if(f.opts){const cur=formFields[f.k],os=(!cur||f.opts.includes(cur))?f.opts:[...f.opts,cur];c=`<select onchange="formFields['${f.k}']=this.value"><option value="">Choose…</option>${os.map(o=>`<option${cur===o?' selected':''}>${o}</option>`).join('')}</select>`}
- else if(f.list)c=`<input type="text" list="dl_${f.k}" value="${v}" placeholder="e.g. ${f.list[0]}" oninput="formFields['${f.k}']=this.value"><datalist id="dl_${f.k}">${f.list.map(o=>`<option value="${o}">`).join('')}</datalist>`;
- else c=`<input type="text" value="${v}" oninput="formFields['${f.k}']=this.value">`;
- return `<div class="field"><label>${f.l}</label>${c}</div>`}
-function renderTypeFields(){const el=document.getElementById('typeFields');if(!el)return;const t=TYPES[formType];let h='';
+function fieldHtml(f){const cur=formFields[f.k]||'',v=_a(cur),k=f.k;let c;const set=`formFields['${k}']=this.value`;const vh=TY(formType).variantField===f.k?';onVariantChange()':'';
+ if(f.kind==='long')c=`<textarea style="min-height:90px" oninput="${set}">${_a(cur)}</textarea>`;
+ else if(f.kind==='date')c=`<input type="date" value="${v}" onchange="${set}">`;
+ else if(f.kind==='number')c=`<input type="text" inputmode="decimal" value="${v}" oninput="${set}">`;
+ else if(f.kind==='select'||f.kind==='semester'){const base=f.kind==='semester'?semOpts():(f.opts||[]);const os=(!cur||base.includes(cur))?base:[...base,cur];
+  c=`<select onchange="${set}${vh}"><option value="">Choose…</option>${os.map(o=>`<option${cur===o?' selected':''}>${_a(o)}</option>`).join('')}</select>`}
+ else if(f.kind==='suggest')c=`<input type="text" list="dl_${k}" value="${v}" oninput="${set}" onchange="${vh.slice(1)}"><datalist id="dl_${k}">${(f.opts||[]).map(o=>`<option value="${_a(o)}">`).join('')}</datalist>`;
+ else c=`<input type="text" value="${v}" oninput="${set}">`;
+ return `<div class="field"><label>${_a(f.l)}</label>${c}</div>`}
+function renderTypeFields(){const el=document.getElementById('typeFields');if(!el)return;const t=TY(formType);let h='';
  if(t.fields.length)h+=`<div class="type-block">${t.fields.map(fieldHtml).join('')}</div>`;
  if(t.deliv){const used=new Set(formDeliv.map(d=>d.label));
-  h+=`<div class="field"><label>${t.deliv.title}</label><div class="ed-hint">${t.deliv.hint}</div><div class="ed-list">`+formDeliv.map((d,i)=>`<div class="ed-row"><input type="text" value="${_a(d.label)}" placeholder="Label" oninput="formDeliv[${i}].label=this.value"><input type="date" value="${d.date||''}" onchange="formDeliv[${i}].date=this.value"><button type="button" class="ed-x" onclick="rmDeliv(${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add">`+t.deliv.presets.filter(l=>!used.has(l)).map(l=>`<button type="button" class="ed-chip" onclick="addDeliv('${l}')">+ ${l}</button>`).join('')+`<button type="button" class="ed-chip" onclick="addDeliv('')">+ Other</button></div></div>`}
+  h+=`<div class="field"><label>${_a(t.deliv.title||'Deliverables')}</label>${t.deliv.hint?`<div class="ed-hint">${_a(t.deliv.hint)}</div>`:''}<div class="ed-list">`+formDeliv.map((d,i)=>`<div class="ed-row"><input type="text" value="${_a(d.label)}" placeholder="Label" oninput="formDeliv[${i}].label=this.value"><input type="date" value="${d.date||''}" onchange="formDeliv[${i}].date=this.value;formDeliv[${i}]._man=true"><button type="button" class="ed-x" onclick="rmDeliv(${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add">`+(t.deliv.presets||[]).filter(l=>!used.has(l)).map(l=>`<button type="button" class="ed-chip" data-l="${_a(l)}" onclick="addDeliv(this.dataset.l)">+ ${_a(l)}</button>`).join('')+`<button type="button" class="ed-chip" onclick="addDeliv('')">+ Other</button></div></div>`}
  if(t.stages){
-  h+=`<div class="field"><label>Stages to graduation</label><div class="ed-hint">Check what is complete. Progress is the share of stages done.</div><div class="ed-list">`+formStages.map((s,i)=>`<div class="ed-row stage"><span class="deliv-check" style="pointer-events:auto;cursor:pointer;${s.done?'background:var(--accent2);border-color:var(--accent2)':''}" onclick="toggleFormStage(${i})">${s.done?_ck:''}</span><input type="text" value="${_a(s.label)}" oninput="formStages[${i}].label=this.value"><button type="button" class="ed-x" onclick="rmStage(${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add"><button type="button" class="ed-chip" onclick="addStage()">+ Add stage</button><button type="button" class="ed-chip" onclick="resetStages()">Reset to defaults</button></div></div>`}
+  h+=`<div class="field"><label>${_a(t.stages.title||'Stages')}</label><div class="ed-hint">Check what is complete. Progress is the share of stages done.</div><div class="ed-list">`+formStages.map((s,i)=>`<div class="ed-row stage"><span class="deliv-check" style="pointer-events:auto;cursor:pointer;${s.done?'background:var(--accent2);border-color:var(--accent2)':''}" onclick="toggleFormStage(${i})">${s.done?_ck:''}</span><input type="text" value="${_a(s.label)}" oninput="formStages[${i}].label=this.value"><button type="button" class="ed-x" onclick="rmStage(${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add"><button type="button" class="ed-chip" onclick="addStage()">+ Add stage</button><button type="button" class="ed-chip" onclick="resetStages()">Reset to defaults</button></div></div>`}
  el.innerHTML=h}
 function _focusLast(){const r=document.querySelectorAll('#typeFields .ed-row input[type=text]');const l=r[r.length-1];if(l&&!l.value)l.focus()}
 function addDeliv(l){formDeliv.push({id:uid(),label:l,date:'',done:false});renderTypeFields();_focusLast()}
@@ -1190,21 +1265,141 @@ function rmDeliv(i){formDeliv.splice(i,1);renderTypeFields()}
 function addStage(){formStages.push({id:uid(),label:'',done:false});renderTypeFields();_focusLast()}
 function rmStage(i){formStages.splice(i,1);renderTypeFields()}
 function toggleFormStage(i){formStages[i].done=!formStages[i].done;renderTypeFields()}
-function resetStages(){formStages=DEFAULT_STAGES.map(l=>({id:uid(),label:l,done:false}));renderTypeFields()}
-function applyTypeForm(p){const t=TYPES[formType];p.type=formType;const f={};
- t.fields.forEach(x=>{const v=(formFields[x.k]||'').trim();if(v)f[x.k]=v});p.fields=f;
- p.deliverables=t.deliv?formDeliv.filter(d=>d.label.trim()).map(d=>({...d,label:d.label.trim()})):[];
+function resetStages(){const t=TY(formType);formStages=stageDefaults(t,variantFor(t,formFields[t.variantField])).map(l=>({id:uid(),label:l,done:false}));renderTypeFields()}
+function applyTypeForm(p){const t=TY(formType);p.type=formType;const f={};
+ t.fields.forEach(x=>{const v=String(formFields[x.k]||'').trim();if(v)f[x.k]=v});p.fields=f;
+ p.deliverables=t.deliv?formDeliv.filter(d=>d.label.trim()).map(d=>{const{_off,_man,...r}=d;return{...r,label:d.label.trim()}}):[];
  p.stages=t.stages?formStages.filter(s=>s.label.trim()).map(s=>({...s,label:s.label.trim()})):[];
  if(typeFilter!=='all'&&typeFilter!==formType){typeFilter='all';try{localStorage.setItem('proj_type_filter','all')}catch(e){}}}
-function typeBarHtml(){const act=state.projects.filter(p=>p.status==='active');
- const n=t=>t==='all'?act.length:act.filter(p=>(p.type||'general')===t).length;const hasS=state.projects.some(p=>p.sample);
- return `<div class="type-bar"><span class="sort-lbl">Type:</span>`+['all',...TYPE_ORDER].map(t=>`<button class="type-chip${typeFilter===t?' active':''}" onclick="setTypeFilter('${t}')">${t==='all'?'All':TYPES[t].label}<span class="tc-n">${n(t)}</span></button>`).join('')+(hasS?`<button class="type-chip ghost" onclick="removeSamples()">Remove samples</button>`:'')+`</div>`}
+function typeBarHtml(){syncTypes();const act=state.projects.filter(p=>p.status==='active');
+ const n=t=>t==='all'?act.length:act.filter(p=>TY(p.type).id===t).length;const hasS=state.projects.some(p=>p.sample);
+ return `<div class="type-bar"><span class="sort-lbl">Type:</span>`+['all',...TYPE_ORDER].map(t=>`<button class="type-chip${typeFilter===t?' active':''}" onclick="setTypeFilter('${t}')">${t==='all'?'All':_a(TYPES[t].label)}<span class="tc-n">${n(t)}</span></button>`).join('')+(hasS?`<button class="type-chip ghost" onclick="removeSamples()">Remove samples</button>`:'')+`</div>`}
 function refreshAll(){if(currentView==='gantt')renderGantt();else render()}
 function setTypeFilter(t){typeFilter=t;try{localStorage.setItem('proj_type_filter',t)}catch(e){}refreshAll()}
 function removeSamples(){const ss=state.projects.filter(p=>p.sample);if(!ss.length)return;
  if(!confirm('Remove '+ss.length+' sample projects?'))return;
  const now=new Date().toISOString();state.tombstones=state.tombstones||{};ss.forEach(p=>state.tombstones[p.id]=now);
  state.projects=state.projects.filter(p=>!p.sample);state._tabTs=now;saveState();refreshAll()}
+
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function groupOptions(listType){syncTypes();const o=[['','None'],['semester','Semester (semester field, else deadline)'],['month','Deadline month'],['priority','Priority'],['type','Project type']];
+ const t=listType&&TYPES[listType];if(t)t.fields.filter(f=>['select','suggest','text'].includes(f.kind)).forEach(f=>o.push(['field:'+f.k,f.l]));return o}
+function groupKeyFor(p,gb){
+ if(gb==='semester'){const k=semKey(p);return k?[k,semLabel(k)]:[1e9,'No semester']}
+ if(gb==='month'){if(!p.deadline)return[1e9,'No date'];const[y,m]=p.deadline.split('-');return[+y*100+ +m,MONTHS[+m-1]+' '+y]}
+ if(gb==='priority'){const pr=p.priority||3;return[pr,(PRIORITIES.find(x=>x.val===pr)||{}).label||'Medium']}
+ if(gb==='type'){const t=tp(p);return[TYPE_ORDER.indexOf(t.id),t.label]}
+ if(gb.indexOf('field:')===0){const k=gb.slice(6),f=tp(p).fields.find(x=>x.k===k);if(!f)return[1e9+1,'Other'];const v=(p.fields||{})[k]||'';if(!v)return[1e9,'None'];const i=f.opts?f.opts.indexOf(v):-1;return[i>=0?i:1e6,v]}
+ return[0,'']}
+function activeSectionHtml(arr,tab){const gb=tab&&tab.groupBy;
+ if(!gb)return `<div class="section-label">Active</div>`+arr.map((p,i)=>renderCard(p,i)).join('');
+ const sm=sortModes[tab.id]||'manual',desc=sm==='semester-desc'||sm==='deadline-desc';
+ const m=new Map();arr.forEach(p=>{const[k,l]=groupKeyFor(p,gb),key=k+'|'+l;if(!m.has(key))m.set(key,{k,l,items:[]});m.get(key).items.push(p)});
+ const gs=[...m.values()].sort((a,b)=>{const x=a.k,y=b.k;if(x===y)return 0;if(x>=1e9)return 1;if(y>=1e9)return -1;return desc?y-x:x-y});
+ let i=0;return gs.map(g=>`<div class="section-label group-label">${_a(g.l)}<span class="section-count">${g.items.length}</span></div>`+g.items.map(p=>renderCard(p,i++)).join('')).join('')}
+function renderListOpts(mode,tab){const el=document.getElementById(mode+'TabExtra');if(!el)return;syncTypes();
+ const lt=tab&&tab.listType||'',gb=tab&&tab.groupBy||'';
+ el.innerHTML=`<div class="field" style="padding:0 0 16px"><label>List type</label><select id="${mode}ListType" onchange="listTypeChanged('${mode}')"><option value="">Standard (any project)</option>${TYPE_ORDER.map(id=>`<option value="${id}"${id===lt?' selected':''}>${_a(TYPES[id].label)}</option>`).join('')}</select><div class="ed-hint" style="margin:6px 0 0">New projects in this list start as this type.</div></div><div class="field" style="padding:0 0 16px"><label>Group by</label><select id="${mode}GroupBy">${groupOptions(lt).map(([v,l])=>`<option value="${v}"${v===gb?' selected':''}>${_a(l)}</option>`).join('')}</select><div class="ed-hint" style="margin:6px 0 0">Adds divider headings between groups, such as semesters.</div></div>`}
+function listTypeChanged(mode){const lt=document.getElementById(mode+'ListType').value,t=lt&&TYPES[lt];renderListOpts(mode,{listType:lt,groupBy:t?t.group||'':''})}
+function readListOpts(mode){const a=document.getElementById(mode+'ListType'),b=document.getElementById(mode+'GroupBy');return{listType:a?a.value:'',groupBy:b?b.value:''}}
+function pickTemplates(l,r){const w=(l.templatesTs||'')>=(r.templatesTs||'')?l:r;return w.templates?{templates:w.templates,templatesTs:w.templatesTs||''}:{}}
+
+let tplDraft=null;
+const _clone=o=>JSON.parse(JSON.stringify(o));
+function _tplSheet(){let d=document.getElementById('templateOverlay');if(d)return d;
+ d=document.createElement('div');d.className='overlay';d.id='templateOverlay';d.setAttribute('onclick',"overlayClose(event,'templateOverlay')");
+ d.innerHTML='<div class="sheet tpl-sheet"><div class="sheet-handle"></div><div class="sheet-title" id="tplTitle"></div><div id="tplBody"></div><div class="sheet-footer" id="tplFoot"></div></div>';document.body.appendChild(d);return d}
+function openTemplateManager(){closeSheet('backupOverlay');const d=_tplSheet();renderTplList();d.classList.add('open')}
+function _tplSummary(t){const n=state.projects.filter(p=>TY(p.type).id===t.id).length;const b=[t.fields.length+' field'+(t.fields.length===1?'':'s')];
+ if(t.deliv)b.push('deliverables');if(t.stages)b.push('stages');b.push(n+' project'+(n===1?'':'s'));return b.join(' · ')}
+function renderTplList(){syncTypes();tplDraft=null;
+ document.getElementById('tplTitle').textContent='Project templates';
+ document.getElementById('tplBody').innerHTML=`<div class="ed-hint" style="margin:0 0 14px">A template sets the fields, deliverables, stages and starting values for a project type. Existing projects keep their data when a template changes.</div>`+TYPE_ORDER.map(id=>{const t=TYPES[id];
+  return `<div class="tpl-card"><span class="tpl-dot" style="background:${t.color}"></span><div class="tpl-info"><div class="tpl-name">${_a(t.label)}</div><div class="tpl-sum">${_a(_tplSummary(t))}</div></div><button class="ed-chip" onclick="tplEdit('${id}')">Edit</button><button class="ed-chip" onclick="tplDup('${id}')">Duplicate</button></div>`}).join('')+`<button class="btn-backup primary" style="margin-top:14px" onclick="tplNew()">+ New template</button>`;
+ document.getElementById('tplFoot').innerHTML=`<button class="btn-secondary" onclick="closeSheet('templateOverlay')">Done</button>`}
+function tplEdit(id){tplDraft=_clone(TY(id));tplDraft._orig=id;renderTplEditor()}
+function tplDup(id){tplDraft=_clone(TY(id));tplDraft.id=null;tplDraft.label+=' copy';tplDraft._orig=null;renderTplEditor()}
+function tplNew(){tplDraft={id:null,_orig:null,label:'',color:'#2980b9',nameLabel:'Project Name',dateLabel:'Deadline',meta:'',fields:[],deliv:null,stages:null,defaults:{priority:3,color:'blue',desc:''},group:'',countdown:false,subSem:false,variantField:'',variants:{}};renderTplEditor()}
+const _ck2=(on,fn,txt)=>`<label class="tpl-check"><input type="checkbox"${on?' checked':''} onchange="${fn}"> ${txt}</label>`;
+const _ti=(v,path,ph,extra)=>`<input type="text" value="${_a(v)}" placeholder="${_a(ph||'')}" oninput="${path}=this.value"${extra||''}>`;
+function renderTplEditor(){const d=tplDraft;const isNew=!d._orig;
+ document.getElementById('tplTitle').textContent=isNew?'New template':'Edit template';
+ const sw=COLORS.map(c=>`<div class="color-swatch${d.color===c.hex?' selected':''}" style="background:${c.hex}" onclick="tplDraft.color='${c.hex}';renderTplEditor()"></div>`).join('');
+ const fields=d.fields.map((f,i)=>`<div class="tpl-field"><div class="tpl-row2">${_ti(f.l,`tplDraft.fields[${i}].l`,'Field label')}<select onchange="tplSetKind(${i},this.value)">${KINDS.map(([v,l])=>`<option value="${v}"${f.kind===v?' selected':''}>${l}</option>`).join('')}</select></div>${(f.kind==='select'||f.kind==='suggest')?`<input type="text" class="tpl-opts" value="${_a((f.opts||[]).join(', '))}" placeholder="Options, separated by commas" onchange="renderTplEditor()" oninput="tplDraft.fields[${i}].opts=this.value.split(',').map(s=>s.trim()).filter(Boolean)">`:''}<div class="tpl-row3">${_ck2(f.card,`tplDraft.fields[${i}].card=this.checked`,'Show on card')}<span class="tpl-spacer"></span><button type="button" class="ed-x" onclick="tplMove(${i},-1)" title="Move up">↑</button><button type="button" class="ed-x" onclick="tplMove(${i},1)" title="Move down">↓</button><button type="button" class="ed-x" onclick="tplRm('fields',${i})" title="Remove">×</button></div></div>`).join('');
+ let dv='';if(d.deliv){dv=`<div class="field" style="margin-top:12px"><label>Section title</label>${_ti(d.deliv.title,'tplDraft.deliv.title')}</div><div class="field"><label>Quick-add suggestions</label><input type="text" value="${_a((d.deliv.presets||[]).join(', '))}" placeholder="Slides, Outline, Manuscript" oninput="tplDraft.deliv.presets=this.value.split(',').map(s=>s.trim()).filter(Boolean)"></div><div class="field"><label>Added to every new project</label><div class="ed-hint">Days before the deadline fills in each date automatically. Leave blank for no date.</div><div class="ed-list">`+(d.deliv.defaults||[]).map((x,i)=>`<div class="ed-row"><input type="text" value="${_a(x.label)}" placeholder="Label" oninput="tplDraft.deliv.defaults[${i}].label=this.value"><input type="text" inputmode="numeric" value="${x.before==null?'':x.before}" placeholder="Days before" oninput="tplDraft.deliv.defaults[${i}].before=this.value===''?null:(+this.value||0)"><button type="button" class="ed-x" onclick="tplRm('deliv.defaults',${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add"><button type="button" class="ed-chip" onclick="tplAddDelivDefault()">+ Add default</button></div></div>`}
+ let st='';if(d.stages){st=`<div class="field" style="margin-top:12px"><label>Section title</label>${_ti(d.stages.title,'tplDraft.stages.title')}</div><div class="field"><label>Stages in order</label><div class="ed-hint">Progress on the card is the share of stages complete.</div><div class="ed-list">`+(d.stages.items||[]).map((s,i)=>`<div class="ed-row two"><input type="text" value="${_a(s)}" placeholder="Stage" oninput="tplDraft.stages.items[${i}]=this.value"><button type="button" class="ed-x" onclick="tplRm('stages.items',${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add"><button type="button" class="ed-chip" onclick="tplDraft.stages.items.push('');renderTplEditor()">+ Add stage</button></div></div>`}
+ const df=d.defaults||(d.defaults={priority:3,color:'blue',desc:''});
+ const gopts=[['','None'],['semester','Semester'],['month','Deadline month'],['priority','Priority'],['type','Project type']].concat(d.fields.filter(f=>['select','suggest','text'].includes(f.kind)).map(f=>['field:'+f.k,f.l]));
+ const sub=_tplSubHtml(d);
+ const dsw=COLORS.map(c=>`<div class="color-swatch${df.color===c.id?' selected':''}" style="background:${c.hex}" onclick="tplDraft.defaults.color='${c.id}';renderTplEditor()"></div>`).join('');
+ document.getElementById('tplBody').innerHTML=`
+<div class="field"><label>Template name</label>${_ti(d.label,'tplDraft.label','e.g. Committee service',' maxlength="30"')}</div>
+<div class="field"><label>Tag color</label><div class="color-picker">${sw}</div></div>
+<div class="tpl-h">Labels</div>
+<div class="field"><label>Name field label</label>${_ti(d.nameLabel,'tplDraft.nameLabel','Project Name')}</div>
+<div class="field"><label>Deadline label</label>${_ti(d.dateLabel,'tplDraft.dateLabel','Deadline')}<div class="ed-hint" style="margin:6px 0 0">For example Event date, Grades due, Proposed graduation.</div></div>
+<div class="field"><label>Date prefix on card</label>${_ti(d.meta,'tplDraft.meta','Optional, e.g. Event')}</div>
+<div class="tpl-h">Fields</div>
+<div class="tpl-fields">${fields||'<div class="ed-hint">No custom fields yet.</div>'}</div>
+<div class="ed-add" style="margin-top:8px"><button type="button" class="ed-chip" onclick="tplAddField()">+ Add field</button></div>
+<div class="tpl-h">Deliverables</div>
+${_ck2(!!d.deliv,'tplToggle(\'deliv\',this.checked)','Projects of this type have dated deliverables')}${dv}
+<div class="tpl-h">Stages</div>
+${_ck2(!!d.stages,'tplToggle(\'stages\',this.checked)','Projects of this type move through stages')}${st}
+${sub}
+<div class="tpl-h">Card display</div>
+${_ck2(d.countdown,'tplDraft.countdown=this.checked','Show time remaining until the deadline')}
+<div style="height:8px"></div>
+${_ck2(d.subSem,'tplDraft.subSem=this.checked','Show the deadline\'s semester on the card, such as Grad Fall 2027')}
+<div class="tpl-h">New project defaults</div>
+<div class="field"><label>Priority</label><select onchange="tplDraft.defaults.priority=+this.value">${PRIORITIES.map(x=>`<option value="${x.val}"${df.priority===x.val?' selected':''}>${x.label}</option>`).join('')}</select></div>
+<div class="field"><label>Project color</label><div class="color-picker">${dsw}</div></div>
+<div class="field"><label>Starting description</label><textarea style="min-height:110px" placeholder="- [ ] First task" oninput="tplDraft.defaults.desc=this.value">${_a(df.desc)}</textarea><div class="ed-hint" style="margin:6px 0 0">Checklist lines here carry into each new project.</div></div>
+<div class="field"><label>Suggested list grouping</label><select onchange="tplDraft.group=this.value">${gopts.map(([v,l])=>`<option value="${v}"${d.group===v?' selected':''}>${_a(l)}</option>`).join('')}</select><div class="ed-hint" style="margin:6px 0 0">Used when a list is set to this type.</div></div>`;
+ document.getElementById('tplFoot').innerHTML=(d._orig&&d._orig!=='general'?`<button class="btn-secondary" style="color:var(--accent);border-color:#f5c6c1;flex:none" onclick="tplDelete()">Delete</button>`:'')+`<button class="btn-secondary" onclick="renderTplList()">Cancel</button><button class="btn-primary" onclick="tplSave()">Save template</button>`}
+function _tplSubHtml(d){
+ const sel=d.fields.filter(f=>f.kind==='select'||f.kind==='suggest'),hint=t=>`<div class="ed-hint" style="margin:8px 0 0">${t}</div>`;
+ let h=`<div class="tpl-h">Subtypes</div><div class="field"><label>Subtype field</label><select onchange="tplDraft.variantField=this.value;renderTplEditor()"><option value="">None</option>${sel.map(f=>`<option value="${f.k}"${d.variantField===f.k?' selected':''}>${_a(f.l)}</option>`).join('')}</select>${hint('Picking a value for this field in a project fills in that subtype\'s stages, deliverables and starting description. Add a Dropdown field above if none is listed.')}</div>`;
+ const f=sel.find(x=>x.k===d.variantField);if(!f)return h;
+ const opts=f.opts||[];if(!opts.length)return h+hint('Add options to that field first.');
+ if(!d.deliv&&!d.stages)h+=hint('Turn on deliverables or stages above to give subtypes their own.');
+ d.variants=d.variants||{};
+ return h+opts.map((o,vi)=>{const v=d.variants[o]||{};let b=`<div class="tpl-field"><div class="tpl-name" style="margin-bottom:6px">${_a(o)}</div>`;
+  if(d.stages){b+=_ck2(!!v.stages,`tplVarToggle(${vi},'stages',this.checked)`,'Custom stages');
+   if(v.stages)b+=`<div class="ed-list" style="margin:8px 0">`+v.stages.map((s,i)=>`<div class="ed-row two"><input type="text" value="${_a(s)}" placeholder="Stage" oninput="tplVV(${vi}).stages[${i}]=this.value"><button type="button" class="ed-x" onclick="tplVarRm(${vi},'stages',${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add" style="margin-bottom:8px"><button type="button" class="ed-chip" onclick="tplVV(${vi}).stages.push('');renderTplEditor()">+ Add stage</button></div>`}
+  if(d.deliv){b+=_ck2(!!v.deliv,`tplVarToggle(${vi},'deliv',this.checked)`,'Custom deliverables');
+   if(v.deliv)b+=`<div class="ed-list" style="margin:8px 0">`+v.deliv.map((x,i)=>`<div class="ed-row"><input type="text" value="${_a(x.label)}" placeholder="Label" oninput="tplVV(${vi}).deliv[${i}].label=this.value"><input type="text" inputmode="numeric" value="${x.before==null?'':x.before}" placeholder="Days before" oninput="tplVV(${vi}).deliv[${i}].before=this.value===''?null:(+this.value||0)"><button type="button" class="ed-x" onclick="tplVarRm(${vi},'deliv',${i})" title="Remove">×</button></div>`).join('')+`</div><div class="ed-add" style="margin-bottom:8px"><button type="button" class="ed-chip" onclick="tplVV(${vi}).deliv.push({label:'',before:null});renderTplEditor()">+ Add deliverable</button></div>`}
+  b+=_ck2(v.desc!=null,`tplVarToggle(${vi},'desc',this.checked)`,'Custom starting description');
+  if(v.desc!=null)b+=`<textarea style="min-height:80px;margin-top:8px" oninput="tplVV(${vi}).desc=this.value">${_a(v.desc)}</textarea>`;
+  return b+'</div>'}).join('')}
+function _vkey(vi){const f=tplDraft.fields.find(x=>x.k===tplDraft.variantField);return f.opts[vi]}
+function tplVV(vi){tplDraft.variants=tplDraft.variants||{};const k=_vkey(vi);return tplDraft.variants[k]||(tplDraft.variants[k]={stages:null,deliv:null,desc:null})}
+function tplVarToggle(vi,kind,on){const v=tplVV(vi),d=tplDraft;v[kind]=on?(kind==='stages'?[...(d.stages.items||[])]:kind==='deliv'?_clone(d.deliv.defaults||[]):''):null;renderTplEditor()}
+function tplVarRm(vi,kind,i){tplVV(vi)[kind].splice(i,1);renderTplEditor()}
+function tplSetKind(i,k){const f=tplDraft.fields[i];f.kind=k;if((k==='select'||k==='suggest')&&!f.opts)f.opts=[];renderTplEditor()}
+function tplAddField(){tplDraft.fields.push({k:'f_'+uid().slice(-6),l:'',kind:'text',card:false});renderTplEditor();const r=document.querySelectorAll('#tplBody .tpl-field input[type=text]');const l=r[r.length-1];if(l)l.focus()}
+function tplMove(i,dir){const a=tplDraft.fields,j=i+dir;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];renderTplEditor()}
+function tplRm(path,i){const o=path.split('.').reduce((x,k)=>x[k],tplDraft);o.splice(i,1);renderTplEditor()}
+function tplToggle(k,on){tplDraft[k]=on?(k==='deliv'?{title:'Deliverables',hint:'',presets:[],defaults:[]}:{title:'Stages',items:['Stage 1','Stage 2','Stage 3']}):null;renderTplEditor()}
+function tplAddDelivDefault(){tplDraft.deliv.defaults.push({label:'',before:null});renderTplEditor()}
+function tplSave(){const d=tplDraft;d.label=(d.label||'').trim();
+ if(!d.label){alert('Give the template a name.');return}
+ d.fields=d.fields.filter(f=>(f.l||'').trim()).map(f=>({...f,l:f.l.trim()}));
+ if(d.deliv)d.deliv.defaults=d.deliv.defaults.filter(x=>(x.label||'').trim());
+ if(d.stages)d.stages.items=d.stages.items.map(s=>s.trim()).filter(Boolean);
+ d.nameLabel=(d.nameLabel||'').trim()||'Project Name';d.dateLabel=(d.dateLabel||'').trim()||'Deadline';
+ if(d.variantField&&!d.fields.some(f=>f.k===d.variantField))d.variantField='';
+ Object.keys(d.variants||{}).forEach(k=>{const v=d.variants[k];if(v.stages)v.stages=v.stages.map(s=>s.trim()).filter(Boolean);if(v.deliv)v.deliv=v.deliv.filter(x=>(x.label||'').trim())});
+ const arr=[...(state.templates&&state.templates.length?state.templates:defaultTemplates())],orig=d._orig;delete d._orig;
+ if(orig){const i=arr.findIndex(t=>t.id===orig);if(i>=0)arr[i]=d;else arr.push(d)}else{d.id='tpl_'+uid();arr.push(d)}
+ state.templates=arr;state.templatesTs=new Date().toISOString();saveState();syncTypes(true);refreshAll();renderTplList()}
+function tplDelete(){const id=tplDraft._orig;if(!id||id==='general')return;
+ const n=state.projects.filter(p=>p.type===id).length;
+ if(!confirm('Delete this template?'+(n?' '+n+' project'+(n===1?'':'s')+' will display as General and keep their data.':'')))return;
+ const now=new Date().toISOString();state.templates=(state.templates&&state.templates.length?state.templates:defaultTemplates()).filter(t=>t.id!==id);state.templatesTs=now;
+ state.tabs.forEach(t=>{if(t.listType===id){t.listType='';t.groupBy=''}});state._tabTs=now;
+ saveState();syncTypes(true);refreshAll();renderTplList()}
+
 const mkStages=n=>DEFAULT_STAGES.map((l,i)=>({id:'st'+i,label:l,done:i<n}));
 function sampleProjects(tabId){const b={tabId,status:'active',sample:true,_ts:'2026-10-01T00:00:00.000Z',created:0,desc:''};
  const D=(id,label,off,done)=>({id,label,date:dayISO(off),done:!!done});
@@ -1227,10 +1422,6 @@ function courseSamples(tabId){const b={tabId,status:'active',sample:true,_ts:'20
  return[
  {...b,id:'sample_co1',name:'Introduction to Homiletics',color:'gold',priority:2,progress:45,start:dayISO(-45),deadline:dayISO(70),fields:{semester:'Fall 2026',code:'HOM 501'},deliverables:[D('d1','Submit textbook order',-60,1),D('d2','Post syllabus',-50,1),D('d3','Post final exam',55),D('d4','Submit grades',70)]},
  {...b,id:'sample_co2',name:'Pastoral Care Practicum',color:'teal',priority:3,progress:0,start:dayISO(110),deadline:dayISO(215),fields:{semester:'Spring 2027',code:'PC 640'},deliverables:[D('d1','Submit textbook order',40),D('d2','Post syllabus',95),D('d3','Submit grades',215)]}]}
-function _unusedSeed(s){if(s.samplesSeeded)return;s.samplesSeeded=true;
- const tab=(s.tabs&&s.tabs[0]&&s.tabs[0].id)||'general';const have=new Set(s.projects.map(p=>p.id));const tomb=s.tombstones||{};
- sampleProjects(tab).forEach(p=>{if(!have.has(p.id)&&!tomb[p.id])s.projects.push(p)})}
-
 let _cardDragId=null;
 function clearDropMarks(){document.querySelectorAll('.kanban-col.drag-target').forEach(c=>c.classList.remove('drag-target'))}
 function cardDragStart(e,id){_cardDragId=id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id);
@@ -1464,11 +1655,11 @@ function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p
       </div>
       <div class="field">
         <label id="deadlineLabel">Deadline</label>
-        <input type="date" id="projDeadline">
+        <input type="date" id="projDeadline" oninput="autoDates()">
       </div>
       <div class="field">
         <label>List</label>
-        <select id="projTab"></select>
+        <select id="projTab" onchange="onProjTabChange()"></select>
       </div>
     </div>
     <div class="sheet-footer">
@@ -1491,6 +1682,7 @@ function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p
       <label>Color</label>
       <div class="color-picker" id="tabColorPicker"></div>
     </div>
+    <div id="newTabExtra"></div>
     <div class="sheet-footer" style="padding:0">
       <button class="btn-secondary" onclick="closeSheet('tabOverlay')">Cancel</button>
       <button class="btn-primary" onclick="saveNewTab()">Create List</button>
@@ -1511,6 +1703,7 @@ function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p
       <label>Color</label>
       <div class="color-picker" id="editTabColorPicker"></div>
     </div>
+    <div id="editTabExtra"></div>
     <div class="sheet-footer" style="padding:0; flex-wrap:wrap; gap:8px">
       <button class="btn-secondary" style="color:var(--accent);border-color:#f5c6c1" onclick="deleteTab()">Delete List</button>
       <button class="btn-secondary" onclick="closeSheet('editTabOverlay')">Cancel</button>
@@ -1537,6 +1730,11 @@ function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p
       <div style="font-size:10px;color:var(--muted);letter-spacing:0.06em;line-height:1.7;margin-top:8px">
         Export saves a <strong>.json</strong> file to your Downloads. Import will replace your current data.<br>
         Tip: Export to Google Drive or email for cloud backup.
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Project templates</label>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Define project types, their fields, deliverables and starting values.</div>
+        <button class="btn-backup primary" onclick="openTemplateManager()">Manage templates →</button>
       </div>
       <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
         <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Account</label>
@@ -1970,6 +2168,7 @@ function mergeStates(local, remote, preferRemote = false) {
     tabSortModes: winner.tabSortModes || {},
     _tabTs:       winner._tabTs || new Date().toISOString(),
     tombstones,
+    ...pickTemplates(local, remote),
   };
 }
 
@@ -2256,6 +2455,7 @@ function isFuture(iso) {
 function isDesktop() { return window.innerWidth >= 900; }
 
 function render() {
+  syncTypes();
   if (isDesktop()) { renderKanban(); }
   else { renderTabs(); renderContent(); }
 }
@@ -2322,7 +2522,7 @@ function renderKanban() {
         <div class="empty-sub">Tap <strong>+</strong> below to add your first project</div>
       </div>`;
     } else {
-      if (active.length > 0) { cards += `<div class="section-label">Active</div>`; active.forEach((p,i) => { cards += renderCard(p,i); }); }
+      if (active.length > 0) cards += activeSectionHtml(active, tab);
       if (shelved.length > 0) { cards += sectionHeaderHtml('Shelved', shelved.length, showShelved, 'toggleShelvedView', 'shelved-label'); if (showShelved) shelved.forEach((p,i) => { cards += renderCard(p,i); }); }
       if (archived.length > 0) { cards += sectionHeaderHtml('Archived', archived.length, showArchived, 'toggleArchiveView'); if (showArchived) archived.forEach((p,i) => { cards += renderCard(p,i); }); }
     }
@@ -2398,7 +2598,7 @@ function setKanbanSort(tabId, mode) {
 
 function openAddProjectForTab(tabId) {
   openAddProject();
-  setTimeout(() => { const sel = document.getElementById('projTab'); if (sel) sel.value = tabId; }, 50);
+  setTimeout(() => { const sel = document.getElementById('projTab'); if (sel) { sel.value = tabId; onProjTabChange(); } }, 50);
 }
 
 // ─── MOBILE RENDER ──────────────────────────────────────
@@ -2580,7 +2780,7 @@ function renderContent() {
       <div class="empty-sub">Tap <strong>+</strong> to add your first project here.</div>
     </div>`;
   }
-  if (active.length > 0)   { html += `<div class="section-label">Active</div>`; active.forEach((p,i) => { html += renderCard(p,i); }); }
+  if (active.length > 0) html += activeSectionHtml(active, tab);
   if (shelved.length > 0)  { html += sectionHeaderHtml('Shelved', shelved.length, showShelved, 'toggleShelvedView', 'shelved-label'); if (showShelved) shelved.forEach((p,i) => { html += renderCard(p,i); }); }
   if (archived.length > 0) { html += sectionHeaderHtml('Archived', archived.length, showArchived, 'toggleArchiveView'); if (showArchived) archived.forEach((p,i) => { html += renderCard(p,i); }); }
 
@@ -2943,6 +3143,7 @@ function openNewTabSheet() {
   selectedTabColor = 'teal';
   document.getElementById('newTabName').value = '';
   renderColorPicker('tabColorPicker', selectedTabColor, c => { selectedTabColor = c; });
+  renderListOpts('new', null);
   document.getElementById('tabOverlay').classList.add('open');
   setTimeout(() => document.getElementById('newTabName').focus(), 200);
 }
@@ -2951,7 +3152,7 @@ function saveNewTab() {
   const name = document.getElementById('newTabName').value.trim();
   if (!name) { document.getElementById('newTabName').focus(); return; }
   const id = 'tab_' + uid();
-  state.tabs.push({ id, name, color: selectedTabColor });
+  state.tabs.push({ id, name, color: selectedTabColor, ...readListOpts('new') });
   state.activeTab = id;
   state._tabTs = new Date().toISOString();
   saveState(); closeSheet('tabOverlay'); render();
@@ -2964,6 +3165,7 @@ function openEditTab(tabId) {
   editTabColorVal = tab.color;
   document.getElementById('editTabName').value = tab.name;
   renderColorPicker('editTabColorPicker', editTabColorVal, c => { editTabColorVal = c; });
+  renderListOpts('edit', tab);
   document.getElementById('editTabOverlay').classList.add('open');
 }
 
@@ -2972,6 +3174,7 @@ function saveEditTab() {
   const name = document.getElementById('editTabName').value.trim();
   if (!name || !tab) return;
   tab.name = name; tab.color = editTabColorVal;
+  Object.assign(tab, readListOpts('edit'));
   state._tabTs = new Date().toISOString();
   saveState(); closeSheet('editTabOverlay'); render();
 }
