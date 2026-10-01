@@ -1064,6 +1064,13 @@
 .gantt-tick{position:absolute;top:13px;width:10px;height:10px;transform:rotate(45deg);background:#fff;border:2px solid var(--ink);z-index:3;cursor:pointer}
 .gantt-tick.done{background:var(--ink);opacity:.45}
 @media(max-width:480px){.ed-row{grid-template-columns:minmax(0,1fr) 128px 36px}.ed-x{width:36px}}
+.project-card.dragging-card{opacity:.35}
+.card-ghost{box-shadow:0 12px 32px rgba(28,25,23,.28);transform:scale(.96) rotate(-1.2deg);opacity:.95;overflow:hidden;max-height:90px}
+.card-ghost .card-body,.card-ghost .card-progress-wrap{display:none}
+.card-header{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+@media(min-width:900px){.card-header[draggable=true]{cursor:grab}.card-header[draggable=true]:active{cursor:grabbing}}
+.tab.drop-hot{outline:2px solid var(--accent3);outline-offset:-2px;background:rgba(255,255,255,.18)}
+body.card-dragging .tab:not(.active){box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 </style>
 <script>
 const TYPE_ORDER=['general','speaking','writing','course','supervision'];
@@ -1223,6 +1230,45 @@ function courseSamples(tabId){const b={tabId,status:'active',sample:true,_ts:'20
 function _unusedSeed(s){if(s.samplesSeeded)return;s.samplesSeeded=true;
  const tab=(s.tabs&&s.tabs[0]&&s.tabs[0].id)||'general';const have=new Set(s.projects.map(p=>p.id));const tomb=s.tombstones||{};
  sampleProjects(tab).forEach(p=>{if(!have.has(p.id)&&!tomb[p.id])s.projects.push(p)})}
+
+let _cardDragId=null;
+function clearDropMarks(){document.querySelectorAll('.kanban-col.drag-target').forEach(c=>c.classList.remove('drag-target'))}
+function cardDragStart(e,id){_cardDragId=id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id);
+ const c=document.getElementById('card-'+id);if(c){e.dataTransfer.setDragImage(c,24,24);setTimeout(()=>c.classList.add('dragging-card'),0)}e.stopPropagation()}
+function cardDragEnd(){clearDropMarks();document.querySelectorAll('.dragging-card').forEach(c=>c.classList.remove('dragging-card'));_cardDragId=null}
+function cardDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';clearDropMarks();e.currentTarget.classList.add('drag-target')}
+function cardDrop(e,toTabId){e.preventDefault();const id=_cardDragId;clearDropMarks();_cardDragId=null;moveProject(id,toTabId)}
+function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p||p.tabId===toTabId)return;
+ p.tabId=toTabId;stampProject(p);saveState();if(!isDesktop())state.activeTab=toTabId;render()}
+(function(){
+ let timer=null,sx=0,sy=0,id=null,on=false,ghost=null,hot=null,lastDrag=0;
+ const cancel=()=>{clearTimeout(timer);timer=null};
+ const end=()=>{on=false;if(ghost){ghost.remove();ghost=null}document.body.classList.remove('card-dragging');
+  document.querySelectorAll('.tab.drop-hot').forEach(t=>t.classList.remove('drop-hot'));
+  const c=id&&document.getElementById('card-'+id);if(c)c.classList.remove('dragging-card');hot=null;id=null};
+ document.addEventListener('touchstart',e=>{
+  if(isDesktop()||e.touches.length!==1)return;const h=e.target.closest&&e.target.closest('.card-header');if(!h)return;
+  const card=h.closest('.project-card');sx=e.touches[0].clientX;sy=e.touches[0].clientY;id=card.id.slice(5);
+  timer=setTimeout(()=>{on=true;timer=null;if(navigator.vibrate)navigator.vibrate(15);
+   const r=card.getBoundingClientRect();ghost=card.cloneNode(true);ghost.removeAttribute('id');ghost.className='project-card card-ghost';
+   ghost.style.cssText='position:fixed;z-index:9999;pointer-events:none;width:'+r.width+'px;left:'+r.left+'px;top:'+r.top+'px;margin:0';
+   ghost.dataset.ox=sx-r.left;ghost.dataset.oy=sy-r.top;document.body.appendChild(ghost);card.classList.add('dragging-card');document.body.classList.add('card-dragging')},420)},{passive:true});
+ document.addEventListener('touchmove',e=>{
+  const t=e.touches[0];
+  if(timer){if(Math.hypot(t.clientX-sx,t.clientY-sy)>10)cancel();return}
+  if(!on)return;e.preventDefault();
+  ghost.style.left=(t.clientX-ghost.dataset.ox)+'px';ghost.style.top=(t.clientY-ghost.dataset.oy)+'px';
+  const el=document.elementFromPoint(t.clientX,t.clientY),tab=el&&el.closest&&el.closest('.tab');
+  document.querySelectorAll('.tab.drop-hot').forEach(x=>x.classList.remove('drop-hot'));
+  hot=null;if(tab){tab.classList.add('drop-hot');hot=+tab.dataset.idx}
+  const sc=document.getElementById('tabsScroll'),b=sc.getBoundingClientRect();
+  if(t.clientY<b.bottom+30){if(t.clientX<b.left+48)sc.scrollLeft-=10;else if(t.clientX>b.right-48)sc.scrollLeft+=10}
+ },{passive:false});
+ document.addEventListener('touchend',()=>{cancel();if(!on)return;const to=hot!=null&&state.tabs[hot]?state.tabs[hot].id:null,pid=id;lastDrag=Date.now();end();if(to)moveProject(pid,to)},{passive:true});
+ document.addEventListener('touchcancel',()=>{cancel();if(on)end()},{passive:true});
+ document.addEventListener('click',e=>{if(Date.now()-lastDrag<500&&e.target.closest&&e.target.closest('.card-header')){e.stopPropagation();e.preventDefault()}},true);
+ document.addEventListener('contextmenu',e=>{if(!isDesktop()&&e.target.closest&&e.target.closest('.card-header'))e.preventDefault()});
+})();
 </script>
 </head>
 <body>
@@ -2669,7 +2715,7 @@ function renderCard(p, idx) {
   const stagger = idx !== undefined ? `--card-i:${idx};` : '';
   return `<div class="project-card${p.status==='archived'?' archived':''}${p.status==='shelved'?' shelved':''}${overdue?' overdue':''}" id="card-${p.id}" style="${stagger}border-left-color:${color.hex}">
 
-    <div class="card-header" onclick="toggleCard('${p.id}')">
+    <div class="card-header" draggable="${isDesktop()}" ondragstart="cardDragStart(event,'${p.id}')" ondragend="cardDragEnd()" onclick="toggleCard('${p.id}')">
       <div class="card-color-bar" style="background:${color.hex}"></div>
       <div class="card-main">${cardKicker(p)}
         <div class="card-title-row">
@@ -3528,6 +3574,7 @@ function kanbanDragStart(e, tabId) {
   e.stopPropagation();
 }
 function kanbanDragOver(e) {
+  if (_cardDragId) return cardDragOver(e);
   if (!_kanbanDragId) return;
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
@@ -3536,6 +3583,7 @@ function kanbanDragOver(e) {
   if (col) col.classList.add('drag-target');
 }
 function kanbanDrop(e, toTabId) {
+  if (_cardDragId) return cardDrop(e, toTabId);
   e.preventDefault();
   document.querySelectorAll('.kanban-col').forEach(c => c.classList.remove('drag-target'));
   if (!_kanbanDragId || _kanbanDragId === toTabId) return;
