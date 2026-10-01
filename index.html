@@ -1096,6 +1096,77 @@ body.card-dragging .tab:not(.active){box-shadow:inset 0 0 0 1px rgba(255,255,255
 .section-label .section-count{margin-left:8px}
 .td-v.pre{white-space:pre-wrap}
 @media(max-width:480px){.tpl-row2{grid-template-columns:minmax(0,1fr) 118px}}
+
+.project-card{--m:#6f675e}
+.project-card .card-header{display:block;padding:18px 18px 0}
+.project-card .card-main{display:block}
+.cd-eb{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--m);line-height:1;min-height:20px}
+.cd-dot{width:7px;height:7px;border-radius:50%;flex:none}
+.cd-sl{opacity:.45}
+.cd-flag{margin-left:6px;display:inline-flex;align-items:center;gap:4px;letter-spacing:.06em;font-weight:600;color:#b4530a}
+.cd-flag.crit{color:#b71c1c}
+.project-card .card-chevron{margin:0 -6px 0 auto;width:28px;height:28px;justify-content:center;color:var(--m);opacity:.75}
+.project-card .card-chevron.open{opacity:1}
+.project-card .card-title{font-size:25px;line-height:1.2;letter-spacing:.01em;margin-top:8px;white-space:normal;overflow:visible;text-overflow:clip;text-wrap:balance;overflow-wrap:anywhere}
+.kanban-cards .project-card .card-title{font-size:22px;line-height:1.2}
+.cd-sub{font-size:13.5px;line-height:1.45;color:var(--m);margin-top:6px;overflow-wrap:anywhere}
+.cd-sub.serif{font-family:'Instrument Serif',serif;font-size:17px;line-height:1.35;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+.cd-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;margin-top:18px}
+.cd-facts.one{grid-template-columns:1fr}
+.cd-fl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--m);margin-bottom:4px}
+.cd-fv{font-size:15px;font-weight:500;line-height:1.3;color:var(--ink);overflow-wrap:anywhere}
+.cd-fv small{display:block;font-size:13px;font-weight:400;color:var(--m);margin-top:2px}
+.cd-fv.late,.cd-fv.late small{color:var(--accent)}
+.cd-fv.late small{font-weight:500}
+.project-card .card-progress-wrap{padding:20px 18px 20px}
+.project-card .progress-row{gap:12px}
+.project-card .progress-track{height:6px;border-radius:3px}
+.project-card .progress-fill{border-radius:3px}
+.project-card .stage-seg{height:6px;border-radius:3px}
+.project-card .progress-pct{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;min-width:44px;justify-content:flex-end}
+.project-card .cb-frac{font-size:12px;opacity:1}
+.project-card .card-body{padding:2px 18px 18px;border-top:1px solid var(--border)}
+.cd-sec{margin-top:24px}.cd-sec:first-child{margin-top:20px}
+.cd-sh{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--m);margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.cd-sh span{letter-spacing:.02em;text-transform:none;font-size:12px;text-align:right}
+.cd-dg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.cd-dg .w{grid-column:1/-1}
+.cd-dg .cd-fv{font-weight:400}
+.cd-dg .cd-fv.serif{font-family:'Instrument Serif',serif;font-size:19px;line-height:1.3}
+.cd-dg .cd-fv.pre{white-space:pre-wrap}
+.cd-rows{display:flex;flex-direction:column}
+.cd-rw{display:flex;align-items:center;gap:12px;min-height:46px;border-top:1px solid var(--border);font-size:14px;cursor:pointer}
+.cd-rows>.cd-rw:first-child,.cd-donelist.open+.cd-rows>.cd-rw:first-child{border-top:none}
+.cd-ck{width:20px;height:20px;flex:none;border-radius:6px;border:1.5px solid #8a8278;display:grid;place-items:center;color:#fff;pointer-events:none}
+.cd-rw.dn .cd-ck{background:var(--accent2);border-color:var(--accent2)}
+.cd-rw.dn .cd-lb{color:var(--m);text-decoration:line-through}
+.cd-lb{flex:1;min-width:0;line-height:1.3;overflow-wrap:anywhere}
+.cd-dt{font-size:13px;color:var(--m);white-space:nowrap;text-align:right}
+.cd-dt small{display:block;font-size:12px}
+.cd-rw.lt .cd-dt{color:var(--accent);font-weight:500}
+.cd-rw.fin{background:var(--paper2);border-radius:10px;border:none;padding:0 12px;margin-top:8px;min-height:50px}
+.cd-rw.fin .cd-lb{font-weight:500}.cd-rw.fin .cd-dt{color:var(--ink);font-weight:500}.cd-rw.fin .cd-dt.lt{color:var(--accent)}
+.cd-fi{width:20px;height:20px;flex:none;display:grid;place-items:center;color:var(--ink-soft)}
+.cd-rw.cur{background:var(--paper2);border-radius:10px;padding:0 12px;margin:2px 0;border:none}
+.cd-rw.cur .cd-lb{font-weight:600}
+.cd-rw.cur+.cd-rw{border-top:none}
+.cd-ring{width:20px;height:20px;flex:none;border-radius:50%;border:1.5px solid #8a8278;pointer-events:none}
+.cd-rw.cur .cd-ring{border:5px solid var(--ink);background:#fff}
+.cd-chip{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--ink)}
+.cd-donesum{display:flex;align-items:center;gap:10px;min-height:44px;font-size:13px;color:var(--m);cursor:pointer}
+.cd-donesum .cd-ck{background:var(--accent2);border-color:var(--accent2);border-radius:50%}
+.cd-donesum .cd-cv{margin-left:auto;display:flex;transition:transform .2s}
+.cd-donesum.open .cd-cv{transform:rotate(180deg)}
+.cd-donelist{display:none}.cd-donelist.open{display:block}
+.project-card .card-desc.cd-nt{font-size:14px;line-height:1.6;color:var(--ink-soft);background:var(--paper);border-radius:10px;padding:12px 14px;margin:0}
+.cd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:26px;padding-top:16px;border-top:1px solid var(--border)}
+.cd-ab{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 11px;border-radius:10px;border:none;background:none;font:500 13px 'Space Grotesk',sans-serif;color:var(--ink-soft);cursor:pointer}
+@media(hover:hover){.cd-ab:hover{background:var(--paper2)}.cd-ab.del:hover{background:#fdecea}.cd-ab.pr:hover{background:#000}}
+.cd-ab.pr{background:var(--ink);color:var(--paper);padding:0 16px}
+.cd-ab.ok{color:var(--accent2)}
+.cd-ab.del{color:var(--accent);margin-left:auto}
+.cd-ab svg{display:block;flex:none}
+.card-ghost{max-height:170px}
 </style>
 <script>
 const DEFAULT_STAGES=['Coursework','Qualifying exams','Proposal defense','IRB / ethics approval','Data collection','Drafting','Defense','Final submission'];
@@ -1168,30 +1239,7 @@ const fieldVal=(f,v)=>f.kind==='date'?formatDateDisplay(v):v;
 function typeSub(p){const t=tp(p),fv=p.fields||{};const out=[];
  if(t.subSem&&p.deadline)out.push((t.meta?t.meta+' ':'')+semLabel(semFromDate(p.deadline)));
  t.fields.filter(f=>f.card&&fv[f.k]).forEach(f=>out.push(fieldVal(f,fv[f.k])));return out.join(' · ')}
-function cardKicker(p){const t=tp(p);if(t.id==='general')return'';const s=typeSub(p);
- return `<div class="card-kicker"><span class="type-tag" style="${tagStyle(t.color)}">${_a(t.label)}</span>${s?`<span class="kicker-sub">${_a(s)}</span>`:''}</div>`}
-function metaExtra(p){let h='';const t=tp(p);
- if(t.countdown&&p.deadline){const s=spanLabel(p.deadline);if(s)h+=`<span>· ${s} to go</span>`}
- const nd=nextDeliv(p);
- if(nd){const late=daysUntil(nd.date)<0;h+=`<span${late?' style="color:var(--accent)"':''}>${late?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:3px"></span>':'·'} ${_a(nd.label)} ${formatDateDisplay(nd.date)}</span>`}
- return h}
-function stageTrackHtml(p){const si=stageInfo(p);const col=(COLORS.find(c=>c.id===p.color)||COLORS[3]).hex;
- const segs=p.stages.map(s=>`<span class="stage-seg${s.done?' done':s===si.cur?' cur':''}" style="--c:${col}" title="${_a(s.label)}"></span>`).join('');
- const cap=si.cur?`Now: <strong>${_a(si.cur.label)}</strong> · ${si.done} of ${si.total}`:`All ${si.total} stages complete`;
- return `<div class="stage-wrap"><div class="stage-track">${segs}</div><div class="stage-cap">${cap}</div></div>`}
-function stageNoteHtml(p){const si=stageInfo(p);
- return `<div class="checkbox-progress-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10"/></svg><span>Progress tracked by stages: <strong>${si.done}</strong> of <strong>${si.total}</strong> complete.</span></div>`}
 const _ck='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
-function typeDetailsHtml(p){
- const t=tp(p);if(t.id==='general')return'';const fv=p.fields||{};let h='';
- const rows=t.fields.filter(x=>fv[x.k]).map(x=>`<span class="td-l">${_a(x.l)}</span><span class="td-v${x.kind==='long'?' pre':''}">${_a(fieldVal(x,fv[x.k]))}</span>`).join('');
- if(rows)h+=`<div class="type-details">${rows}</div>`;
- if(t.deliv&&p.deliverables&&p.deliverables.length){
-  h+=`<div class="td-head">${_a(t.deliv.title||'Deliverables')}</div><div class="deliv-list">`+[...p.deliverables].sort((a,b)=>cmpDate(a.date,b.date)).map(d=>{const late=!d.done&&d.date&&daysUntil(d.date)<0;
-   return `<div class="deliv-row${d.done?' done':''}" onclick="toggleDeliv('${p.id}','${d.id}')"><span class="deliv-check">${d.done?_ck:''}</span><span class="deliv-lbl">${_a(d.label)}</span><span class="deliv-date${late?' late':''}">${d.date?formatDateDisplay(d.date):'No date'}</span></div>`}).join('')+'</div>'}
- if(t.stages&&p.stages&&p.stages.length){const si=stageInfo(p);
-  h+=`<div class="td-head">${_a(t.stages.title||'Stages')}</div><div class="deliv-list">`+p.stages.map(s=>`<div class="deliv-row${s.done?' done':''}${s===si.cur?' current':''}" onclick="toggleStage('${p.id}','${s.id}')"><span class="deliv-check">${s.done?_ck:''}</span><span class="deliv-lbl">${_a(s.label)}</span>${s===si.cur?'<span class="deliv-date">Current</span>':''}</div>`).join('')+'</div>'}
- return h}
 function refreshCard(id){
  const p=state.projects.find(x=>x.id===id),el=document.getElementById('card-'+id);if(!p||!el){render();return}
  const open=document.getElementById('body-'+id).classList.contains('open');
@@ -1280,6 +1328,98 @@ function removeSamples(){const ss=state.projects.filter(p=>p.sample);if(!ss.leng
  if(!confirm('Remove '+ss.length+' sample projects?'))return;
  const now=new Date().toISOString();state.tombstones=state.tombstones||{};ss.forEach(p=>state.tombstones[p.id]=now);
  state.projects=state.projects.filter(p=>!p.sample);state._tabTs=now;saveState();refreshAll()}
+
+const CI={
+chev:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+flag:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4h13l-2 4 2 4H4"/></svg>',
+edit:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+shelf:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="13" x2="14" y2="13"/></svg>',
+arch:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+act:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>',
+del:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>'};
+const shortDate=iso=>{const s=formatDateDisplay(iso);return s&&iso.slice(0,4)===String(new Date().getFullYear())?s.replace(/, \d{4}$/,''):s};
+const lateTxt=iso=>{const n=Math.abs(daysUntil(iso));return n+(n===1?' day':' days')+' late'};
+const relTxt=iso=>{const d=daysUntil(iso);return d<0?lateTxt(iso):d===0?'today':'in '+spanLabel(iso)};
+const variantVal=p=>{const t=tp(p);return t.variantField?((p.fields||{})[t.variantField]||''):''};
+function cardSub(p){const t=tp(p),fv=p.fields||{};
+ const f=t.fields.filter(x=>x.card&&fv[x.k]&&x.k!==t.variantField&&x.kind!=='long').map(x=>String(fieldVal(x,fv[x.k])));
+ if(!f.length)return'';
+ if(f.length===1&&f[0].length>48)return `<p class="cd-sub serif">${_a(f[0])}</p>`;
+ return `<p class="cd-sub">${f.map(_a).join(' · ')}</p>`}
+function cardFacts(p,overdue,pct){const t=tp(p),a=[];
+ if(p.start&&isFuture(p.start))a.push(['Starts',formatDateDisplay(p.start),'',0]);
+ if(p.deadline){let v,s='',late=0;
+  if(overdue){v=formatDateDisplay(p.deadline);s=lateTxt(p.deadline);late=1}
+  else{v=t.subSem?semLabel(semFromDate(p.deadline)):formatDateDisplay(p.deadline);s=pct>=100?'':relTxt(p.deadline)}
+  a.push([dueLbl(p),v,s,late])}
+ if(t.stages&&p.stages&&p.stages.length){const si=stageInfo(p);a.push(['Current stage',si.cur?si.cur.label:'All complete','',0])}
+ else{const nd=nextDeliv(p);if(nd){const late=daysUntil(nd.date)<0;a.push(['Next up',nd.label,late?lateTxt(nd.date):shortDate(nd.date),late?1:0])}}
+ if(!a.length)return'';
+ return `<div class="cd-facts${a.length<2?' one':''}">`+a.map(f=>`<div><div class="cd-fl">${_a(f[0])}</div><div class="cd-fv${f[3]?' late':''}">${_a(f[1])}${f[2]?`<small>${_a(f[2])}</small>`:''}</div></div>`).join('')+'</div>'}
+function stageTrackHtml(p){const si=stageInfo(p);const col=(COLORS.find(c=>c.id===p.color)||COLORS[3]).hex;
+ const segs=p.stages.map(s=>`<span class="stage-seg${s.done?' done':s===si.cur?' cur':''}" style="--c:${col}" title="${_a(s.label)}"></span>`).join('');
+ return `<div class="stage-wrap"><div class="stage-track">${segs}</div></div>`}
+const cdSec=(h,inner,r)=>`<div class="cd-sec"><div class="cd-sh">${h}${r?`<span>${r}</span>`:''}</div>${inner}</div>`;
+function detailsSec(p){const t=tp(p),fv=p.fields||{},it=[];
+ t.fields.filter(x=>fv[x.k]).forEach(x=>{const v=String(fieldVal(x,fv[x.k]));const serif=x.kind==='text'&&v.length>48;
+  it.push(`<div${(serif||x.kind==='long'||v.length>36)?' class="w"':''}><div class="cd-fl">${_a(x.l)}</div><div class="cd-fv${serif?' serif':''}${x.kind==='long'?' pre':''}">${_a(v)}</div></div>`)});
+ if(p.start)it.push(`<div><div class="cd-fl">${isFuture(p.start)?'Starts':'Started'}</div><div class="cd-fv">${formatDateDisplay(p.start)}</div></div>`);
+ if(t.subSem&&p.deadline)it.push(`<div><div class="cd-fl">${_a(dueLbl(p))}</div><div class="cd-fv">${formatDateDisplay(p.deadline)}</div></div>`);
+ return it.length?cdSec('Details',`<div class="cd-dg">${it.join('')}</div>`):''}
+function scheduleSec(p){const t=tp(p);if(!(t.deliv&&p.deliverables&&p.deliverables.length))return'';
+ const rows=[...p.deliverables].sort((a,b)=>cmpDate(a.date,b.date)).map(d=>{const late=!d.done&&d.date&&daysUntil(d.date)<0;
+  return `<div class="cd-rw${d.done?' dn':''}${late?' lt':''}" onclick="toggleDeliv('${p.id}','${d.id}')"><span class="cd-ck">${d.done?_ck:''}</span><span class="cd-lb">${_a(d.label)}</span><span class="cd-dt">${d.date?shortDate(d.date):'No date'}${!d.done&&d.date?`<small>${relTxt(d.date)}</small>`:''}</span></div>`}).join('');
+ const fin=p.deadline?`<div class="cd-rw fin"><span class="cd-fi">${CI.flag}</span><span class="cd-lb">${_a(dueLbl(p))}</span><span class="cd-dt${daysUntil(p.deadline)<0&&p.progress<100?' lt':''}">${formatDateDisplay(p.deadline)}<small>${relTxt(p.deadline)}</small></span></div>`:'';
+ return cdSec(_a(t.deliv.title||'Deliverables'),`<div class="cd-rows">${rows}</div>${fin}`)}
+function stagesSec(p){const t=tp(p);if(!(t.stages&&p.stages&&p.stages.length))return'';
+ const si=stageInfo(p),done=p.stages.filter(s=>s.done),rest=p.stages.filter(s=>!s.done);
+ const row=s=>`<div class="cd-rw${s.done?' dn':''}${s===si.cur?' cur':''}" onclick="toggleStage('${p.id}','${s.id}')">${s.done?`<span class="cd-ck">${_ck}</span>`:'<span class="cd-ring"></span>'}<span class="cd-lb">${_a(s.label)}</span>${s===si.cur?'<span class="cd-chip">Current</span>':''}</div>`;
+ const ds=done.length?`<div class="cd-donesum" onclick="toggleDoneStages(this)"><span class="cd-ck">${_ck}</span>${done.length} ${done.length===1?'stage':'stages'} complete<span class="cd-cv">${CI.chev}</span></div><div class="cd-donelist"><div class="cd-rows">${done.map(row).join('')}</div></div>`:'';
+ return cdSec(_a(t.stages.title||'Stages'),ds+`<div class="cd-rows">${rest.map(row).join('')}</div>`,`${si.done} of ${si.total}`)}
+function toggleDoneStages(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open')}
+function typeDetailsHtml(p){return detailsSec(p)+scheduleSec(p)+stagesSec(p)}
+
+function renderCard(p, idx) {
+  const color  = COLORS.find(c => c.id === p.color) || COLORS[3];
+  const pi             = progressInfo(p);
+  const cp             = pi.cp || null;
+  const displayPct     = pi.pct;
+  const checkboxDriven = pi.kind === 'checkbox';
+  const stageDriven    = pi.kind === 'stages';
+  const overdue = p.deadline && isOverdue(p.deadline) && displayPct < 100;
+  const t       = tp(p);
+  const stagger = idx !== undefined ? `--card-i:${idx};` : '';
+  const vv      = variantVal(p);
+  const pr      = p.priority === 1 ? ['Critical','crit'] : p.priority === 2 ? ['High',''] : null;
+  const flag    = pr ? `<span class="cd-flag ${pr[1]}">${CI.flag}${pr[0]}</span>` : '';
+  const prog    = stageDriven
+    ? stageTrackHtml(p) + `<div class="progress-pct" id="pct-${p.id}">${pi.si.done} of ${pi.si.total}</div>`
+    : `<div class="progress-track${checkboxDriven?' checkbox-driven':''}"${checkboxDriven?'':` onclick="handleTrackClick(event,'${p.id}')"`}><div class="progress-fill fill-${p.color}" id="fill-${p.id}" style="${stagger}--w:${displayPct}%"></div></div><div class="progress-pct" id="pct-${p.id}">${progressPctHTML(displayPct, cp)}</div>`;
+  const slider = (!stageDriven && !checkboxDriven)
+    ? cdSec('Progress', `<div class="progress-row"><input type="range" class="prog-slider" data-id="${p.id}" min="0" max="100" value="${p.progress}"></div>`) : '';
+  const notes = p.desc ? cdSec('Notes', `<div class="card-desc md-body cd-nt">${renderMarkdown(p.desc, p.id)}</div>`, checkboxDriven ? 'Progress follows the checklist' : '') : '';
+  const btn = (cls, fn, ico, lbl) => `<button class="cd-ab ${cls}" onclick="${fn}">${ico}${lbl}</button>`;
+  return `<div class="project-card${p.status==='archived'?' archived':''}${p.status==='shelved'?' shelved':''}${overdue?' overdue':''}" id="card-${p.id}" style="${stagger}border-left-color:${color.hex}">
+    <div class="card-header" draggable="${isDesktop()}" ondragstart="cardDragStart(event,'${p.id}')" ondragend="cardDragEnd()" onclick="toggleCard('${p.id}')">
+      <div class="card-main">
+        <div class="cd-eb"><span class="cd-dot" style="background:${t.color}"></span><span>${_a(t.label)}</span>${vv?`<span class="cd-sl">/</span><span>${_a(vv)}</span>`:''}${flag}<div class="card-chevron" id="chev-${p.id}">${CI.chev}</div></div>
+        <div class="card-title">${escHtml(p.name)}</div>
+        ${cardSub(p)}${cardFacts(p, overdue, displayPct)}
+      </div>
+    </div>
+    <div class="card-progress-wrap"><div class="progress-row">${prog}</div></div>
+    <div class="card-body" id="body-${p.id}">
+      ${typeDetailsHtml(p)}${slider}${notes}
+      <div class="cd-acts">
+        ${btn('pr',`openEditProject('${p.id}')`,CI.edit,'Edit')}
+        ${p.status !== 'active'   ? btn('ok',`setProjectStatus('${p.id}','active')`,CI.act,'Activate') : ''}
+        ${p.status !== 'shelved'  ? btn('',`setProjectStatus('${p.id}','shelved')`,CI.shelf,'Shelve') : ''}
+        ${p.status !== 'archived' ? btn('',`setProjectStatus('${p.id}','archived')`,CI.arch,'Archive') : ''}
+        ${btn('del',`deleteProject('${p.id}')`,CI.del,'Delete')}
+      </div>
+    </div>
+  </div>`;
+}
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function groupOptions(listType){syncTypes();const o=[['','None'],['semester','Semester (semester field, else deadline)'],['month','Deadline month'],['priority','Priority'],['type','Project type']];
@@ -1460,6 +1600,7 @@ function moveProject(id,toTabId){const p=state.projects.find(x=>x.id===id);if(!p
  document.addEventListener('click',e=>{if(Date.now()-lastDrag<500&&e.target.closest&&e.target.closest('.card-header')){e.stopPropagation();e.preventDefault()}},true);
  document.addEventListener('contextmenu',e=>{if(!isDesktop()&&e.target.closest&&e.target.closest('.card-header'))e.preventDefault()});
 })();
+
 </script>
 </head>
 <body>
@@ -2901,84 +3042,7 @@ function renderMarkdown(raw, projId) {
 }
 
 // ─── RENDER CARD ────────────────────────────────────────
-function renderCard(p, idx) {
-  const color  = COLORS.find(c => c.id === p.color) || COLORS[3];
-  // Checkboxes in the description (if any) drive the displayed progress
-  const pi             = progressInfo(p);
-  const cp             = pi.cp || null;
-  const displayPct     = pi.pct;
-  const checkboxDriven = pi.kind === 'checkbox';
-  const stageDriven    = pi.kind === 'stages';
-  const overdue = p.deadline && isOverdue(p.deadline) && displayPct < 100;
-  const pri    = PRIORITIES.find(x => x.val === (p.priority || 3));
-  const priCls = `pri-${p.priority || 3}`;
-  const stagger = idx !== undefined ? `--card-i:${idx};` : '';
-  return `<div class="project-card${p.status==='archived'?' archived':''}${p.status==='shelved'?' shelved':''}${overdue?' overdue':''}" id="card-${p.id}" style="${stagger}border-left-color:${color.hex}">
-
-    <div class="card-header" draggable="${isDesktop()}" ondragstart="cardDragStart(event,'${p.id}')" ondragend="cardDragEnd()" onclick="toggleCard('${p.id}')">
-      <div class="card-color-bar" style="background:${color.hex}"></div>
-      <div class="card-main">${cardKicker(p)}
-        <div class="card-title-row">
-          <div class="card-title">${escHtml(p.name)}</div>
-          <span class="priority-badge ${priCls}">${pri ? pri.short : ''}</span>
-        </div>
-        <div class="card-meta">
-          ${p.deadline ? `<span>${overdue?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:3px;vertical-align:middle"></span>':'·'} ${metaLbl(p)}${formatDateDisplay(p.deadline)}${overdue?'<span style="color:var(--accent)"> · overdue</span>':''}</span>` : ''}
-          ${p.start    ? `<span>${isFuture(p.start)?'→ starts':'· started'} ${formatDateDisplay(p.start)}</span>` : ''}
-          ${metaExtra(p)}
-        </div>
-      </div>
-      <div class="card-chevron" id="chev-${p.id}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="card-progress-wrap">
-      <div class="progress-row">
-        ${stageDriven ? stageTrackHtml(p) : `<div class="progress-track${checkboxDriven?' checkbox-driven':''}"${checkboxDriven?'':` onclick="handleTrackClick(event,'${p.id}')"`}>
-          <div class="progress-fill fill-${p.color}" id="fill-${p.id}" style="${stagger}--w:${displayPct}%"></div>
-        </div>`}
-        <div class="progress-pct" id="pct-${p.id}">${progressPctHTML(displayPct, cp)}</div>
-      </div>
-    </div>
-    <div class="card-body" id="body-${p.id}">
-      ${p.desc ? `<div class="card-desc md-body">${renderMarkdown(p.desc, p.id)}</div>` : ''}
-      ${typeDetailsHtml(p)}
-      <div class="card-dates">
-        ${p.start    ? `<div class="date-chip start">${isFuture(p.start)?'▶ Starts:':'▶ Started:'} ${formatDateDisplay(p.start)}</div>` : ''}
-        ${p.deadline ? `<div class="date-chip deadline">⏳ ${dueLbl(p)}: ${formatDateDisplay(p.deadline)}</div>` : ''}
-      </div>
-      ${stageDriven ? stageNoteHtml(p) : checkboxDriven
-        ? `<div class="checkbox-progress-note">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>Progress auto-tracked: <strong>${cp.done}</strong> of <strong>${cp.total}</strong> checkbox${cp.total===1?'':'es'} complete.</span>
-          </div>`
-        : `<div class="slider-wrap" style="margin-bottom:12px">
-        <label style="display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Adjust Progress</label>
-        <div class="progress-row">
-          <input type="range" class="prog-slider" data-id="${p.id}" min="0" max="100" value="${p.progress}">
-          <span class="progress-pct" style="pointer-events:none">&nbsp;</span>
-        </div>
-      </div>`}
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="openEditProject('${p.id}')" title="Edit">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        ${p.status !== 'active' ? `<button class="card-action-btn success" onclick="setProjectStatus('${p.id}','active')" title="Activate">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-            </button>` : ''}
-        ${p.status !== 'shelved' ? `<button class="card-action-btn" onclick="setProjectStatus('${p.id}','shelved')" title="Shelve">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
-            </button>` : ''}
-        ${p.status !== 'archived' ? `<button class="card-action-btn" onclick="setProjectStatus('${p.id}','archived')" title="Archive">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-            </button>` : ''}
-
-        <button class="card-action-btn danger" onclick="deleteProject('${p.id}')" title="Delete">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>`;
-}
-
+// renderCard now lives in cards.js
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
